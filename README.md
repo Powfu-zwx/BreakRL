@@ -29,16 +29,16 @@ TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕
 
 | # | 章节 | 核心问题 | 材料 |
 |---|---|---|---|
-| 1 | [多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf) | 探索与利用如何权衡？ | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) · [TeX](notes/multi-armed-bandit/multi-armed-bandit.tex) |
-| 2 | [马尔可夫决策过程](notes/mdp/mdp.pdf) | 如何形式化一个序列决策问题？ | PDF |
-| 3 | [时序差分学习](notes/temporal-difference-learning/temporal-difference-learning.pdf) | 如何从一步反馈中估计长期价值？ | PDF |
+| 1 | [多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf) | 探索与利用如何权衡？ | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) · [TeX](notes/multi-armed-bandit/multi-armed-bandit.tex) · [Notebook](notes/multi-armed-bandit/multi-armed-bandit_experiments.ipynb) |
+| 2 | [马尔可夫决策过程](notes/mdp/mdp.pdf) | 如何形式化一个序列决策问题？ | [PDF](notes/mdp/mdp.pdf) · [TeX](notes/mdp/mdp.tex) · [Notebook](notes/mdp/mdp_experiments.ipynb) |
+| 3 | [时序差分学习](notes/temporal-difference-learning/temporal-difference-learning.pdf) | 如何从一步反馈中估计长期价值？ | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) · [TeX](notes/temporal-difference-learning/temporal-difference-learning.tex) · [Notebook](notes/temporal-difference-learning/temporal-difference-learning_experiments.ipynb) |
 | 4 | [DQN](notes/dqn/dqn.pdf) | 神经网络如何稳定地学习价值函数？ | [PDF](notes/dqn/dqn.pdf) · [TeX](notes/dqn/dqn.tex) · [Notebook](notes/dqn/dqn_experiments.ipynb) |
 | 5 | [Policy Gradient / REINFORCE](notes/policy-gradient/pg.pdf) | 为什么直接优化策略？ | [PDF](notes/policy-gradient/pg.pdf) · [TeX](notes/policy-gradient/pg.tex) · [Notebook](notes/policy-gradient/pg_experiments.ipynb) |
 | 6 | [Actor-Critic / A2C](notes/actor-critic/ac.pdf) | 价值估计如何帮助策略更新？ | [PDF](notes/actor-critic/ac.pdf) · [TeX](notes/actor-critic/ac.tex) · [Notebook](notes/actor-critic/ac_experiments.ipynb) |
 | 7 | [PPO](notes/ppo/ppo.pdf) | 如何约束策略更新的幅度？ | [PDF](notes/ppo/ppo.pdf) · [TeX](notes/ppo/ppo.tex) · [Notebook](notes/ppo/ppo_experiments.ipynb) |
 | 8 | [SAC](notes/sac/sac.pdf) | 连续控制中如何兼顾探索与利用？ | [PDF](notes/sac/sac.pdf) · [TeX](notes/sac/sac.tex) · [Notebook](notes/sac/sac_experiments.ipynb) |
 
-第 1 章提供 PDF 与 TeX；第 2–3 章目前提供 PDF；算法章节（4–8）同时提供 TeX 源码与 notebook。
+全部 8 章均提供 PDF、TeX 源码与实验 notebook。
 
 ## 材料的组织方式
 
