@@ -29,7 +29,7 @@ TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕
 
 | # | 章节 | 核心问题 | 材料 |
 |---|---|---|---|
-| 1 | [多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf) | 探索与利用如何权衡？ | PDF |
+| 1 | [多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf) | 探索与利用如何权衡？ | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) · [TeX](notes/multi-armed-bandit/multi-armed-bandit.tex) |
 | 2 | [马尔可夫决策过程](notes/mdp/mdp.pdf) | 如何形式化一个序列决策问题？ | PDF |
 | 3 | [时序差分学习](notes/temporal-difference-learning/temporal-difference-learning.pdf) | 如何从一步反馈中估计长期价值？ | PDF |
 | 4 | [DQN](notes/dqn/dqn.pdf) | 神经网络如何稳定地学习价值函数？ | [PDF](notes/dqn/dqn.pdf) · [TeX](notes/dqn/dqn.tex) · [Notebook](notes/dqn/dqn_experiments.ipynb) |
@@ -38,7 +38,7 @@ TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕
 | 7 | [PPO](notes/ppo/ppo.pdf) | 如何约束策略更新的幅度？ | [PDF](notes/ppo/ppo.pdf) · [TeX](notes/ppo/ppo.tex) · [Notebook](notes/ppo/ppo_experiments.ipynb) |
 | 8 | [SAC](notes/sac/sac.pdf) | 连续控制中如何兼顾探索与利用？ | [PDF](notes/sac/sac.pdf) · [TeX](notes/sac/sac.tex) · [Notebook](notes/sac/sac_experiments.ipynb) |
 
-前三章目前提供 PDF；其余算法章节同时提供 TeX 源码与 notebook。
+第 1 章提供 PDF 与 TeX；第 2–3 章目前提供 PDF；算法章节（4–8）同时提供 TeX 源码与 notebook。
 
 ## 材料的组织方式
 
@@ -48,7 +48,15 @@ TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕
 
 ## 运行 Notebook
 
-实验使用 Python、PyTorch 与 Gymnasium。创建虚拟环境后安装依赖：
+实验使用 Python、PyTorch 与 Gymnasium。推荐用 conda 环境 **`rl_env`**：
+
+```bash
+conda activate rl_env
+python -m ipykernel install --user --name rl_env --display-name rl_env
+jupyter lab
+```
+
+若从零创建环境，也可：
 
 ```bash
 python -m venv .venv
@@ -56,7 +64,9 @@ pip install -r requirements.txt
 jupyter lab
 ```
 
-打开对应章节目录中的 `*_experiments.ipynb` 即可运行。实验默认使用 CPU；若系统可用，PyTorch 会自动使用 CUDA。
+打开对应章节目录中的 `*_experiments.ipynb`，内核选择 **rl_env**（或当前虚拟环境）。实验默认可用 CPU；若系统可用，PyTorch 会自动使用 CUDA。
+
+本地工作区若遇 Windows 证书库导致 JupyterLab 无法启动，可用仓库根目录的 `python run_jupyter.py`。
 
 ## 当前范围
 
