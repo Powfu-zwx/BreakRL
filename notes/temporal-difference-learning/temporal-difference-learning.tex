@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 \usepackage{booktabs}
 
 \geometry{a4paper, margin=2.5cm}
@@ -88,7 +87,7 @@ Bootstrapping & 否 & 是 \\
 
 TD 引入\textbf{有偏}估计，换来了\textbf{方差大幅降低}与更快收敛。在 5 状态随机游走上（图~\ref{fig:td-vs-mc}），用同一局轨迹观察两种方法的估计质量：MC 必须用较小的步长（$\alpha=0.01$）来平均回报、估计粗糙且滞后；TD(0) 用更大的步长（$\alpha=0.1$）每步就地修正，更快贴近真实价值。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig1_random_walk_mc_vs_td.pdf}
   \caption{5 状态随机游走的价值估计（同一局轨迹）。黑线为真实价值 $v(s)=s/6$，红色为 MC（$\alpha=0.01$）、蓝色为 TD(0)（$\alpha=0.1$）。TD(0) 在 100、200 局后都更贴近真实值（100 局平均 RMS：MC 0.149 vs TD 0.062）。}
@@ -133,7 +132,7 @@ Q-Learning 学习\textbf{最优}（贪心）策略，但执行时仍用探索策
 
 经典的 Cliff Walking 环境（$4\times12$ 格子，起点左下、目标右下，底部一行中间 10 格是悬崖：踩中回到起点并罚 $-100$，普通步罚 $-1$）揭示了两种算法的本质差异，如图~\ref{fig:cliff} 所示。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig3_cliff_sarsa_vs_qlearning.pdf}
   \caption{悬崖行走（$4\times12$，$\alpha=0.5$，$\varepsilon=0.1$，$\gamma=1$，20 个随机种子，10 局滑动平均）。训练期间 SARSA 的每局累计奖励显著高于 Q-Learning：SARSA 学到保守安全的绕行路线（偶尔探索也不至于灾难性坠崖），Q-Learning 学最短路径、但训练时因随机探索频繁坠崖。}
@@ -181,7 +180,7 @@ TD(0) 只看一步（低方差高偏差），MC 看全程（无偏高方差）�
 
 图~\ref{fig:nstep} 展示了 $n$ 对偏差-方差权衡的影响：$n$ 越小（越依赖 bootstrapping）误差越低，$n$ 越大（越依赖真实奖励）越接近 MC 的高误差。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig2_nstep_bias_variance.pdf}
   \caption{5 状态随机游走上 N 步 TD 的 RMS 误差随局数的变化（同一 $\alpha=0.1$，平均 100 局）。$n=1$（TD(0)）误差最低，$n=3$、$n=10$ 依次上升，$n\to\infty$（MC）误差最高——$n$ 越小、bootstrap 越多，方差越小、学得越快。}

@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 
 \geometry{a4paper, margin=2.5cm}
 
@@ -208,7 +207,7 @@ Bellman 期望方程是线性的（可求逆），最优方程却是\textbf{非�
 
 \textbf{策略评估}：迭代 Bellman 期望方程 $V_{k+1}(s) \leftarrow \sum_a \pi(a\mid s)\bigl[R(s,a)+\gamma\sum_{s'}P(s'\mid s,a)V_k(s')\bigr]$，收敛到 $v_\pi$。图~\ref{fig:policy-eval} 左图展示几个状态的 $V_k(s)$ 随扫描收敛，右图为收敛后的 $v_\pi$ 热力图。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig1_policy_evaluation.pdf}
   \caption{策略评估（$4\times4$ GridWorld，均匀随机策略，$\gamma=0.9$）。左：四个状态的 $V_k(s)$ 随扫描次数收敛（紧邻目标的格收敛快、远角格收敛慢）；右：收敛后 $v_\pi$ 的热力图。}
@@ -217,7 +216,7 @@ Bellman 期望方程是线性的（可求逆），最优方程却是\textbf{非�
 
 \textbf{值迭代}：迭代 Bellman 最优方程 $V_{k+1}(s) \leftarrow \max_a\bigl[R(s,a)+\gamma\sum_{s'}P(s'\mid s,a)V_k(s')\bigr]$。图~\ref{fig:vi-wave} 显示高价值区域像水波一样从目标格逐轮向外扩展。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig2_value_iteration_wave.pdf}
   \caption{值迭代的价值传播（$4\times4$ GridWorld，$\gamma=0.9$）。第 1/2/3 轮与收敛时（第 7 轮）的 $V_k$：一步可达目标格的格价值最先变为 $1.0$，之后每多一轮价值向外辐射一格。}
@@ -226,7 +225,7 @@ Bellman 期望方程是线性的（可求逆），最优方程却是\textbf{非�
 
 \textbf{策略迭代}：交替「完整策略评估 → 贪心改进」。图~\ref{fig:pi-vi} 对比两种算法的收敛动态。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig3_policy_vs_value_iteration.pdf}
   \caption{值迭代 vs 策略迭代（$4\times4$ GridWorld，$\gamma=0.9$）。左：值迭代的 Bellman 残差 $\max_s|V_{k+1}-V_k|$ 单调几何衰减（本例 7 轮收敛）；右：策略迭代的残差逐扫描呈阶梯下降（虚线为每次策略改进，本例 3 轮迭代、约 127 轮扫描）。两种算法收敛到同一个 $V^*$（数值上 $\max_s|V^{VI}_*-V^{PI}_*|=0$）。}
