@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 
 \geometry{a4paper, margin=2.5cm}
 
@@ -262,7 +261,7 @@ P(\mu \mid r_{1:n}) &\propto P(r_{1:n} \mid \mu) \cdot P(\mu)  \\
 
 实验观察：Thompson 采样各臂后验随数据收敛的过程如图~\ref{fig:thompson-posterior} 所示。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.92\textwidth]{fig3_thompson_posterior.pdf}
   \caption{Thompson 采样的后验演化（10 臂伯努利老虎机，最优臂 $\mu^*=0.90$，固定种子）。三个时刻（第 50 / 500 / 2000 步）三个臂的后验 $\mathrm{Beta}(\alpha_k,\beta_k)$：最优臂（绿）因被大量拉取而迅速收窄到 $0.90$ 附近；被冷落的次优臂（灰）长期保持“宽”的形态——后验宽度正是 Thompson 采样探索的驱动力。虚线标出各臂真实 $\mu_k$。}
@@ -300,7 +299,7 @@ P(\mu \mid r_{1:n}) &\propto P(r_{1:n} \mid \mu) \cdot P(\mu)  \\
 
 实验验证（图~\ref{fig:regret} 与图~\ref{fig:optimal-arm}）：10 臂伯努利老虎机、20 个随机种子下，各算法的行为与本章理论吻合。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig1_regret_comparison.pdf}
   \caption{四种算法的累积懊悔 $R(T)$ 对比（20 个随机种子，阴影为 $\pm 1\sigma$）。Greedy 近似线性增长；$\varepsilon$-Greedy（$\varepsilon=0.1$）次之但仍是线性；UCB 与 Thompson Sampling 呈亚线性（$O(\log T)$）。}
@@ -318,7 +317,7 @@ P(\mu \mid r_{1:n}) &\propto P(r_{1:n} \mid \mu) \cdot P(\mu)  \\
 
 从“把拉杆次数分配给最优臂的比例”也能看出各算法探索方式的不同，如图~\ref{fig:optimal-arm} 所示。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig2_optimal_arm_selection.pdf}
   \caption{各算法拉中最优臂的比例（20 个随机种子，100 步滑动平均，阴影为 $\pm 1\sigma$）。Greedy 每个种子只锁死一个臂，本例约三成种子被次优臂“困死”；$\varepsilon$-Greedy 停在 $1-\varepsilon=0.9$ 附近；衰减 $\varepsilon$ 缓慢爬向 1；UCB 与 Thompson Sampling 收敛最快。}
