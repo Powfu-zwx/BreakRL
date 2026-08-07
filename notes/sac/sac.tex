@@ -1,0 +1,256 @@
+\documentclass{article}
+
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+
+\geometry{a4paper, margin=2.5cm}
+
+\begin{document}
+
+% ============================================================
+\section*{SAC（Soft Actor-Critic）}
+
+\subsection*{先讲一个故事}
+
+你是一个练习投篮的运动员。经过几百次训练，你发现从左侧 45 度角切入投篮成功率最高，于是你开始只用这条路线。教练皱起眉头说：「你的左侧上篮确实稳，但你只有一招，对手摸清了规律，就会专门堵你。而且——万一右侧其实有条更好的路线，你永远不会发现。」
+
+\textbf{普通 RL 的做法}：找到一条「最优」路线后死守，策略变成确定性的。
+
+\textbf{最大熵 RL 的做法}：在保证高得分的前提下，\underline{尽量保持多种路线的可能性}。随机性本身就是值得追求的——它带来探索、带来鲁棒性，也让你不那么容易被针对。
+
+这就是最大熵 RL 与普通 RL 的分野：
+
+\[
+\boxed{J(\pi) = \sum_t \mathbb{E}_{(s_t,a_t)\sim\rho_\pi}\!\left[r(s_t,a_t) \;+\; \alpha\,H\!\left(\pi(\cdot|s_t)\right)\right]}
+\]
+
+\subsection*{数学形式化}
+
+Shannon 熵定义（策略的随机性度量）：
+\[
+H(\pi(\cdot|s)) = -\mathbb{E}_{a\sim\pi(\cdot|s)}\!\left[\log\pi(a|s)\right]
+\]
+
+\begin{itemize}
+  \item 均匀分布 $\to$ 熵最大；确定性策略 $\to$ 熵为 $0$；
+  \item $\alpha > 0$ 为温度参数，控制「探索」与「利用」的权衡；$\alpha \to 0$ 退化为普通 RL。
+\end{itemize}
+
+\textbf{翻译成人话}：原来的目标是「只最大化奖励」，现在变成「最大化奖励 $+$ $\alpha$ 倍的随机程度」。策略越随机，额外获得越多；策略越好，奖励项越高——两者同时被优化。
+
+% ============================================================
+\section*{软贝尔曼方程}
+
+\subsection*{从硬到软}
+
+普通 Q 函数满足 Bellman 方程：
+\[
+Q(s,a) = r(s,a) + \gamma\,\mathbb{E}_{s'}\!\left[\max_{a'} Q(s',a')\right]
+\]
+
+在最大熵框架下，策略不再取 $\max$，而是对所有动作取期望，同时加上熵项。定义\textbf{软状态价值函数}：
+\[
+\boxed{V_\text{soft}(s) = \mathbb{E}_{a\sim\pi}\!\left[Q_\text{soft}(s,a) - \alpha\log\pi(a|s)\right]}
+\]
+
+对应的\textbf{软 Q 函数}（软贝尔曼方程）：
+\[
+\boxed{Q_\text{soft}(s,a) = r(s,a) + \gamma\,\mathbb{E}_{s'\sim p}\!\left[V_\text{soft}(s')\right]}
+\]
+
+\textbf{直觉}：$V_\text{soft}$ 比普通 $V$ 多了一项 $-\alpha\log\pi$。在高熵（随机）状态，$-\alpha\log\pi$ 较大，$V_\text{soft}$ 更高——算法\underline{主动奖励那些「不确定、可探索」的状态}。
+
+\subsection*{最优软策略}
+
+在软 Bellman 方程下，最优策略有解析形式：
+
+\[
+\pi^*(a|s) \propto \exp\!\left(\frac{1}{\alpha} Q_\text{soft}^*(s,a)\right)
+\]
+
+这是一个 Boltzmann（能量）分布：Q 值越高的动作，被选中的概率越高；温度 $\alpha$ 越高，分布越均匀（更随机）；$\alpha\to 0$，退化为 $\arg\max$（确定性贪心）。
+
+% ============================================================
+\section*{SAC 的三个核心机制}
+
+\subsection*{机制一：Tanh 压缩高斯策略（重参数化采样）}
+
+连续动作空间中，策略输出一个高斯分布 $\mathcal{N}(\mu_\phi(s), \sigma_\phi^2(s))$，再用 $\tanh$ 压缩到有界区间。
+
+\[
+\boxed{a = \tanh\!\left(\mu_\phi(s) + \sigma_\phi(s)\odot\varepsilon\right), \quad \varepsilon\sim\mathcal{N}(0,I)}
+\]
+
+\textbf{重参数化的好处}：将随机性 $\varepsilon$ 从网络参数中「分离出来」，梯度可以直接对 $\phi$ 反向传播：
+\[
+\nabla_\phi \mathbb{E}_{a}[f(a)] = \mathbb{E}_\varepsilon\!\left[\nabla_\phi f\!\left(\tanh(\mu_\phi + \sigma_\phi\odot\varepsilon)\right)\right]
+\]
+
+\textbf{对数概率的 Tanh 修正}（变量替换定理）：
+\[
+\log\pi(a|s) = \log\mathcal{N}(u|\mu_\phi,\sigma_\phi^2) - \sum_d \log\!\left(1 - \tanh^2(u_d)\right)
+\]
+
+其中 $u = \mu_\phi + \sigma_\phi\odot\varepsilon$ 是压缩前的高斯样本。忽略修正项会导致概率估计偏高，熵计算错误。
+
+\subsection*{机制二：双 Q 网络（Clipped Double Q）}
+
+用单个 Q 网络计算目标值会导致\textbf{过高估计（overestimation bias）}：网络自举（bootstrapping）时倾向于选择被高估的 Q 值，误差不断累积。
+
+SAC 维护两个独立的 Q 网络 $Q_{\theta_1},\,Q_{\theta_2}$，计算目标时取最小值：
+
+\[
+\boxed{y = r + \gamma\left[\min_{i=1,2} Q_{\bar\theta_i}(s',\tilde a') - \alpha\log\pi(\tilde a'|s')\right], \quad \tilde a'\sim\pi(\cdot|s')}
+\]
+
+\textbf{为什么取最小？} 两个独立网络的估计误差不相关，取 $\min$ 相当于悲观估计——宁可低估也不高估，阻断了过估计的正反馈。
+
+各 Q 网络的损失：
+\[
+L_Q(\theta_i) = \hat{\mathbb{E}}\!\left[\left(Q_{\theta_i}(s,a) - y\right)^2\right]
+\]
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig2_double_q.pdf}
+  \caption{双 Q vs 单 Q 消融（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。取 $\min$ 的双 Q 版本回报更高、更稳。}
+  \label{fig:sac-double-q}
+\end{figure}
+
+\subsection*{机制三：软目标网络更新（Soft Target Update）}
+
+普通 DQN 的目标网络每隔固定步骤「硬拷贝」一次，容易引发训练抖动。SAC 用指数移动平均平滑更新：
+
+\[
+\boxed{\bar\theta_i \leftarrow \tau\,\theta_i + (1-\tau)\,\bar\theta_i, \quad \tau \ll 1\;(\text{如 }0.005)}
+\]
+
+$\tau=0.005$ 意味着目标网络每步只移动 $0.5\%$，目标值变化极为平缓，稳定性大幅提升。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig3_soft_target_update.pdf}
+  \caption{软目标更新（$\tau=0.005$）vs 硬拷贝（$\tau=1.0$）消融（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。软更新更平滑。}
+  \label{fig:sac-soft-target}
+\end{figure}
+
+% ============================================================
+\section*{自动温度调节（Automatic Entropy Tuning）}
+
+\subsection*{问题：$\alpha$ 怎么设？}
+
+$\alpha$ 决定探索强度：太大 $\to$ 策略太随机，不收敛；太小 $\to$ 退化为贪心，失去探索优势。手动调参代价高且脆弱。
+
+SAC 用对偶梯度下降\textbf{自动学习} $\alpha$，目标是维持策略熵等于预设的目标熵 $\mathcal{H}_\text{target}$：
+
+\[
+\boxed{L(\alpha) = \mathbb{E}_{\tilde a\sim\pi}\!\left[-\alpha\left(\log\pi_\phi(\tilde a|s) + \mathcal{H}_\text{target}\right)\right]}
+\]
+
+\textbf{直觉}：
+\begin{itemize}
+  \item 若当前策略熵 $H(\pi) > \mathcal{H}_\text{target}$（太随机）$\to$ 梯度让 $\alpha$ 下降，减弱探索；
+  \item 若 $H(\pi) < \mathcal{H}_\text{target}$（太确定）$\to$ 梯度让 $\alpha$ 上升，加强探索。
+\end{itemize}
+
+$\alpha$ 本质上是一个「拉格朗日乘子」，强制执行熵约束。
+
+\subsection*{目标熵的设定}
+
+实践中常用启发式：
+\[
+\mathcal{H}_\text{target} = -\dim(\mathcal{A})
+\]
+
+对于 $d$ 维连续动作空间，目标熵为 $-d$（每维贡献 $-1$ 纳特）。这等价于要求策略在每个维度的「有效随机性」约等于标准正态。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig1_entropy_ablation.pdf}
+  \caption{温度消融：自动 $\alpha$ vs 固定 $\alpha=0.2$ vs $\alpha=0$（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。自动调节通常更稳。}
+  \label{fig:sac-entropy}
+\end{figure}
+
+% ============================================================
+\section*{SAC 完整算法}
+
+\subsection*{三个并行优化目标}
+
+\[
+\boxed{L_Q(\theta_i)  = \hat{\mathbb{E}}\!\left[\bigl(Q_{\theta_i}(s,a)-y\bigr)^2\right]}
+\]
+
+\[
+\boxed{L_\pi(\phi)    = \hat{\mathbb{E}}_{s,\tilde a}\!\left[\alpha\log\pi_\phi(\tilde a|s) - \min_{i}Q_{\theta_i}(s,\tilde a)\right]}
+\]
+
+\[
+\boxed{L(\alpha)      = \hat{\mathbb{E}}_{\tilde a}\!\left[-\alpha\bigl(\log\pi_\phi(\tilde a|s)+\mathcal{H}_\text{target}\bigr)\right]}
+\]
+
+Actor 损失的含义：最大化「Q 值 $-$ $\alpha$ 倍的对数概率」= 最大化（奖励期望 $+$ 熵）。
+
+\subsection*{SAC 算法流程}
+
+\begin{enumerate}
+  \item \textbf{初始化}：Actor $\pi_\phi$，双 Critic $Q_{\theta_1}, Q_{\theta_2}$，目标网络 $Q_{\bar\theta_1}, Q_{\bar\theta_2}$，Replay Buffer $\mathcal{B}$，$\log\alpha$；
+  \item \textbf{收集数据}：用 $\pi_\phi$ 与环境交互，将 $(s,a,r,s',d)$ 存入 $\mathcal{B}$；
+  \item \textbf{每步更新}（从 $\mathcal{B}$ 采样 mini-batch）：
+    \begin{enumerate}
+      \item 计算软目标值 $y$（用目标网络 $+$ 下一步动作 $+$ 熵修正）；
+      \item 更新双 Critic：最小化 $L_Q(\theta_1) + L_Q(\theta_2)$；
+      \item 重采样 $\tilde a\sim\pi_\phi(\cdot|s)$，更新 Actor：最小化 $L_\pi(\phi)$；
+      \item 更新温度：最小化 $L(\alpha)$；
+      \item 软更新目标网络：$\bar\theta_i \leftarrow \tau\theta_i+(1-\tau)\bar\theta_i$。
+    \end{enumerate}
+\end{enumerate}
+
+
+% ============================================================
+\section*{SAC vs 其他深度 RL 方法}
+
+\subsection*{SAC vs PPO}
+
+\[
+\begin{array}{c|c|c|c|c}
+\text{方法} & \text{动作空间} & \text{样本效率} & \text{稳定性} & \text{离线友好} \\
+\hline
+\text{PPO} & \text{离散/连续} & \text{中（on-policy）}  & \text{高} & \text{否} \\
+\text{SAC} & \text{连续}     & \text{高（off-policy）} & \text{高} & \text{是} \\
+\end{array}
+\]
+
+\subsection*{为什么 SAC 比 PPO 更适合连续动作？}
+
+\begin{enumerate}
+  \item \textbf{Off-policy 样本效率}：SAC 使用 Replay Buffer，每条经验可被反复利用；PPO 是 on-policy，rollout 用完即丢；
+  \item \textbf{高维连续动作}：PPO 的离散化或 Gaussian 策略在高维空间方差大；SAC 的 Tanh-Gaussian + 重参数化梯度更稳定；
+  \item \textbf{自动探索调节}：SAC 的 $\alpha$ 自适应；PPO 的熵系数 $c_2$ 需手动设定且固定；
+  \item \textbf{离线 RL 兼容}：SAC 的 off-policy 框架天然支持离线数据复用；PPO 的 on-policy 结构很难适配离线数据。
+\end{enumerate}
+
+
+% ============================================================
+\section*{本章在 RL 体系中的位置}
+
+\begin{enumerate}
+  \item \textbf{TD 路线} $\to$ Q-Learning $\to$ DQN（离散动作，值函数方法）；
+  \item \textbf{MC 路线} $\to$ REINFORCE $\to$ 策略梯度（on-policy，高方差）；
+  \item \textbf{Actor-Critic} $\to$ GAE $\to$ PPO（在线策略，clip 约束）；
+  \item \textbf{最大熵 RL} $\to$ \underline{SAC}（本章：连续动作，off-policy，自动熵调节）。
+\end{enumerate}
+
+SAC 是连续控制任务的默认基线：样本高效、训练稳定、自动调节探索强度，是工业界和学术界连续控制任务的首选算法。
+
+\subsection*{参考资料}
+
+\begin{enumerate}
+  \item Haarnoja et al.\ (2018). Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor. \textit{ICML}.
+  \item Haarnoja et al.\ (2018). Soft Actor-Critic Algorithms and Applications. \textit{arXiv:1812.05905}.
+  \item Sutton \& Barto (2018). \textit{Reinforcement Learning: An Introduction} (2nd ed.). Chapter 13.
+\end{enumerate}
+
+\end{document}
