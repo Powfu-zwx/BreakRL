@@ -3,6 +3,7 @@
 面向中文读者的强化学习教学材料。
 
 - 可编辑笔记：`notes/`
+- 新章节骨架：`notes/rl_note_template.tex`（复制到 `notes/<chapter>/<chapter>.tex` 再写）
 - 公开发布仓库（git submodule，当前 Fundamentals **v0.2.0**）：`release/fundamentals-v0.1` → [Powfu-zwx/TESAURO](https://github.com/Powfu-zwx/TESAURO)
 
 目录名 `fundamentals-v0.1` 是历史路径；版本以 [`CITATION.cff`](CITATION.cff) / release tag 为准（现为 0.2.0）。
