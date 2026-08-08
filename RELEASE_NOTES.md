@@ -1,3 +1,16 @@
+# v0.3.1 Release Notes
+
+## Fixes
+
+- 修正 `CITATION.cff` 中仓库地址的大小写（`tesauro` → `TESAURO`），品牌名统一大写。
+- 发布 `run_jupyter.py`（Windows 证书库规避启动脚本），使 README 中的指引可直接使用。
+
+## Changes
+
+- 第 1–3 章插图改用 `[!htbp]` 浮动位置约定，避免 Overleaf 编译时的图片排版问题。
+
+---
+
 # v0.3.0 Release Notes
 
 ## What's New — Fundamentals Complete
