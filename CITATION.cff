@@ -2,10 +2,10 @@ cff-version: 1.2.0
 message: "If you use TESAURO in teaching, research, or other public work, please cite it."
 type: software
 title: "TESAURO: Reinforcement Learning Fundamentals"
-version: 0.3.0
-date-released: "2026-08-07"
+version: 0.3.1
+date-released: "2026-08-08"
 license: CC-BY-4.0
-repository-code: "https://github.com/Powfu-zwx/tesauro"
+repository-code: "https://github.com/Powfu-zwx/TESAURO"
 authors:
   - name: "TESAURO Contributors"
 abstract: "Chinese teaching materials for the foundations of deep model-free reinforcement learning."
