@@ -47,7 +47,7 @@ b = 100 & 100^4 \times 2 = 200{,}000{,}000 \\
 
 Atari 游戏的状态是 $84 \times 84 \times 4$ 的灰度图像帧，Q 表的条目数约为 $256^{84\times 84\times 4}$——连写都写不下（如图~\ref{fig:qtable}）。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.95\textwidth]{fig1_qtable_motivation.pdf}
   \caption{维度灾难：Q 表大小随状态维度和离散化精度指数爆炸，远超一个小型神经网络的参数量。}
@@ -115,7 +115,7 @@ DQN 的后两个创新分别精确地解决这两个问题。
 
 消融实验如图~\ref{fig:replay} 所示：去掉经验回放后，训练曲线方差显著增大，收敛更慢。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig2_replay_comparison.pdf}
   \caption{经验回放的消融实验（CartPole-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。有经验回放的版本收敛更快、方差更小。}
@@ -154,7 +154,7 @@ DQN 的后两个创新分别精确地解决这两个问题。
 
 消融实验如图~\ref{fig:target} 所示。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig3_target_comparison.pdf}
   \caption{目标网络的消融实验（CartPole-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。无目标网络时，训练曲线更不稳定，种子间方差更高。}
