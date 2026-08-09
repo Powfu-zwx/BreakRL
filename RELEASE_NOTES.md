@@ -1,3 +1,22 @@
+# v0.4.0 Release Notes
+
+## What's New — Offline RL: CQL 与 IQL
+
+第 9 章**离线强化学习**，完整提供 PDF + TeX 源码 + 实验 Notebook + 3 张配图。本章以「一个病，两种药」的结构让 **CQL 与 IQL 等权**：共同面对分布漂移（外推误差），CQL 把悲观写进价值函数，IQL 把悲观写进动作集合。
+
+| # | 章节 | 内容 |
+|---|---|---|
+| 9 | 离线强化学习 | 外推误差（朴素离线 DQN 塌缩）、BC 及格线、CQL 保守惩罚、IQL in-sample 学习、两种悲观的分工 |
+
+## Notes
+
+- 实验在 **CartPole-v1** 的 medium 数据集上验证三张图：朴素离线 DQN 的 Q 估计与真实回报脱钩、跌破 BC；CQL 与 IQL 的回报都恢复到 BC 水平。
+- 数据集 `offline_rl_medium.npz`（30k 条）由固定 seed 的「medium 检查点」行为策略以 ε=0.3 随机性采集，缓存为单源真理，notebook 可复现。
+- BC 因训练 seed 方差较高，图中以 mean ± 1σ 灰色区间带表示「及格线」，判据为「恢复到 BC 水平」而非严格超过某个值。
+- 全实验 CPU/GPU 可复现（约 5–8 分钟），学术绘图风格（serif、3 seeds 均值 ± 1σ）。
+
+---
+
 # v0.3.1 Release Notes
 
 ## Fixes

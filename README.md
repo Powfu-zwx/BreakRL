@@ -15,7 +15,7 @@
 
 TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕一个明确问题展开：先建立直觉，再给出必要公式，最后用可运行的 notebook 观察结论如何在实验中成立或失效。
 
-当前发布的是 **Fundamentals**：一条从多臂老虎机、MDP 和 TD learning 出发，通向 DQN、PPO 与 SAC 的经典深度 model-free RL 主线。
+当前发布的是 **Fundamentals**：一条从多臂老虎机、MDP 和 TD learning 出发，通向 DQN、PPO、SAC 与离线强化学习（CQL / IQL）的经典深度 model-free RL 主线。
 
 ## 如何使用
 
@@ -37,8 +37,9 @@ TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕
 | 6 | [Actor-Critic / A2C](notes/actor-critic/ac.pdf) | 价值估计如何帮助策略更新？ | [PDF](notes/actor-critic/ac.pdf) · [TeX](notes/actor-critic/ac.tex) · [Notebook](notes/actor-critic/ac_experiments.ipynb) |
 | 7 | [PPO](notes/ppo/ppo.pdf) | 如何约束策略更新的幅度？ | [PDF](notes/ppo/ppo.pdf) · [TeX](notes/ppo/ppo.tex) · [Notebook](notes/ppo/ppo_experiments.ipynb) |
 | 8 | [SAC](notes/sac/sac.pdf) | 连续控制中如何兼顾探索与利用？ | [PDF](notes/sac/sac.pdf) · [TeX](notes/sac/sac.tex) · [Notebook](notes/sac/sac_experiments.ipynb) |
+| 9 | [离线强化学习](notes/offline-rl/offline-rl.pdf) | 只有固定数据集时，如何避免分布漂移？ | [PDF](notes/offline-rl/offline-rl.pdf) · [TeX](notes/offline-rl/offline-rl.tex) · [Notebook](notes/offline-rl/offline-rl_experiments.ipynb) |
 
-全部 8 章均提供 PDF、TeX 源码与实验 notebook。
+全部 9 章均提供 PDF、TeX 源码与实验 notebook。
 
 ## 材料的组织方式
 
@@ -70,7 +71,7 @@ jupyter lab
 
 ## 当前范围
 
-本版本聚焦经典深度 model-free RL，覆盖价值学习、策略梯度、Actor-Critic、稳定策略优化与最大熵连续控制。模型式强化学习、多智能体强化学习及其他主题不包含在本次发布中。
+本版本聚焦经典深度 model-free RL，覆盖价值学习、策略梯度、Actor-Critic、稳定策略优化、最大熵连续控制与离线强化学习（保守 Q 学习 CQL / 隐式 Q 学习 IQL）。模型式强化学习、多智能体强化学习及其他主题不包含在本次发布中。
 
 ## 许可
 
