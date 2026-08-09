@@ -12,14 +12,26 @@
 *.bcf
 *.run.xml
 
-# Jupyter
+# Python / Jupyter
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
+.venv/
+venv/
 
 # Publication build artifacts
 tmp/
 
-# OS
+# OS / IDE
 .DS_Store
 Thumbs.db
+*.lnk
+.vscode/
+.cursor/
+
+# Local debug / temp
+debug-*.log
+_fix_and_verify.py
+_audit_*.py
+_debug_*.py
+_run_*.py

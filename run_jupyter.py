@@ -1,14 +1,14 @@
-"""Launch JupyterLab from rl_env with Windows SSL cert-store workaround."""
+"""Launch JupyterLab with the Windows SSL certificate-store workaround."""
 import ssl
 import sys
 
 
-_orig = ssl.SSLContext.load_default_certs
+_original_load_default_certs = ssl.SSLContext.load_default_certs
 
 
 def _safe_load_default_certs(self, purpose=ssl.Purpose.SERVER_AUTH):
     try:
-        return _orig(self, purpose)
+        return _original_load_default_certs(self, purpose)
     except ssl.SSLError:
         return None
 
