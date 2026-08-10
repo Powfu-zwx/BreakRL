@@ -4,7 +4,21 @@
 
 - 教材源码与实验：`notes/`
 - 新章节骨架：`notes/rl_note_template.tex`（复制到 `notes/<chapter>/<chapter>.tex` 再写）
-- 第 10 章：模型式强化学习（Dyna-Q）：学习环境模型并进行规划
+
+## 章节
+
+1. 多臂老虎机：探索与利用
+2. 马尔可夫决策过程：序列决策形式化
+3. 时序差分学习：长期价值估计
+4. DQN：神经网络价值学习
+5. Policy Gradient / REINFORCE：直接优化策略
+6. Actor-Critic / A2C：价值辅助策略更新
+7. PPO：约束策略更新
+8. SAC：最大熵连续控制
+9. 离线强化学习：CQL 与 IQL
+10. 模型式强化学习：从环境模型到 Dyna-Q
+
+每章提供 TeX 源码、实验 Notebook 与配图；章节 PDF 由维护者在 Overleaf 使用 XeLaTeX 编译后放入对应目录。
 
 ## 环境
 
