@@ -1,80 +1,75 @@
 # TESAURO
 
-<p align="center">
-  <img src="assets/tesauro-wordmark.png" width="560" alt="TESAURO">
-</p>
+面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习，并从第 10 章延伸到模型式强化学习。
 
-<p align="center">
-  <strong>Reinforcement Learning Fundamentals</strong><br>
-  从价值估计到连续控制，把强化学习讲成可推导、可运行、可复现的系统。
-</p>
+- 在线阅读（实验 Notebook 渲染）：<https://powfu-zwx.github.io/TESAURO/>
+- 教材源码与实验：`notes/`
+- 新章节骨架：`notes/rl_note_template.tex`（复制到 `notes/<chapter>/<chapter>.tex` 再写）
 
-<p align="center">
-  <img src="assets/tesauro-dqn-preview.png" width="960" alt="DQN lesson page, notebook implementation, and experiment result">
-</p>
+## 章节
 
-TESAURO 是一套面向中文读者的强化学习教学材料。每一章围绕一个明确问题展开：先建立直觉，再给出必要公式，最后用可运行的 notebook 观察结论如何在实验中成立或失效。
+1. 多臂老虎机：探索与利用
+2. 马尔可夫决策过程：序列决策形式化
+3. 时序差分学习：长期价值估计
+4. DQN：神经网络价值学习
+5. Policy Gradient / REINFORCE：直接优化策略
+6. Actor-Critic / A2C：价值辅助策略更新
+7. PPO：约束策略更新
+8. SAC：最大熵连续控制
+9. 离线强化学习：CQL 与 IQL
+10. 模型式强化学习：从环境模型到 Dyna-Q
 
-当前发布的是 **Fundamentals**：一条从多臂老虎机、MDP 和 TD learning 出发，通向 DQN、PPO、SAC 与离线强化学习（CQL / IQL）的经典深度 model-free RL 主线。
+每章提供 TeX 源码、实验 Notebook 与配图；章节 PDF 由维护者在 Overleaf 使用 XeLaTeX 编译后放入对应目录。
 
-## 如何使用
+## 环境
 
-1. 按下方顺序阅读 PDF，先建立整体的决策与价值学习框架。
-2. 在涉及算法的章节中对照 TeX，追踪目标函数、估计量和稳定化机制。
-3. 运行 notebook，改变随机种子、超参数或算法组件，亲自观察训练曲线与失败模式。
-
-建议具备 Python、基础概率论以及 PyTorch 入门知识。阅读本项目不要求预先掌握强化学习。
-
-## 内容
-
-| # | 章节 | 核心问题 | 材料 |
-|---|---|---|---|
-| 1 | [多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf) | 探索与利用如何权衡？ | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) · [TeX](notes/multi-armed-bandit/multi-armed-bandit.tex) · [Notebook](notes/multi-armed-bandit/multi-armed-bandit_experiments.ipynb) |
-| 2 | [马尔可夫决策过程](notes/mdp/mdp.pdf) | 如何形式化一个序列决策问题？ | [PDF](notes/mdp/mdp.pdf) · [TeX](notes/mdp/mdp.tex) · [Notebook](notes/mdp/mdp_experiments.ipynb) |
-| 3 | [时序差分学习](notes/temporal-difference-learning/temporal-difference-learning.pdf) | 如何从一步反馈中估计长期价值？ | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) · [TeX](notes/temporal-difference-learning/temporal-difference-learning.tex) · [Notebook](notes/temporal-difference-learning/temporal-difference-learning_experiments.ipynb) |
-| 4 | [DQN](notes/dqn/dqn.pdf) | 神经网络如何稳定地学习价值函数？ | [PDF](notes/dqn/dqn.pdf) · [TeX](notes/dqn/dqn.tex) · [Notebook](notes/dqn/dqn_experiments.ipynb) |
-| 5 | [Policy Gradient / REINFORCE](notes/policy-gradient/pg.pdf) | 为什么直接优化策略？ | [PDF](notes/policy-gradient/pg.pdf) · [TeX](notes/policy-gradient/pg.tex) · [Notebook](notes/policy-gradient/pg_experiments.ipynb) |
-| 6 | [Actor-Critic / A2C](notes/actor-critic/ac.pdf) | 价值估计如何帮助策略更新？ | [PDF](notes/actor-critic/ac.pdf) · [TeX](notes/actor-critic/ac.tex) · [Notebook](notes/actor-critic/ac_experiments.ipynb) |
-| 7 | [PPO](notes/ppo/ppo.pdf) | 如何约束策略更新的幅度？ | [PDF](notes/ppo/ppo.pdf) · [TeX](notes/ppo/ppo.tex) · [Notebook](notes/ppo/ppo_experiments.ipynb) |
-| 8 | [SAC](notes/sac/sac.pdf) | 连续控制中如何兼顾探索与利用？ | [PDF](notes/sac/sac.pdf) · [TeX](notes/sac/sac.tex) · [Notebook](notes/sac/sac_experiments.ipynb) |
-| 9 | [离线强化学习](notes/offline-rl/offline-rl.pdf) | 只有固定数据集时，如何避免分布漂移？ | [PDF](notes/offline-rl/offline-rl.pdf) · [TeX](notes/offline-rl/offline-rl.tex) · [Notebook](notes/offline-rl/offline-rl_experiments.ipynb) |
-
-全部 9 章均提供 PDF、TeX 源码与实验 notebook。
-
-## 材料的组织方式
-
-- **笔记**：解释一个方法要解决什么问题，以及它为什么这样设计。
-- **推导**：保留目标函数、关键近似和实现假设，便于回查细节。
-- **实验**：以受控 toy 环境检验单个机制的作用，不将局部现象包装成通用性能结论。
-
-## 运行 Notebook
-
-实验统一使用 Python 3.10 的 conda 环境 **`rl_env`**，依赖以仓库中的 [`requirements.txt`](requirements.txt) 为准：
+实验统一使用 conda 环境 **`rl_env`**（Python 3.10、PyTorch、Gymnasium）。依赖来源以 [`requirements.txt`](requirements.txt) 为准：
 
 ```bash
 conda create -n rl_env python=3.10
 conda activate rl_env
 python -m pip install -r requirements.txt
 python -m ipykernel install --user --name rl_env --display-name rl_env
-python run_jupyter.py
 ```
 
-`run_jupyter.py` 是 Windows 证书库问题下的推荐启动入口；若确认本机没有该问题，也可使用 `python -m jupyter lab`。打开对应章节目录中的 `*_experiments.ipynb`，内核选择 **rl_env**。实验默认使用 CPU；若系统可用，PyTorch 会自动使用 CUDA。
-
-执行 Notebook 时请将输出写到仓库外的临时目录，避免覆盖已跟踪的实验产物。
-
-若从零创建环境，也可：
+## 运行 Notebook
 
 ```bash
-python -m venv .venv
-python -m pip install -r requirements.txt
+conda activate rl_env
 python run_jupyter.py
 ```
 
-## 当前范围
+`run_jupyter.py` 包含 Windows 证书库规避逻辑；若确认本机没有该问题，也可以在同一环境中使用 `python -m jupyter lab`。打开 `notes/<chapter>/*_experiments.ipynb`，内核选择 **rl_env**。
 
-本版本聚焦经典深度 model-free RL，覆盖价值学习、策略梯度、Actor-Critic、稳定策略优化、最大熵连续控制与离线强化学习（保守 Q 学习 CQL / 隐式 Q 学习 IQL）。模型式强化学习、多智能体强化学习及其他主题不包含在本次发布中。
+执行 Notebook 时请将输出写到仓库外的临时目录，避免覆盖已跟踪的实验产物。结构检查可以使用：
+
+```bash
+python scripts/check_consistency.py
+```
+
+## 编译与贡献
+
+TeX 使用 XeLaTeX + ctex 编译，通常在 Overleaf 完成。模板和所有章节统一使用 `[!htbp]` figure 浮动约定；当前机器没有 TeX 工具时不要手工修改 PDF。
+
+单仓库工作流如下：
+
+1. 修改 `notes/` 中的 TeX、Notebook 或实验资源。
+2. 在 `rl_env` 中运行结构检查；Notebook 和 TeX 的完整验证按维护者安排在相应环境中完成。
+3. 检查完整 diff，提交根仓库变更。
+4. 由维护者根据 [`CITATION.cff`](CITATION.cff) 更新版本并创建 release tag。
+
+检查脚本只读验证 Notebook 结构、TeX figure 约定和本地图片引用，不执行训练、不编译 PDF，也不覆盖源文件。GitHub Actions 会在 push 和 pull request 上自动运行同一检查。
+
+## 在线站点
+
+站点由 Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 master 后 `.github/workflows/site.yml` 自动构建并部署到 GitHub Pages。本地预览：
+
+```bash
+uvx --from "jupyter-book>=1.0,<2" jupyter-book build .
+```
+
+产物在 `_build/html/`（已被 gitignore）。首次使用前需在仓库 Settings → Pages 将 Source 设为 GitHub Actions（一次性设置），此后每次 push 自动部署。
 
 ## 许可
 
-文字、PDF、TeX 与视觉材料采用 [CC BY 4.0](LICENSE)；Jupyter notebook 中的代码采用 [MIT 许可](LICENSE-CODE)。引用方式见 [CITATION.cff](CITATION.cff)。
+文字、PDF、TeX 与视觉材料采用 [CC BY 4.0](LICENSE)；Jupyter Notebook 中的代码采用 [MIT 许可](LICENSE-CODE)。

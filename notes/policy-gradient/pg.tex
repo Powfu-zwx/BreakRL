@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 
 \geometry{a4paper, margin=2.5cm}
 
@@ -91,7 +90,7 @@ Monte Carlo 估计有无偏性（无数次采样的均值等于真实期望）�
 
 实验如图~\ref{fig:variance} 所示：5 个随机种子的原始训练曲线波动巨大，平滑均值始终维持在低水平，vanilla REINFORCE 在 500 集内无法稳定解决 CartPole-v1。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.95\textwidth]{fig1_reinforce_high_variance.pdf}
   \caption{Vanilla REINFORCE 的高方差（CartPole-v1，5 个随机种子）。原始轨迹剧烈波动，部分 episode 短暂冲高但随即回落，平滑均值长期维持在较低水平。}
@@ -132,7 +131,7 @@ Monte Carlo 估计有无偏性（无数次采样的均值等于真实期望）�
 
 消融实验如图~\ref{fig:baseline} 所示。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig2_convergence_baseline_comparison.pdf}
   \caption{有 / 无 Value Baseline 的训练对比（CartPole-v1，5 个随机种子，阴影为 $\pm 1\sigma$）。加入 Baseline 后，部分种子能在 500 集内收敛到接近满分，整体期望回报显著高于 Vanilla REINFORCE。}
@@ -151,7 +150,7 @@ H(\pi(\cdot \mid s)) = -\sum_a \pi(a \mid s) \log \pi(a \mid s)
 
 图~\ref{fig:entropy} 展示了两种方法在训练过程中的熵演化：
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig3_policy_entropy_evolution.pdf}
   \caption{策略熵在训练过程中的演化（CartPole-v1，5 个随机种子，阴影为 $\pm 1\sigma$）。Vanilla REINFORCE 熵迅速塌缩至接近 0，但并未收敛到好策略，是过早陷入坏的确定性策略；有 Baseline 的版本熵下降更平缓，保留探索能力，最终收敛到更好的策略。}

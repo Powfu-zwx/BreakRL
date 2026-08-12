@@ -21,6 +21,7 @@ venv/
 
 # Publication build artifacts
 tmp/
+_build/
 
 # OS / IDE
 .DS_Store

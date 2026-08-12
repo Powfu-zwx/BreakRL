@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 
 \geometry{a4paper, margin=2.5cm}
 
@@ -142,7 +141,7 @@ Actor 越不动，Critic 就越稳固。系统自我锁死，且这个锁死状�
 episode return 从第 $\sim 20$ 轮起彻底钉死在 $\approx 9$（CartPole-v1 最大为 500），500 轮训练毫无进展。
 5 条曲线几乎重叠，说明这不是随机性问题，而是 5 个 seed 全部落入了同一个坏固定点。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig1_naive_ac_failure.pdf}
   \caption{朴素 Actor-Critic（$\alpha = 5 \times 10^{-3}$，无熵，无梯度裁剪）在 CartPole-v1 上的 5 个随机种子：episode return 全程钉死在 $\approx 9$，CartPole-v1 最大回报为 500。}
@@ -152,7 +151,7 @@ episode return 从第 $\sim 20$ 轮起彻底钉死在 $\approx 9$（CartPole-v1 
 图~\ref{fig:adv} 给出了坍缩机制的直接证据：朴素 AC 的均值 $|\text{advantage}|$ 在前 50 轮内从 $\approx 3.5$ 急速跌至 $\approx 0.1$，此后全程贴近零轴，Actor 梯度信号彻底消失。
 与之对比，A2C 的 $|\text{advantage}|$ 呈现\textbf{钟形曲线}——随策略改进而持续上升（Critic 追不上），随接近收敛而平滑回落——这是在线学习系统的健康特征。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig3_advantage_collapse.pdf}
   \caption{每回合均值 $|\hat{A}_t|$ 的演化（5 seeds，mean $\pm$ 1 std）。蓝色（朴素 AC）在前 50 轮内归零；红色（A2C）维持非零信号，钟形轮廓反映了 Critic 与 Actor 之间持续的「追赶」动态。}
@@ -271,7 +270,7 @@ GAE 计算需要完整的 TD 误差序列，因此要先完成一整局 rollout�
 
 图~\ref{fig:compare} 展示了 5 个随机种子的 mean $\pm$ 1 std 收益曲线：A2C 从第 $\sim 50$ 轮起稳定上升，第 500 轮均值达到 $\approx 310$，且曲线仍在上升（未完全收敛）；朴素 AC 全程贴近 $x$ 轴，两者在 episode 50 之后就完全分离。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig2_a2c_vs_naive.pdf}
   \caption{A2C 与朴素 Actor-Critic 在 CartPole-v1 上的收敛对比（5 seeds，mean $\pm$ 1 std，相同网络结构，仅训练方式不同）。}

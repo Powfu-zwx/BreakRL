@@ -1,0 +1,21 @@
+# Jupyter Book 站点配置。构建:jupyter-book build .(CI 见 .github/workflows/site.yml)
+title: TESAURO
+author: TESAURO Contributors
+copyright: "2026, TESAURO Contributors"
+logo: assets/tesauro-wordmark.png
+only_build_toc_files: true
+
+execute:
+  # 站点只渲染已保存的输出,不重新执行实验
+  execute_notebooks: "off"
+
+repository:
+  url: https://github.com/Powfu-zwx/TESAURO
+  branch: master
+
+html:
+  use_repository_button: true
+
+sphinx:
+  config:
+    language: zh_CN

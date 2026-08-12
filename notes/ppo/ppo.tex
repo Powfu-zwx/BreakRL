@@ -78,7 +78,7 @@ L^{\text{CPI}}(\theta) = \hat{\mathbb{E}}_t\!\left[r_t(\theta)\,\hat{A}_t\right]
   \item 第 8 轮：$r_t$ 严重偏离，优势估计彻底失效，梯度方向错误，训练崩溃。
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig1_noclip_instability.pdf}
   \caption{无 clip 的 PPO（$K=20$ 轮，mini-batch）在 LunarLander-v3 上的 5 个 seed（蓝色细线）。
@@ -124,7 +124,7 @@ $\varepsilon$ 通常取 $0.2$。
 
 \subsection*{clip 如何压制 $r$ 的漂移}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig2_clip_vs_noclip.pdf}
   \caption{PPO-Clip（蓝）vs 无 Clip PPO（红）在 LunarLander-v3 上（5 seeds，均值 $\pm$ 标准差）。
@@ -134,7 +134,7 @@ $\varepsilon$ 通常取 $0.2$。
            无 Clip 版本早期崩至 $-600\sim-1000$，缓慢恢复，始终落后且方差更大。}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\textwidth]{fig3_policy_ratio.pdf}
   \caption{每个 epoch 开始前、以全批数据测量的均值策略比值 $r_t$（5 seeds，均值 $\pm$ 标准差）。

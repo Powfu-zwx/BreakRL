@@ -4,7 +4,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{float}
 
 \geometry{a4paper, margin=2.5cm}
 
@@ -113,7 +112,7 @@ SAC 维护两个独立的 Q 网络 $Q_{\theta_1},\,Q_{\theta_2}$，计算目标�
 L_Q(\theta_i) = \hat{\mathbb{E}}\!\left[\left(Q_{\theta_i}(s,a) - y\right)^2\right]
 \]
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig2_double_q.pdf}
   \caption{双 Q vs 单 Q 消融（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。取 $\min$ 的双 Q 版本回报更高、更稳。}
@@ -130,7 +129,7 @@ L_Q(\theta_i) = \hat{\mathbb{E}}\!\left[\left(Q_{\theta_i}(s,a) - y\right)^2\rig
 
 $\tau=0.005$ 意味着目标网络每步只移动 $0.5\%$，目标值变化极为平缓，稳定性大幅提升。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig3_soft_target_update.pdf}
   \caption{软目标更新（$\tau=0.005$）vs 硬拷贝（$\tau=1.0$）消融（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。软更新更平滑。}
@@ -167,7 +166,7 @@ $\alpha$ 本质上是一个「拉格朗日乘子」，强制执行熵约束。
 
 对于 $d$ 维连续动作空间，目标熵为 $-d$（每维贡献 $-1$ 纳特）。这等价于要求策略在每个维度的「有效随机性」约等于标准正态。
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig1_entropy_ablation.pdf}
   \caption{温度消融：自动 $\alpha$ vs 固定 $\alpha=0.2$ vs $\alpha=0$（Pendulum-v1，3 个随机种子，阴影为 $\pm 1\sigma$）。自动调节通常更稳。}
