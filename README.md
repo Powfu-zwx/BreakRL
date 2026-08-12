@@ -62,7 +62,7 @@ TeX 使用 XeLaTeX + ctex 编译，通常在 Overleaf 完成。模板和所有�
 
 ## 在线站点
 
-站点由 Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 master 后 `.github/workflows/site.yml` 自动构建并部署到 GitHub Pages。本地预览：
+站点由 Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 main 后 `.github/workflows/site.yml` 自动构建并部署到 GitHub Pages。本地预览：
 
 ```bash
 uvx --from "jupyter-book>=1.0,<2" jupyter-book build .
