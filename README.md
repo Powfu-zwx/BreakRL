@@ -2,6 +2,7 @@
 
 面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习，并从第 10 章延伸到模型式强化学习。
 
+- 在线阅读（实验 Notebook 渲染）：<https://powfu-zwx.github.io/TESAURO/>
 - 教材源码与实验：`notes/`
 - 新章节骨架：`notes/rl_note_template.tex`（复制到 `notes/<chapter>/<chapter>.tex` 再写）
 
@@ -58,6 +59,16 @@ TeX 使用 XeLaTeX + ctex 编译，通常在 Overleaf 完成。模板和所有�
 4. 由维护者根据 [`CITATION.cff`](CITATION.cff) 更新版本并创建 release tag。
 
 检查脚本只读验证 Notebook 结构、TeX figure 约定和本地图片引用，不执行训练、不编译 PDF，也不覆盖源文件。GitHub Actions 会在 push 和 pull request 上自动运行同一检查。
+
+## 在线站点
+
+站点由 Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 master 后 `.github/workflows/site.yml` 自动构建并部署到 GitHub Pages。本地预览：
+
+```bash
+uvx --from "jupyter-book>=1.0,<2" jupyter-book build .
+```
+
+产物在 `_build/html/`（已被 gitignore）。若首次部署未自动启用 Pages，在仓库 Settings → Pages 将 Source 设为 GitHub Actions。
 
 ## 许可
 

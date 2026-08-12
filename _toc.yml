@@ -1,0 +1,23 @@
+format: jb-book
+root: index
+chapters:
+  - file: notes/multi-armed-bandit/multi-armed-bandit_experiments
+    title: 1. 多臂老虎机:探索与利用
+  - file: notes/mdp/mdp_experiments
+    title: 2. 马尔可夫决策过程:序列决策形式化
+  - file: notes/temporal-difference-learning/temporal-difference-learning_experiments
+    title: 3. 时序差分学习:长期价值估计
+  - file: notes/dqn/dqn_experiments
+    title: 4. DQN:神经网络价值学习
+  - file: notes/policy-gradient/pg_experiments
+    title: 5. Policy Gradient / REINFORCE:直接优化策略
+  - file: notes/actor-critic/ac_experiments
+    title: 6. Actor-Critic / A2C:价值辅助策略更新
+  - file: notes/ppo/ppo_experiments
+    title: 7. PPO:约束策略更新
+  - file: notes/sac/sac_experiments
+    title: 8. SAC:最大熵连续控制
+  - file: notes/offline-rl/offline-rl_experiments
+    title: 9. 离线强化学习:CQL 与 IQL
+  - file: notes/model-based-rl/model-based-rl_experiments
+    title: 10. 模型式强化学习:从环境模型到 Dyna-Q
