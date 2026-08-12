@@ -25,5 +25,7 @@ chapters:
     title: 11. RLHF：从偏好到奖励
   - file: notes/dpo/dpo_experiments
     title: 12. DPO：不训奖励模型的偏好优化
+  - file: notes/grpo/grpo_experiments
+    title: 13. GRPO 与 RLVR：可验证奖励
   - file: failure-atlas
     title: RL 失败模式图鉴
