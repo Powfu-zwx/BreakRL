@@ -68,7 +68,7 @@ TeX 使用 XeLaTeX + ctex 编译，通常在 Overleaf 完成。模板和所有�
 uvx --from "jupyter-book>=1.0,<2" jupyter-book build .
 ```
 
-产物在 `_build/html/`（已被 gitignore）。若首次部署未自动启用 Pages，在仓库 Settings → Pages 将 Source 设为 GitHub Actions。
+产物在 `_build/html/`（已被 gitignore）。首次使用前需在仓库 Settings → Pages 将 Source 设为 GitHub Actions（一次性设置），此后每次 push 自动部署。
 
 ## 许可
 
