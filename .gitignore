@@ -19,8 +19,7 @@ __pycache__/
 .venv/
 venv/
 
-# Publication build artifacts
-tmp/
+# Site build
 _build/
 
 # OS / IDE
@@ -29,10 +28,3 @@ Thumbs.db
 *.lnk
 .vscode/
 .cursor/
-
-# Local debug / temp
-debug-*.log
-_fix_and_verify.py
-_audit_*.py
-_debug_*.py
-_run_*.py
