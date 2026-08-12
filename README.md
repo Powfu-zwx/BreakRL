@@ -2,6 +2,8 @@
 
 面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习，并从第 10 章延伸到模型式强化学习。
 
+与同类教材的区别：每章实验都是**消融对照**——不只展示算法怎么跑通，更让你亲眼看到去掉关键机制后它如何失败。全部失败案例按「症状 → 机制 → 复现 → 修复」汇总为 [RL 失败模式图鉴](https://powfu-zwx.github.io/TESAURO/failure-atlas.html)。
+
 - 在线阅读（实验 Notebook 渲染）：<https://powfu-zwx.github.io/TESAURO/>
 - 教材源码与实验：`notes/`
 - 新章节骨架：`notes/rl_note_template.tex`（复制到 `notes/<chapter>/<chapter>.tex` 再写）
