@@ -21,5 +21,7 @@ chapters:
     title: 9. 离线强化学习：CQL 与 IQL
   - file: notes/model-based-rl/model-based-rl_experiments
     title: 10. 模型式强化学习：从环境模型到 Dyna-Q
+  - file: notes/rlhf/rlhf_experiments
+    title: 11. RLHF：从偏好到奖励
   - file: failure-atlas
     title: RL 失败模式图鉴

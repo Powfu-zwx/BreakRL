@@ -15,8 +15,8 @@ def check_notebooks() -> list[str]:
         return ["nbformat is required to validate notebooks"]
 
     notebooks = sorted((ROOT / "notes").rglob("*.ipynb"))
-    if len(notebooks) != 10:
-        errors.append(f"expected 10 notebooks, found {len(notebooks)}")
+    if len(notebooks) != 11:
+        errors.append(f"expected 11 notebooks, found {len(notebooks)}")
     for path in notebooks:
         try:
             nbformat.read(path, as_version=4)

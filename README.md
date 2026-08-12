@@ -1,6 +1,6 @@
 # TESAURO
 
-面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习，并从第 10 章延伸到模型式强化学习。
+面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习，并延伸到模型式强化学习与 RLHF。
 
 与同类教材的区别：每章实验都是**消融对照**——不只展示算法怎么跑通，更让你亲眼看到去掉关键机制后它如何失败。全部失败案例按「症状 → 机制 → 复现 → 修复」汇总为 [RL 失败模式图鉴](https://powfu-zwx.github.io/TESAURO/failure-atlas.html)。
 
@@ -20,6 +20,7 @@
 8. SAC：最大熵连续控制
 9. 离线强化学习：CQL 与 IQL
 10. 模型式强化学习：从环境模型到 Dyna-Q
+11. RLHF：从偏好到奖励
 
 每章提供 TeX 源码、实验 Notebook 与配图；章节 PDF 由维护者在 Overleaf 使用 XeLaTeX 编译后放入对应目录。
 
@@ -51,7 +52,7 @@ python scripts/check_consistency.py
 
 ## 编译与贡献
 
-TeX 使用 XeLaTeX + ctex 编译，通常在 Overleaf 完成。模板和所有章节统一使用 `[!htbp]` figure 浮动约定；当前机器没有 TeX 工具时不要手工修改 PDF。
+TeX 使用 XeLaTeX + ctex 编译，可在 Overleaf 完成，也可用本机 conda 环境 `tex_env` 中的 Tectonic：`conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex`。模板和所有章节统一使用 `[!htbp]` figure 浮动约定；没有 TeX 工具时不要手工修改 PDF。
 
 单仓库工作流如下：
 
