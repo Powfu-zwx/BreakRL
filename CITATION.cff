@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use BreakRL in teaching, research, or other public work, please cite it."
 type: software
 title: "BreakRL: Reinforcement Learning Fundamentals"
-version: 1.0.0
+version: 1.1.0
 date-released: "2026-08-16"
 license: CC-BY-4.0
 repository-code: "https://github.com/Powfu-zwx/BreakRL"
