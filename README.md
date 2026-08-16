@@ -1,21 +1,21 @@
 <div align="center">
 
-<img src="assets/tesauro-wordmark.png" alt="TESAURO" width="400">
+<img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
 
 **消融实验驱动的中文强化学习教材**
 
 从多臂老虎机到 RLHF · DPO · GRPO/RLVR —— 每章一份正文推导、一组可复现的消融实验
 
 <p>
-  <a href="https://github.com/Powfu-zwx/TESAURO/tags"><img src="https://img.shields.io/github/v/tag/Powfu-zwx/TESAURO?label=release&style=flat-square&color=2166AC" alt="release"></a>
-  <a href="https://github.com/Powfu-zwx/TESAURO/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/TESAURO/quality.yml?branch=main&label=checks&style=flat-square" alt="checks"></a>
-  <a href="https://powfu-zwx.github.io/TESAURO/"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/TESAURO/site.yml?branch=main&label=site&style=flat-square" alt="site"></a>
+  <a href="https://github.com/Powfu-zwx/BreakRL/tags"><img src="https://img.shields.io/github/v/tag/Powfu-zwx/BreakRL?label=release&style=flat-square&color=2166AC" alt="release"></a>
+  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/quality.yml?branch=main&label=checks&style=flat-square" alt="checks"></a>
+  <a href="https://powfu-zwx.github.io/BreakRL/"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/site.yml?branch=main&label=site&style=flat-square" alt="site"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-CC%20BY%204.0%20%2B%20MIT-97ca00?style=flat-square" alt="license"></a>
 </p>
 
 <p>
-  <a href="https://powfu-zwx.github.io/TESAURO/"><b>在线阅读</b></a> ·
-  <a href="https://powfu-zwx.github.io/TESAURO/failure-atlas.html"><b>失败模式图鉴</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
   <a href="#章节">章节</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#引用">引用</a>
@@ -28,32 +28,26 @@
 与同类教材的区别：**每章实验都是消融对照**——不只展示算法怎么跑通，更让你亲眼看到去掉关键机制后它如何失败。
 
 - **消融对照**：PPO 去掉 clip 崩到 −8000、DQN 去掉回放卡在 10 分、RLHF 去掉 KL 锚被 reward hacking 击穿——每章三张图，机制与失败各占一半；
-- **失败模式图鉴**：全部失败案例按「症状 → 机制 → 复现 → 修复」汇总成[速查表](https://powfu-zwx.github.io/TESAURO/failure-atlas.html)，训练不收敛时按症状查根因；
+- **失败模式图鉴**：全部失败案例按「症状 → 机制 → 复现 → 修复」汇总成[速查表](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，训练不收敛时按症状查根因；
 - **全部可复现**：小模型、小任务、3 个随机种子，单机 CPU/GPU 分钟级跑完任意一章的全部实验。
-
-<div align="center">
-  <img src="assets/tesauro-dqn-preview.png" width="88%" alt="正文推导、参考实现与消融实验">
-  <br>
-  <sub>一章教材的三个切面：正文推导 · 参考实现 · 消融实验（第 4 章 DQN，经验回放有 / 无对照）</sub>
-</div>
 
 ## 章节
 
 | # | 章节 | 正文 | 实验 |
 |---|------|------|------|
-| 1 | 多臂老虎机：探索与利用 | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/multi-armed-bandit/multi-armed-bandit_experiments.html) |
-| 2 | 马尔可夫决策过程：序列决策形式化 | [PDF](notes/mdp/mdp.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/mdp/mdp_experiments.html) |
-| 3 | 时序差分学习：长期价值估计 | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/temporal-difference-learning/temporal-difference-learning_experiments.html) |
-| 4 | DQN：神经网络价值学习 | [PDF](notes/dqn/dqn.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/dqn/dqn_experiments.html) |
-| 5 | Policy Gradient / REINFORCE：直接优化策略 | [PDF](notes/policy-gradient/pg.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/policy-gradient/pg_experiments.html) |
-| 6 | Actor-Critic / A2C：价值辅助策略更新 | [PDF](notes/actor-critic/ac.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/actor-critic/ac_experiments.html) |
-| 7 | PPO：约束策略更新 | [PDF](notes/ppo/ppo.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/ppo/ppo_experiments.html) |
-| 8 | SAC：最大熵连续控制 | [PDF](notes/sac/sac.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/sac/sac_experiments.html) |
-| 9 | 离线强化学习：CQL 与 IQL | [PDF](notes/offline-rl/offline-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/offline-rl/offline-rl_experiments.html) |
-| 10 | 模型式强化学习：从环境模型到 Dyna-Q | [PDF](notes/model-based-rl/model-based-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/model-based-rl/model-based-rl_experiments.html) |
-| 11 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/rlhf/rlhf_experiments.html) |
-| 12 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/dpo/dpo_experiments.html) |
-| 13 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [在线阅读](https://powfu-zwx.github.io/TESAURO/notes/grpo/grpo_experiments.html) |
+| 1 | 多臂老虎机：探索与利用 | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments.html) |
+| 2 | 马尔可夫决策过程：序列决策形式化 | [PDF](notes/mdp/mdp.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments.html) |
+| 3 | 时序差分学习：长期价值估计 | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments.html) |
+| 4 | DQN：神经网络价值学习 | [PDF](notes/dqn/dqn.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments.html) |
+| 5 | Policy Gradient / REINFORCE：直接优化策略 | [PDF](notes/policy-gradient/pg.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments.html) |
+| 6 | Actor-Critic / A2C：价值辅助策略更新 | [PDF](notes/actor-critic/ac.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments.html) |
+| 7 | PPO：约束策略更新 | [PDF](notes/ppo/ppo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments.html) |
+| 8 | SAC：最大熵连续控制 | [PDF](notes/sac/sac.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments.html) |
+| 9 | 离线强化学习：CQL 与 IQL | [PDF](notes/offline-rl/offline-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) |
+| 10 | 模型式强化学习：从环境模型到 Dyna-Q | [PDF](notes/model-based-rl/model-based-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments.html) |
+| 11 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) |
+| 12 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
+| 13 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
 
 第 1–10 章构成经典主线（价值学习 → 策略优化 → 离线与模型式），第 11–13 章是 LLM 后训练三部曲。新章节从 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 复制骨架开始写。
 
@@ -61,7 +55,7 @@
 
 15 种失败模式的症状速查表：「回报断崖式崩盘」「Q 值一路涨、策略却变差」「离线训练损失正常、回报塌缩」「奖励没问题、就是学不动」……每条给出根因机制、可一键复现的消融实验与修复手段。
 
-→ [powfu-zwx.github.io/TESAURO/failure-atlas.html](https://powfu-zwx.github.io/TESAURO/failure-atlas.html)
+→ [powfu-zwx.github.io/BreakRL/failure-atlas.html](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)
 
 ## 快速开始
 
@@ -109,11 +103,11 @@ uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html
 仓库页右侧的 "Cite this repository" 可直接导出引用；元数据与当前版本号见 [`CITATION.cff`](CITATION.cff)。
 
 ```bibtex
-@software{tesauro,
-  title  = {TESAURO: Reinforcement Learning Fundamentals},
-  author = {{TESAURO Contributors}},
+@software{breakrl,
+  title  = {BreakRL: Reinforcement Learning Fundamentals},
+  author = {{BreakRL Contributors}},
   year   = {2026},
-  url    = {https://github.com/Powfu-zwx/TESAURO}
+  url    = {https://github.com/Powfu-zwx/BreakRL}
 }
 ```
 

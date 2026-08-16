@@ -1,4 +1,4 @@
-"""Read-only structural checks for the TESAURO repository.
+"""Read-only structural checks for the BreakRL repository.
 
 Invariants:
 - every chapter directory under notes/ holds exactly one .tex, a .pdf with
