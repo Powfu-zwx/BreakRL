@@ -1,8 +1,9 @@
 """Read-only structural checks for the BreakRL repository.
 
 Invariants:
-- every chapter directory under notes/ holds exactly one .tex, a .pdf with
-  the same stem, and exactly one *_experiments.ipynb that parses;
+- every chapter directory under notes/ holds exactly one main .tex (plus an
+  optional *_en.tex English edition), a .pdf with the same stem, and exactly
+  one *_experiments.ipynb that parses;
 - figure environments use the [!htbp] convention and referenced graphics
   exist next to the .tex;
 - _toc.yml chapter entries and chapter notebooks cover each other, and its
@@ -31,11 +32,17 @@ def check_chapters() -> list[str]:
 
     for chapter in chapter_dirs():
         rel = chapter.relative_to(ROOT)
-        tex_files = sorted(chapter.glob("*.tex"))
-        if len(tex_files) != 1:
-            errors.append(f"{rel}: expected exactly one .tex, found {len(tex_files)}")
-        else:
-            pdf = tex_files[0].with_suffix(".pdf")
+        main_tex = sorted(chapter.glob("*.tex"))
+        en_tex = sorted(p for p in main_tex if p.stem.endswith("_en"))
+        main_tex = [p for p in main_tex if not p.stem.endswith("_en")]
+        if len(main_tex) != 1:
+            errors.append(f"{rel}: expected exactly one main .tex, found {len(main_tex)}")
+            continue
+        if len(en_tex) > 1:
+            errors.append(f"{rel}: expected at most one *_en.tex, found {len(en_tex)}")
+            continue
+        for tex in main_tex + en_tex:
+            pdf = tex.with_suffix(".pdf")
             if not pdf.exists():
                 errors.append(f"{rel}: missing chapter PDF {pdf.name}")
 

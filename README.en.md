@@ -38,7 +38,7 @@ What sets this book apart: **every chapter's experiments are ablation contrasts*
 
 | # | Chapter | Text | Experiments |
 |---|---------|------|-------------|
-| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments.html) |
+| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) |
 | 2 | Markov decision processes | [PDF](notes/mdp/mdp.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments.html) |
 | 3 | Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments.html) |
 | 4 | DQN: neural value learning | [PDF](notes/dqn/dqn.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments.html) |
@@ -52,6 +52,8 @@ What sets this book apart: **every chapter's experiments are ablation contrasts*
 | 12 | RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) |
 | 13 | DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
 | 14 | GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
+
+English editions are being added chapter by chapter (chapter 1 and the failure atlas are done); the PDF and online links below point to the English edition where available.
 
 Chapters 1–10 form the classic mainline (value learning → policy optimization → offline and model-based methods), chapter 11 bridges classic RL and LLMs through sequence modeling, and chapters 12–14 are the LLM post-training trilogy. New chapters start from the skeleton in [`notes/rl_note_template.tex`](notes/rl_note_template.tex).
 

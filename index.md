@@ -39,11 +39,11 @@
 - **[The RL Failure Atlas](failure-atlas-en.md)** (in English): 17 failure modes as *symptom → mechanism → reproduction → fix* — start here when training won't converge;
 - **Fully reproducible**: small models, 3–20 seeds per chapter, minutes on a single CPU/GPU machine.
 
-The chapter prose is written in Chinese; the table below gives an English one-line guide. The [English README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) mirrors this in the repository.
+English editions are being added chapter by chapter (chapter 1 and the failure atlas are done); rows without an English link remain Chinese-only for now. The [English README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) mirrors this in the repository.
 
 | # | Chapter | Experiments |
 | --- | --- | --- |
-| 1. Multi-armed bandits: exploration vs exploitation | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/multi-armed-bandit/multi-armed-bandit.pdf) | [Read online](notes/multi-armed-bandit/multi-armed-bandit_experiments.ipynb) |
+| 1. Multi-armed bandits: exploration vs exploitation | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Read online](notes/multi-armed-bandit/multi-armed-bandit_experiments_en.ipynb) |
 | 2. Markov decision processes | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/mdp/mdp.pdf) | [Read online](notes/mdp/mdp_experiments.ipynb) |
 | 3. Temporal-difference learning | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/temporal-difference-learning/temporal-difference-learning.pdf) | [Read online](notes/temporal-difference-learning/temporal-difference-learning_experiments.ipynb) |
 | 4. DQN: neural value learning | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/dqn/dqn.pdf) | [Read online](notes/dqn/dqn_experiments.ipynb) |
