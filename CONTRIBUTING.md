@@ -20,7 +20,7 @@ python run_jupyter.py   # Windows 证书库规避；无此问题可直接 python
 - 一个 `<chapter>_experiments.ipynb`；
 - 三张 `fig*.pdf` 实验图（由 notebook 生成）。
 
-**英文版（双语对齐）**：已有英文版的章节额外包含 `<chapter>_en.tex` / `<chapter>_en.pdf` / `<chapter>_experiments_en.ipynb`（只翻译 markdown 单元格，代码与输出和中文版保持一致），并登记进 `_toc.yml` 的 English 分区、`README.en.md` 与 `index.md` 的英文表。**修改中文版内容（正文结论、实验数值、图）时必须同步英文版**——两份不一致视为未完成。英文版正在逐章补齐，从第 1 章开始。
+**英文版（双语对齐）**：每章均含中文版（`<chapter>.tex` / `<chapter>.pdf` / `<chapter>_experiments.ipynb`）与英文版（`<chapter>_en.tex` / `<chapter>_en.pdf` / `<chapter>_experiments_en.ipynb`）。英文版只翻译 markdown 单元格，代码与输出和中文版保持一致（`scripts/check_consistency.py` 会强制校验英文版 Notebook 的代码单元与中文版一致），并登记进 `_toc.yml` 的 English 分区、`README.en.md` 与 `index.md` 的英文表。**修改中文版内容（正文结论、实验数值、图）时必须同步英文版**——两份不一致视为未完成。
 
 正文遵循模板 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 的结构：先讲故事 → 形式化 → 机制（配三图消融）→ 算法流程 → 对比 → 体系位置 → 参考资料。figure 环境统一用 `[!htbp]`。notebook 按三个 Figure 小节 + 小结组织。
 

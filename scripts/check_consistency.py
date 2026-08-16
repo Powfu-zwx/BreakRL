@@ -4,6 +4,10 @@ Invariants:
 - every chapter directory under notes/ holds exactly one main .tex (plus an
   optional *_en.tex English edition), a .pdf with the same stem, and exactly
   one *_experiments.ipynb that parses;
+- a chapter has its English edition (_en.tex + _en.pdf +
+  *_experiments_en.ipynb) as a whole or not at all, and the English notebook's
+  code cells are identical to the Chinese edition's (only markdown is
+  translated);
 - figure environments use the [!htbp] convention and referenced graphics
   exist next to the .tex;
 - _toc.yml chapter entries and chapter notebooks cover each other, and its
@@ -59,6 +63,41 @@ def check_chapters() -> list[str]:
     return errors
 
 
+def check_bilingual() -> list[str]:
+    """EN edition pairs (_en.tex <-> _en.ipynb) and code-cell parity."""
+    errors = []
+    try:
+        import nbformat
+    except ImportError:
+        return ["nbformat is required to validate notebooks"]
+
+    for chapter in chapter_dirs():
+        rel = chapter.relative_to(ROOT)
+        en_tex = sorted(chapter.glob("*_en.tex"))
+        en_notebooks = sorted(chapter.glob("*_experiments_en.ipynb"))
+        if len(en_tex) != len(en_notebooks):
+            errors.append(
+                f"{rel}: {len(en_tex)} *_en.tex but {len(en_notebooks)} *_experiments_en.ipynb"
+            )
+            continue
+        if not en_tex:
+            continue
+        notebooks = sorted(chapter.glob("*_experiments.ipynb"))
+        try:
+            cn = nbformat.read(notebooks[0], as_version=4)
+            en = nbformat.read(en_notebooks[0], as_version=4)
+        except Exception as error:
+            errors.append(f"{rel}: invalid notebook: {error}")
+            continue
+        cn_code = [cell.source for cell in cn.cells if cell.cell_type == "code"]
+        en_code = [cell.source for cell in en.cells if cell.cell_type == "code"]
+        if cn_code != en_code:
+            errors.append(
+                f"{rel}: English notebook code cells differ from the Chinese edition"
+            )
+    return errors
+
+
 def check_tex() -> list[str]:
     errors = []
     for path in sorted((ROOT / "notes").rglob("*.tex")):
@@ -110,7 +149,7 @@ def check_toc() -> list[str]:
 
 
 def main() -> int:
-    errors = check_chapters() + check_tex() + check_toc()
+    errors = check_chapters() + check_bilingual() + check_tex() + check_toc()
     if errors:
         for error in errors:
             print(f"ERROR: {error}")

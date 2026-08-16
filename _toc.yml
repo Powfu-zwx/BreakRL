@@ -37,5 +37,31 @@ parts:
     chapters:
       - file: notes/multi-armed-bandit/multi-armed-bandit_experiments_en
         title: "1. Multi-Armed Bandits: Exploration vs Exploitation"
+      - file: notes/mdp/mdp_experiments_en
+        title: "2. Markov Decision Processes"
+      - file: notes/temporal-difference-learning/temporal-difference-learning_experiments_en
+        title: "3. Temporal-Difference Learning"
+      - file: notes/dqn/dqn_experiments_en
+        title: "4. DQN: Neural Value Learning"
+      - file: notes/policy-gradient/pg_experiments_en
+        title: "5. Policy Gradient / REINFORCE"
+      - file: notes/actor-critic/ac_experiments_en
+        title: "6. Actor-Critic / A2C"
+      - file: notes/ppo/ppo_experiments_en
+        title: "7. PPO: Constrained Policy Updates"
+      - file: notes/sac/sac_experiments_en
+        title: "8. SAC: Maximum-Entropy Continuous Control"
+      - file: notes/offline-rl/offline-rl_experiments_en
+        title: "9. Offline RL: CQL and IQL"
+      - file: notes/model-based-rl/model-based-rl_experiments_en
+        title: "10. Model-Based RL: Dyna-Q"
+      - file: notes/decision-transformer/decision-transformer_experiments_en
+        title: "11. Decision Transformer: RL as Sequence Modeling"
+      - file: notes/rlhf/rlhf_experiments_en
+        title: "12. RLHF: From Preferences to Rewards"
+      - file: notes/dpo/dpo_experiments_en
+        title: "13. DPO: Preference Optimization without a Reward Model"
+      - file: notes/grpo/grpo_experiments_en
+        title: "14. GRPO and RLVR: Verifiable Rewards"
       - file: failure-atlas-en
         title: "Failure Atlas"

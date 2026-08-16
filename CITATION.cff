@@ -9,7 +9,7 @@ repository-code: "https://github.com/Powfu-zwx/BreakRL"
 doi: 10.5281/zenodo.21966485
 authors:
   - name: "BreakRL Contributors"
-abstract: "Chinese teaching materials for reinforcement learning, from multi-armed bandits and deep model-free reinforcement learning to offline and model-based reinforcement learning, and LLM post-training (RLHF, DPO, and GRPO/RLVR)."
+abstract: "An ablation-driven reinforcement learning textbook available in Chinese and English, from multi-armed bandits and deep model-free reinforcement learning to offline and model-based reinforcement learning, a Decision Transformer bridge, and LLM post-training (RLHF, DPO, and GRPO/RLVR), with a 17-entry failure atlas."
 keywords:
   - reinforcement learning
   - deep reinforcement learning

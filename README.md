@@ -53,7 +53,7 @@
 | 13 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
 | 14 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
 
-第 1–10 章构成经典主线（价值学习 → 策略优化 → 离线与模型式），第 11 章以序列建模桥接经典 RL 与 LLM，第 12–14 章是 LLM 后训练三部曲。新章节从 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 复制骨架开始写。
+第 1–10 章构成经典主线（价值学习 → 策略优化 → 离线与模型式），第 11 章以序列建模桥接经典 RL 与 LLM，第 12–14 章是 LLM 后训练三部曲。全书提供中英双语版本，下表为中文版章节；英文版见 [README.en.md](README.en.md) 的章节表。新章节从 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 复制骨架开始写。
 
 ## RL 失败模式图鉴
 
