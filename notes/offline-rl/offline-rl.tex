@@ -224,7 +224,7 @@ V 与 Q 交替回归：
   \item \textbf{值函数路线} $\to$ DQN（在线 $\max$）$\to$ 双 Q / 目标网络（缓解过估计）；
   \item \textbf{Off-policy 路线} $\to$ \underline{SAC}（上一章：replay buffer 反复利用）——离线 RL 就是「拔掉环境插头，把 buffer 固化成整个数据集」；
   \item \underline{离线强化学习}（本章：不能交互，只读固定数据集 $\to$ 分布漂移 $\to$ CQL 压 OOD 价值 / IQL 不问 OOD）；
-  \item \textbf{下游} $\to$ 保守思想的延伸（model-based 离线方法、决策 Transformer 等序列化离线建模）。
+  \item \textbf{下游} $\to$ 保守思想的延伸（model-based 离线方法）；决策 Transformer（第 11 章）则换一套序列建模的世界观重答本章的问题。
 \end{enumerate}
 
 离线 RL 是 RL 走向工业落地的关键一环：真实系统的数据贵、风险高，很多时候只有历史数据可用。本章的两套方案代表了领域内两种主流的「悲观」设计——约束价值，或约束动作——它们共同确立了离线学习的及格线思维：不塌缩（恢复到 BC 水平）比聪明（追最优）更重要。

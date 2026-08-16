@@ -45,15 +45,16 @@
 | 8 | SAC：最大熵连续控制 | [PDF](notes/sac/sac.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments.html) |
 | 9 | 离线强化学习：CQL 与 IQL | [PDF](notes/offline-rl/offline-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) |
 | 10 | 模型式强化学习：从环境模型到 Dyna-Q | [PDF](notes/model-based-rl/model-based-rl.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments.html) |
-| 11 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) |
-| 12 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
-| 13 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
+| 11 | Decision Transformer：序列建模的强化学习 | [PDF](notes/decision-transformer/decision-transformer.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments.html) |
+| 12 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) |
+| 13 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
+| 14 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [在线阅读](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
 
-第 1–10 章构成经典主线（价值学习 → 策略优化 → 离线与模型式），第 11–13 章是 LLM 后训练三部曲。新章节从 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 复制骨架开始写。
+第 1–10 章构成经典主线（价值学习 → 策略优化 → 离线与模型式），第 11 章以序列建模桥接经典 RL 与 LLM，第 12–14 章是 LLM 后训练三部曲。新章节从 [`notes/rl_note_template.tex`](notes/rl_note_template.tex) 复制骨架开始写。
 
 ## RL 失败模式图鉴
 
-15 种失败模式的症状速查表：「回报断崖式崩盘」「Q 值一路涨、策略却变差」「离线训练损失正常、回报塌缩」「奖励没问题、就是学不动」……每条给出根因机制、可一键复现的消融实验与修复手段。
+17 种失败模式的症状速查表：「回报断崖式崩盘」「Q 值一路涨、策略却变差」「离线训练损失正常、回报塌缩」「奖励没问题、就是学不动」……每条给出根因机制、可一键复现的消融实验与修复手段。
 
 → [powfu-zwx.github.io/BreakRL/failure-atlas.html](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)
 
