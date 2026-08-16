@@ -8,6 +8,7 @@
 
 <p>
   <a href="https://github.com/Powfu-zwx/BreakRL/tags"><img src="https://img.shields.io/github/v/tag/Powfu-zwx/BreakRL?label=release&style=flat-square&color=2166AC" alt="release"></a>
+  <a href="https://doi.org/10.5281/zenodo.21966485"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg" alt="DOI" style="max-width:100%"></a>
   <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/quality.yml?branch=main&label=checks&style=flat-square" alt="checks"></a>
   <a href="https://powfu-zwx.github.io/BreakRL/"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/site.yml?branch=main&label=site&style=flat-square" alt="site"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-CC%20BY%204.0%20%2B%20MIT-97ca00?style=flat-square" alt="license"></a>
@@ -105,13 +106,14 @@ uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html
 
 ## 引用
 
-仓库页右侧的 "Cite this repository" 可直接导出引用；元数据与当前版本号见 [`CITATION.cff`](CITATION.cff)。
+仓库页右侧的 "Cite this repository" 可直接导出引用；元数据与当前版本号见 [`CITATION.cff`](CITATION.cff)。各版本已归档至 Zenodo：概念 DOI [`10.5281/zenodo.21966485`](https://doi.org/10.5281/zenodo.21966485)（始终指向最新版本）。
 
 ```bibtex
 @software{breakrl,
   title  = {BreakRL: Reinforcement Learning Fundamentals},
   author = {{BreakRL Contributors}},
   year   = {2026},
+  doi    = {10.5281/zenodo.21966485},
   url    = {https://github.com/Powfu-zwx/BreakRL}
 }
 ```

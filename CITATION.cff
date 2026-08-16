@@ -6,6 +6,7 @@ version: 1.1.0
 date-released: "2026-08-16"
 license: CC-BY-4.0
 repository-code: "https://github.com/Powfu-zwx/BreakRL"
+doi: 10.5281/zenodo.21966485
 authors:
   - name: "BreakRL Contributors"
 abstract: "Chinese teaching materials for reinforcement learning, from multi-armed bandits and deep model-free reinforcement learning to offline and model-based reinforcement learning, and LLM post-training (RLHF, DPO, and GRPO/RLVR)."
