@@ -2,7 +2,7 @@
 
 <img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
 
-**An ablation-driven reinforcement learning textbook (in Chinese)**
+**An ablation-driven reinforcement learning textbook**
 
 From multi-armed bandits to RLHF · DPO · GRPO/RLVR — each chapter pairs a written derivation with a reproducible ablation experiment
 
@@ -32,7 +32,7 @@ What sets this book apart: **every chapter's experiments are ablation contrasts*
 - **Ablation contrasts**: PPO without clipping collapses to −8000, DQN without replay stalls at ~10 points, RLHF without a KL anchor gets reward-hacked — three figures per chapter, half showing the mechanism and half its failure;
 - **Failure atlas**: every failure case is organized as *symptom → mechanism → reproduction → fix* in a [lookup table](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) — when training doesn't converge, find the root cause by symptom;
 - **Fully reproducible**: small models, small tasks, 3–20 random seeds per chapter; any chapter's full experiment suite runs in minutes on a single CPU/GPU machine;
-- **Positioning**: incumbent Chinese textbooks (Hands-on RL, EasyRL) teach how algorithms *work*; BreakRL teaches how they *fail*, and covers the LLM post-training trilogy that remains scarce in open-source Chinese materials.
+- **Positioning**: incumbent textbooks (Hands-on RL, EasyRL) teach how algorithms *work*; BreakRL teaches how they *fail*, and covers the RLHF / DPO / GRPO post-training mainline.
 
 ## Chapters
 
