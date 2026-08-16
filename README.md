@@ -14,6 +14,7 @@
 </p>
 
 <p>
+  <a href="README.en.md"><b>English</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
   <a href="#章节">章节</a> ·
@@ -29,7 +30,8 @@
 
 - **消融对照**：PPO 去掉 clip 崩到 −8000、DQN 去掉回放卡在 10 分、RLHF 去掉 KL 锚被 reward hacking 击穿——每章三张图，机制与失败各占一半；
 - **失败模式图鉴**：全部失败案例按「症状 → 机制 → 复现 → 修复」汇总成[速查表](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，训练不收敛时按症状查根因；
-- **全部可复现**：小模型、小任务、多随机种子（各章 3–20 个），单机 CPU/GPU 分钟级跑完任意一章的全部实验。
+- **全部可复现**：小模型、小任务、多随机种子（各章 3–20 个），单机 CPU/GPU 分钟级跑完任意一章的全部实验；
+- **定位差异**：中文在位教材《动手学强化学习》与蘑菇书 EasyRL 讲「算法怎么工作」，BreakRL 讲「算法怎么失败」，并覆盖中文开源教材仍稀缺的 LLM 后训练三部曲。
 
 ## 章节
 
@@ -93,6 +95,8 @@ uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html
 ```
 
 ## 贡献
+
+欢迎 issue 与 PR，完整指南见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。要点：
 
 1. 修改 `notes/` 中的 TeX、Notebook 或实验资源；
 2. 运行结构检查：`python scripts/check_consistency.py`（只读验证章节结构、TeX figure 约定与 `_toc.yml` 覆盖，不执行训练、不编译 PDF；GitHub Actions 在 push 与 pull request 上自动运行同一检查）；

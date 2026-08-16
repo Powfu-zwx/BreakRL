@@ -1,0 +1,23 @@
+{
+  "title": "BreakRL: Reinforcement Learning Fundamentals",
+  "description": "A Chinese-language, ablation-driven textbook on reinforcement learning. Each of the 14 chapters pairs a written derivation (PDF) with reproducible experiments in which key mechanisms are removed so readers can watch the algorithm fail. Covers bandits, MDPs, temporal-difference learning, DQN, policy gradients, Actor-Critic, PPO, SAC, offline RL (CQL/IQL), model-based RL (Dyna-Q), Decision Transformer, and the LLM post-training trilogy (RLHF, DPO, GRPO/RLVR), plus a 17-entry failure atlas organized as symptom, mechanism, reproduction, and fix. Text is CC BY 4.0; notebook code is MIT.",
+  "creators": [
+    {
+      "name": "BreakRL Contributors"
+    }
+  ],
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "reinforcement learning",
+    "deep reinforcement learning",
+    "offline reinforcement learning",
+    "RLHF",
+    "DPO",
+    "GRPO",
+    "teaching material",
+    "ablation study"
+  ],
+  "language": "zh",
+  "access_right": "open",
+  "upload_type": "software"
+}
