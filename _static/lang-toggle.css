@@ -1,0 +1,38 @@
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  border: 1px solid var(--pst-color-border, rgba(127, 127, 127, 0.35));
+  border-radius: 999px;
+  overflow: hidden;
+  background: transparent;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1;
+  color: var(--pst-color-text, inherit);
+}
+
+.lang-switch .lang-opt {
+  display: inline-block;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.lang-switch .lang-opt:hover {
+  background-color: rgba(127, 127, 127, 0.15);
+}
+
+.lang-switch .lang-opt.active {
+  background-color: var(--pst-color-primary, #2166ac);
+  color: #ffffff;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-header-items__end .lang-switch {
+    display: none;
+  }
+}

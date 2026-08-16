@@ -25,7 +25,7 @@
 | 13. DPO：不训奖励模型的偏好优化 | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/dpo/dpo.pdf) | [在线阅读](notes/dpo/dpo_experiments.ipynb) |
 | 14. GRPO 与 RLVR：可验证奖励 | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/notes/grpo/grpo.pdf) | [在线阅读](notes/grpo/grpo_experiments.ipynb) |
 
-全书提供中英双语版本：下表为中文版章节；英文版见下方 English 分区，或仓库 [README.en.md](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) 的章节表。
+全书提供中英双语版本：下表为中文版章节；英文版见下方 English 分区，或仓库 [README.en.md](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) 的章节表。站点右上角的「中文 / EN」按钮可随时切换语言，选择会被记住。
 
 复现实验的环境配置见仓库 [README](https://github.com/Powfu-zwx/BreakRL#快速开始)。
 
@@ -41,7 +41,7 @@
 - **[The RL Failure Atlas](failure-atlas-en.md)** (in English): 17 failure modes as *symptom → mechanism → reproduction → fix* — start here when training won't converge;
 - **Fully reproducible**: small models, 3–20 seeds per chapter, minutes on a single CPU/GPU machine.
 
-The full book is available in both Chinese and English; the table below links the English editions. The [English README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) mirrors this in the repository.
+The full book is available in both Chinese and English; the table below links the English editions. The [English README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) mirrors this in the repository. Use the 中文/EN switch in the top bar to toggle between editions at any time; the choice is remembered.
 
 | # | Chapter | Experiments |
 | --- | --- | --- |

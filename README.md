@@ -89,7 +89,7 @@ python run_jupyter.py
 conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex
 ```
 
-**在线站点**：Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 main 后 [`site.yml`](.github/workflows/site.yml) 自动构建并部署到 GitHub Pages（首次需在 Settings → Pages 将 Source 设为 GitHub Actions）。本地预览：
+**在线站点**：Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 main 后 [`site.yml`](.github/workflows/site.yml) 自动构建并部署到 GitHub Pages（首次需在 Settings → Pages 将 Source 设为 GitHub Actions）。站点右上角的「中文 / EN」按钮可在中英双语之间切换，选择会被记住，再次访问自动进入所选语言的页面。本地预览：
 
 ```bash
 uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html/

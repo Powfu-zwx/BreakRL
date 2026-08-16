@@ -89,7 +89,7 @@ Open `notes/<chapter>/*_experiments.ipynb` and select the **rl_env** kernel. Whe
 conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex
 ```
 
-**Online site**: Jupyter Book renders the experiment notebooks listed in `_toc.yml` (saved outputs only, no re-execution). Pushing to main triggers [`site.yml`](.github/workflows/site.yml) to build and deploy to GitHub Pages. Local preview:
+**Online site**: Jupyter Book renders the experiment notebooks listed in `_toc.yml` (saved outputs only, no re-execution). Pushing to main triggers [`site.yml`](.github/workflows/site.yml) to build and deploy to GitHub Pages. The 中文/EN switch in the site's top bar toggles between editions; the choice is remembered, so revisits land directly on the selected language's pages. Local preview:
 
 ```bash
 uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # output in _build/html/
