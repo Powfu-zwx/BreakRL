@@ -58,12 +58,12 @@
 (\hat TQ)(s,a)=\mathbb E_{\hat p}[r+\gamma(1-d)\max_{a'}Q(s',a')].
 \]
 
-若奖励有界 $|r|\le R_{\max}$，且 $V_Q=\max_{s,a}|Q(s,a)|$，则
+若奖励有界 $|r|\le R_{\max}$，且 $V_Q=\max_{s,a}|Q(s,a)|$，则对取值于 $[-V_Q, V_Q]$ 的函数 $(1-d)\max_{a'}Q(s',a')$ 应用 $|\mathbb E_{\hat p}f-\mathbb E_pf|\le(\sup f-\inf f)\cdot\mathrm{TV}$：
 
 \[
 \bigl|(\hat TQ-TQ)(s,a)\bigr|
 \le |\mathbb E_{\hat p}r-\mathbb E_pr|
-+\gamma(R_{\max}+V_Q)\,\mathrm{TV}\!\left(\hat p,p\right).
++2\gamma V_Q\,\mathrm{TV}\!\left(\hat p,p\right).
 \]
 
 这条不等式给出本章的中心命题：模型误差每次备份都会进入目标；连续 $k$ 次模型备份的偏差会按几何级数传播。因此，更多规划更新只有在减少的统计误差大于被传播的模型误差时才值得。

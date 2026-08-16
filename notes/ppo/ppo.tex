@@ -145,7 +145,7 @@ $\varepsilon$ 通常取 $0.2$。
 \subsection*{为什么 clip 起作用？}
 
 \begin{enumerate}
-  \item \textbf{限制每步更新的「步幅」}：$r_t \in [1-\varepsilon, 1+\varepsilon]$ 等价于新旧策略的概率比不超过 $\pm 20\%$；
+  \item \textbf{抑制每步更新的「步幅」}：当 $r_t$ 越出 $[1-\varepsilon, 1+\varepsilon]$ 后，该样本在继续越界的方向上不再提供梯度——漂移被\textbf{软性抑制}而非硬性禁止，个别 $r_t$ 仍可能越界（见图~3）；
   \item \textbf{对称保护}：既防止某动作概率被过度增大，也防止被过度减小；
   \item \textbf{悲观下界}：$L^{\text{CLIP}}$ 是 $L^{\text{CPI}}$ 的下界，不会「自欺欺人」地高估提升量——只有真实提升时才更新。
 \end{enumerate}
@@ -236,8 +236,7 @@ Actor 和 Critic \textbf{共享网络参数} $\theta$，一次反向传播同时
   \item 令 $\theta_\text{old} \leftarrow \theta$，返回第 1 步。
 \end{enumerate}
 
-\textbf{为什么 $K$ 轮更新安全了？} clip 把每步的 $r_t$ 限制在 $[1-\varepsilon, 1+\varepsilon]$，
-即使 $K=20$，$\pi_\theta$ 也始终不会脱离 $\pi_{\theta_\text{old}}$ 的信任域。
+\textbf{为什么 $K$ 轮更新安全了？} 一旦某个样本的 $r_t$ 越出 $[1-\varepsilon, 1+\varepsilon]$，clip 就截断它在继续越界方向上的梯度，$K$ 轮复用同一批数据时的误差累积被压制。注意这是\textbf{软约束}：个别 $r_t$ 仍会越界（图~3），只是没有越界方向的梯度激励去进一步放大它。
 
 % ============================================================
 \section*{PPO vs 其他策略梯度方法}
@@ -250,7 +249,7 @@ Actor 和 Critic \textbf{共享网络参数} $\theta$，一次反向传播同时
 \hline
 \text{REINFORCE}  & \text{极低（每批更新一次）} & \text{低（高方差）}  & \text{最简单} \\
 \text{A2C}        & \text{低（同上）}           & \text{中}            & \text{简单} \\
-\text{TRPO}       & \text{高（$K$ 轮更新）}     & \text{高（KL 约束）} & \text{极复杂（二阶）} \\
+\text{TRPO}       & \text{高（每批一次自然梯度更新）} & \text{高（KL 约束）} & \text{极复杂（二阶）} \\
 \text{PPO-Clip}   & \text{高（$K$ 轮更新）}     & \text{高（clip 约束）} & \text{简单（一阶）} \\
 \end{array}
 \]

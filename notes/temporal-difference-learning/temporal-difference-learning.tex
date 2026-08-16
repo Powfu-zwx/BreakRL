@@ -85,12 +85,12 @@ Bootstrapping & 否 & 是 \\
 \end{tabular}
 \end{center}
 
-TD 引入\textbf{有偏}估计，换来了\textbf{方差大幅降低}与更快收敛。在 5 状态随机游走上（图~\ref{fig:td-vs-mc}），用同一局轨迹观察两种方法的估计质量：MC 必须用较小的步长（$\alpha=0.01$）来平均回报、估计粗糙且滞后；TD(0) 用更大的步长（$\alpha=0.1$）每步就地修正，更快贴近真实价值。
+TD 引入\textbf{有偏}估计，换来了\textbf{方差大幅降低}与更快收敛。在 5 状态随机游走上（图~\ref{fig:td-vs-mc}），用同一批轨迹观察两种方法的估计质量：MC 必须用较小的步长（$\alpha=0.01$）来平均回报、估计粗糙且滞后；TD(0) 用更大的步长（$\alpha=0.1$）每步就地修正，更快贴近真实价值。
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.85\textwidth]{fig1_random_walk_mc_vs_td.pdf}
-  \caption{5 状态随机游走的价值估计（同一局轨迹）。黑线为真实价值 $v(s)=s/6$，红色为 MC（$\alpha=0.01$）、蓝色为 TD(0)（$\alpha=0.1$）。TD(0) 在 100、200 局后都更贴近真实值（100 局平均 RMS：MC 0.149 vs TD 0.062）。}
+  \caption{5 状态随机游走的价值估计（同一批轨迹）。黑线为真实价值 $v(s)=s/6$，红色为 MC（$\alpha=0.01$）、蓝色为 TD(0)（$\alpha=0.1$）。TD(0) 在 100、200 局后都更贴近真实值（100 局平均 RMS：MC 0.149 vs TD 0.062）。}
   \label{fig:td-vs-mc}
 \end{figure}
 

@@ -126,8 +126,10 @@ Monte Carlo 估计有无偏性（无数次采样的均值等于真实期望）�
 \begin{itemize}
   \item 额外维护一个 \textbf{Value Network} $V(s;\phi)$，通过最小化均方误差 $\mathcal{L}(\phi) = \mathbb{E}[(G_t - V(s_t;\phi))^2]$ 来训练；
   \item Policy 梯度改为 $\nabla_\theta \log \pi_\theta(a_t \mid s_t) \cdot A_t$；
-  \item $V(s)$ 的学习率须\textbf{低于} policy 的学习率——若 $V(s)$ 收敛太快（几乎完美拟合 $G_t$），则 $A_t \approx 0$，policy 的梯度信号消失。
+  \item $V(s)$ 的学习率与容量要克制——它要回归的是\textbf{期望}回报 $v^\pi(s)$；若网络把访问过的每条轨迹的\textbf{已实现} $G_t$ 都记住（过拟合），训练数据上 $A_t \approx 0$，policy 的梯度信号消失。
 \end{itemize}
+
+\textbf{与第 6 章的关系}：这里的「学习率更低」针对 MC 回归下的记忆化风险；第 6 章的 Actor-Critic 采用 bootstrapping，两时间尺度理论要求 Critic 反而学得\textbf{更快}——场景不同，两条结论并不矛盾。
 
 消融实验如图~\ref{fig:baseline} 所示。
 
@@ -180,7 +182,7 @@ H(\pi(\cdot \mid s)) = -\sum_a \pi(a \mid s) \log \pi(a \mid s)
 \begin{array}{l|l}
 \textbf{设置} & \textbf{原因} \\
 \hline
-\alpha_V < \alpha_\pi & V(s) 不能过快收敛，否则 A_t \approx 0，梯度信号消失 \\[4pt]
+\alpha_V < \alpha_\pi & 防 V(s) 过拟合已实现回报（记忆化会让 A_t \approx 0） \\[4pt]
 \text{不对 } A_t \text{ 做 z-score} & V(s) 已提供自然的中心化，再归一化易消灭信号 \\[4pt]
 \text{clip\_grad\_norm} & 单条轨迹梯度方差大，梯度裁剪防止步长过大 \\
 \end{array}

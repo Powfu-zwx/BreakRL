@@ -93,7 +93,7 @@ Q(s,a) = r(s,a) + \gamma\,\mathbb{E}_{s'}\!\left[\max_{a'} Q(s',a')\right]
 \log\pi(a|s) = \log\mathcal{N}(u|\mu_\phi,\sigma_\phi^2) - \sum_d \log\!\left(1 - \tanh^2(u_d)\right)
 \]
 
-其中 $u = \mu_\phi + \sigma_\phi\odot\varepsilon$ 是压缩前的高斯样本。忽略修正项会导致概率估计偏高，熵计算错误。
+其中 $u = \mu_\phi + \sigma_\phi\odot\varepsilon$ 是压缩前的高斯样本。修正项 $-\sum_d \log(1-\tanh^2(u_d))$ 恒非负：忽略它会\textbf{低估}动作概率（log-prob 偏小、熵偏大），且动作越靠近边界（$|a_d|\to 1$）误差越大。
 
 \subsection*{机制二：双 Q 网络（Clipped Double Q）}
 
@@ -105,7 +105,7 @@ SAC 维护两个独立的 Q 网络 $Q_{\theta_1},\,Q_{\theta_2}$，计算目标�
 \boxed{y = r + \gamma\left[\min_{i=1,2} Q_{\bar\theta_i}(s',\tilde a') - \alpha\log\pi(\tilde a'|s')\right], \quad \tilde a'\sim\pi(\cdot|s')}
 \]
 
-\textbf{为什么取最小？} 两个独立网络的估计误差不相关，取 $\min$ 相当于悲观估计——宁可低估也不高估，阻断了过估计的正反馈。
+\textbf{为什么取最小？} 两个网络的初始化与训练动态不同，估计误差\textbf{不完全相关}；取 $\min$ 相当于系统性偏好两者中更悲观的估计——宁可低估也不高估，阻断了过估计的正反馈。
 
 各 Q 网络的损失：
 \[
@@ -215,10 +215,10 @@ Actor 损失的含义：最大化「Q 值 $-$ $\alpha$ 倍的对数概率」= �
 
 \[
 \begin{array}{c|c|c|c|c}
-\text{方法} & \text{动作空间} & \text{样本效率} & \text{稳定性} & \text{离线友好} \\
+\text{方法} & \text{动作空间} & \text{样本效率} & \text{稳定性} & \text{离线数据} \\
 \hline
-\text{PPO} & \text{离散/连续} & \text{中（on-policy）}  & \text{高} & \text{否} \\
-\text{SAC} & \text{连续}     & \text{高（off-policy）} & \text{高} & \text{是} \\
+\text{PPO} & \text{离散/连续} & \text{中（on-policy）}  & \text{高} & \text{难以复用} \\
+\text{SAC} & \text{连续}     & \text{高（off-policy）} & \text{高} & \text{可复用，需保守化} \\
 \end{array}
 \]
 
@@ -228,7 +228,7 @@ Actor 损失的含义：最大化「Q 值 $-$ $\alpha$ 倍的对数概率」= �
   \item \textbf{Off-policy 样本效率}：SAC 使用 Replay Buffer，每条经验可被反复利用；PPO 是 on-policy，rollout 用完即丢；
   \item \textbf{高维连续动作}：PPO 的离散化或 Gaussian 策略在高维空间方差大；SAC 的 Tanh-Gaussian + 重参数化梯度更稳定；
   \item \textbf{自动探索调节}：SAC 的 $\alpha$ 自适应；PPO 的熵系数 $c_2$ 需手动设定且固定；
-  \item \textbf{离线 RL 兼容}：SAC 的 off-policy 框架天然支持离线数据复用；PPO 的 on-policy 结构很难适配离线数据。
+  \item \textbf{离线数据复用}：SAC 的 off-policy 结构可以复用历史与离线数据；PPO 的 on-policy 结构很难适配离线数据。注意：复用离线数据不等于可以直接离线训练——裸 SAC 在纯离线数据上同样会因外推误差塌缩，需要 CQL/IQL 式的保守化改造（见下一章）。
 \end{enumerate}
 
 

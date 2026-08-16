@@ -57,9 +57,9 @@
 y = r + \gamma \max_{a'} Q_{\bar\theta}(s', a')
 \]
 
-在线时，$\max$ 从\textbf{策略当前真正会执行的动作}里挑最优；离线时，$\max$ 遍历的是网络对\textbf{所有动作}（包括数据集里从未出现过的动作）的估计。对于没见过的动作，$Q_{\bar\theta}(s',a')$ 从没有被任何目标值校准过，它的取值是网络「自由发挥」的——$\max$ 会稳定地选中「相对最高」的那个，而它往往正是数据外、不可信的那个。这个不可信的高值再作为自举目标反向放大，Q 估计与真实价值逐渐\textbf{脱钩}，贪心策略据此行动，真实回报随之崩盘（图 1）。
+在线时，持续交互会不断用新数据校准 $\max$ 挑中的高估动作；离线时，$\max$ 遍历的是网络对\textbf{所有动作}（包括数据集里从未出现过的动作）的估计，且再没有新数据来修正它们。对于没见过的动作，$Q_{\bar\theta}(s',a')$ 从没有被任何目标值校准过，它的取值是网络「自由发挥」的——$\max$ 会稳定地选中「相对最高」的那个，而它往往正是数据外、不可信的那个。这个不可信的高值再作为自举目标反向放大，Q 估计与真实价值逐渐\textbf{脱钩}，贪心策略据此行动，真实回报随之崩盘（图 1）。
 
-Fujimoto 等把这种误差归纳为三类来源：
+Fujimoto 等把其中最主要的来源——动作不存在于数据——称为\textbf{外推误差（extrapolation error）}；Levine 等（2020）的综述进一步把这类误差归纳为三类来源：
 
 \begin{itemize}
   \item \textbf{动作不存在于数据}：$\max$ 选中的 $a'$ 在 $\mathcal{D}$ 中从未出现，Q 对它没有依据；
@@ -70,13 +70,13 @@ Fujimoto 等把这种误差归纳为三类来源：
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.88\textwidth]{fig1_ood_overestimation.pdf}
-  \caption{朴素离线 DQN 的外推误差塌缩（CartPole-v1，medium 数据集，3 个随机种子，阴影为 $\pm 1\sigma$）。同一张图里：蓝色曲线（左轴）是 Q 网络对数据状态的最大 Q 估计，随离线更新持续攀升；红色曲线（右轴）是贪心策略的真实回报，短暂改善后回落，最终跌破行为克隆（BC）这条「及格线」。Q 涨、回报跌，两者脱钩——正是外推误差被自举放大的标志。}
+  \caption{朴素离线 DQN 的外推误差塌缩（CartPole-v1，medium 数据集，3 个随机种子，阴影为 $\pm 1\sigma$）。同一张图里：蓝色曲线（左轴）是 Q 网络对数据状态的最大 Q 估计——它不再跟踪策略的真实价值；红色曲线（右轴）是贪心策略的真实回报，短暂改善后回落，且始终远低于行为克隆（BC）这条「及格线」（BC 约 300，见图 2 的灰色区间）。Q 估计与真实回报脱钩——正是外推误差进入自举目标后的表现。}
   \label{fig:offline-overestimation}
 \end{figure}
 
 \subsection*{Q 值与真实价值的脱钩}
 
-过估计不直接等同于「Q 数值大」。诊断离线算法不能只看 Q 的高低，而要看 \textbf{Q 估计与真实价值是否脱钩}：图 1 中朴素离线 DQN 的 Q 随训练一路攀升，回报却先升后跌——Q 越高，并不代表策略越好。一个健康的算法应该让 Q 与回报\textbf{同步}：Q 涨多少，真实价值就兑现多少。这正是图 2、图 3 中 CQL 与 IQL 的共同特征。
+过估计不直接等同于「Q 数值大」。诊断离线算法不能只看 Q 的高低，而要看 \textbf{Q 估计与真实回报是否脱钩}：图 1 中朴素离线 DQN 的回报先升后跌、始终远低于 BC，而 Q 估计并不反映策略的真实价值——Q 的高低，并不代表策略好坏。一个健康的算法应该让 Q 与回报\textbf{同步}：价值兑现为回报，回报反过来印证价值。CQL 与 IQL 正是通过掐断数据外高值的来源，把回报稳定恢复到 BC 水平（图 2、图 3）。
 
 % ============================================================
 \section*{及格线：行为克隆（Behavior Cloning）}
@@ -88,7 +88,7 @@ Fujimoto 等把这种误差归纳为三类来源：
 \pi_\text{BC} = \arg\max_\pi \mathbb{E}_{(s,a)\sim\mathcal{D}}\!\left[\log\pi(a|s)\right]
 \]
 
-BC 的上限是\textbf{数据集本身的质量}：再好的监督拟合也复现不出数据里没有出现过的行为。注意，「数据集的质量」不等于行为策略 $\mu$ 的平均水平——本章数据由 $\mu$ 以 $\varepsilon=0.3$ 的随机性采集（$\mu$ 平均回报约 236），数据里仍有约 70\% 的状态—动作对来自贪心决策，BC 可以从中「去噪」，恢复出比 $\mu$ 平均水平更好的策略（约 300，均值）。因此 BC 的意义不在「复刻 $\mu$」，而在\textbf{给离线学习立一条不塌缩的及格线}。
+BC 的上限是\textbf{数据集本身的质量}：再好的监督拟合也复现不出数据里没有出现过的行为。注意，「数据集的质量」不等于行为策略 $\mu$ 的平均水平——本章数据由 $\mu$ 以 $\varepsilon=0.3$ 的随机性采集（$\mu$ 平均回报约 111），数据里仍有约 70\% 的状态—动作对来自贪心决策，BC 可以从中「去噪」，恢复出比 $\mu$ 平均水平更好的策略（约 300，均值）。因此 BC 的意义不在「复刻 $\mu$」，而在\textbf{给离线学习立一条不塌缩的及格线}。
 
 BC 的下限意义是：它告诉我们\textbf{不塌缩}的最低要求。朴素离线 Q-learning 连 BC 都打不过（图 1），说明它的失败不是「学得不够好」，而是「学坏了」——方向错了。一个合格的离线算法至少要把回报恢复到 BC 的水平：
 
@@ -116,11 +116,11 @@ BC 的下限意义是：它告诉我们\textbf{不塌缩}的最低要求。朴�
 \]
 
 \begin{itemize}
-  \item $\log\sum_a\exp Q_\theta(s,a)$（logsumexp 项）——把\textbf{所有}动作（含数据外的）的 Q 抬高；
-  \item $\mathbb{E}_{a\sim\hat\mu(\cdot|s)}[Q_\theta(s,a)]$——把\textbf{数据内}动作的 Q 压低。
+  \item $\log\sum_a\exp Q_\theta(s,a)$（logsumexp 项）——在最小化 $L_\text{CQL}$ 时把 Q 往下压，且 softmax 权重集中在\textbf{高 Q 的动作}上，数据外的高值动作首当其冲；
+  \item $-\mathbb{E}_{a\sim\hat\mu(\cdot|s)}[Q_\theta(s,a)]$——在最小化时把\textbf{数据内}动作的 Q 往上抬。
 \end{itemize}
 
-两项相减：数据内动作的相对价值被抬高，数据外动作的相对价值被压低。整体对 $\max$ 的行为没有任何显式约束，但贪心选择的方向被惩罚项拧回了数据内。
+一压一抬：数据内动作的相对价值被抬高，数据外动作的相对价值被压低。整体对 $\max$ 的行为没有任何显式约束，但贪心选择的方向被惩罚项拧回了数据内。
 
 \subsection*{完整目标}
 
@@ -187,7 +187,7 @@ V 与 Q 交替回归：
 \boxed{\pi_\phi \;\leftarrow\; \arg\max_\pi \mathbb{E}_{(s,a)\sim\mathcal{D}}\!\left[\exp\!\Big(\frac{1}{\lambda}\bigl(Q_\theta(s,a) - V_\psi(s)\bigr)\Big)\log\pi_\phi(a|s)\right]}
 \]
 
-其中 $\lambda>0$ 是行为克隆与价值提升之间的\textbf{权衡温度}：$\lambda\to 0$ 退化为纯 BC，$\lambda\to\infty$ 退化为纯 Q 最大化（失去保守性）。
+其中 $\lambda>0$ 是行为克隆与价值提升之间的\textbf{权衡温度}：$\lambda\to\infty$ 时权重趋于 1，退化为纯 BC；$\lambda\to 0$ 时权重集中于优势最大的动作，退化为贪心 Q 最大化。
 
 \begin{figure}[!htbp]
   \centering
@@ -215,7 +215,7 @@ V 与 Q 交替回归：
 
 \textbf{设计哲学的差别}：CQL 回答的是「\underline{数据外动作值多少}」——它强行给出答案，但给的是负面的（保守的）；IQL 回答的是「\underline{不回答数据外动作}」——它修改问题本身，让 $\max$ 从算法里消失。前者是给说谎者设罚则，后者是干脆不问不知道的人。
 
-\textbf{在实际中}：CQL 往往更贴合「离线训练 + 在线微调」的流程（惩罚项在过渡期自然衰减）；IQL 实现更简单、对离散/连续动作同样自然——它不需要估计行为策略的动作密度（连续情形下 CQL 要额外采样 $a\sim\hat\mu$），只需直接用数据里的 $(s,a)$ 对。两者在 D4RL 基准上各有擅长，但都能把回报稳定恢复到 BC 及格线水平——这正是本章图 2、图 3 想传达的：两条路殊途同归。
+\textbf{在实际中}：IQL 的 AWR 式策略提取往往更贴合「离线训练 + 在线微调」的流程；CQL 若要在线微调，需显式退火保守强度 $\alpha$——惩罚项不会随训练自己消失，过强的保守性会阻碍继续提升。IQL 实现也更简单、对离散/连续动作同样自然——它不需要估计行为策略的动作密度（连续情形下 CQL 要额外采样 $a\sim\hat\mu$），只需直接用数据里的 $(s,a)$ 对。两者在 D4RL 基准上各有擅长，但都能把回报稳定恢复到 BC 及格线水平——这正是本章图 2、图 3 想传达的：两条路殊途同归。
 
 % ============================================================
 \section*{本章在 RL 体系中的位置}
@@ -235,6 +235,7 @@ V 与 Q 交替回归：
   \item Kumar et al.\ (2020). Conservative Q-Learning for Offline Reinforcement Learning. \textit{NeurIPS}.
   \item Kostrikov, Nair \& Levine (2021). Offline Reinforcement Learning with Implicit Q-Learning. \textit{NeurIPS}.
   \item Fujimoto, Meger \& Precup (2019). Off-Policy Deep Reinforcement Learning without Exploration. \textit{ICML}.
+  \item Levine et al.\ (2020). Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Practical Applications. \textit{arXiv:2005.01643}.
   \item Pomerleau (1991). Efficient Training of Artificial Neural Networks for Autonomous Navigation. \textit{Neural Computation}.
   \item Sutton \& Barto (2018). \textit{Reinforcement Learning: An Introduction} (2nd ed.). Chapter 13.
 \end{enumerate}

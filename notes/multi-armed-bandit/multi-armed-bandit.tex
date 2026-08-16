@@ -175,7 +175,7 @@ UCB 不只看点估计 $\hat{\mu}_k$，而是计算一个\textbf{置信上界}�
 \delta = \sqrt{\frac{\log(1/p)}{2n}}
 \]
 
-取 $p = 1/t$（随时间固定提高置信度），以概率 $\ge 1-2/t$：
+取 $p = 1/t$（随时间推移逐步收紧置信度），以概率 $\ge 1-2/t$：
 \[
 \mu_k \in \left[\hat{\mu}_k - \sqrt{\frac{\log t}{2 N_k}},\; \hat{\mu}_k + \sqrt{\frac{\log t}{2 N_k}}\right]
 \]
@@ -292,7 +292,7 @@ P(\mu \mid r_{1:n}) &\propto P(r_{1:n} \mid \mu) \cdot P(\mu)  \\
 
 \subsection*{遗憾分析（Agrawal \& Goyal 2012）}
 
-汤普森采样的期望累积遗憾也达到 $O(\log T)$，且常数项匹配 Lai \& Robbins 下界——它是\textbf{常数最优}的。在实践中通常表现最好。
+汤普森采样的期望累积遗憾也达到 $O(\log T)$；对 Bernoulli 情形，Kaufmann, Korda \& Munos（2012）进一步证明其渐近常数匹配 Lai \& Robbins 下界。在实践中它通常表现最好。
 
 % ============================================================
 \section*{四种算法对比总结}
@@ -365,6 +365,7 @@ MAB 是单状态的强化学习。理解了本章，你就握住了 RL 三个核
   \item Lai \& Robbins (1985). Asymptotically efficient adaptive allocation rules. \textit{Advances in Applied Mathematics}.
   \item Auer, Cesa-Bianchi \& Fischer (2002). Finite-time analysis of the multiarmed bandit problem. \textit{Machine Learning}.
   \item Agrawal \& Goyal (2012). Analysis of Thompson sampling for the multi-armed bandit problem. \textit{COLT}.
+  \item Kaufmann, Korda \& Munos (2012). Thompson Sampling: An Asymptotically Optimal Finite-Time Analysis. \textit{ALT}.
   \item 动手学强化学习（Hands-on-RL）. 第2章：多臂老虎机.
 \end{enumerate}
 
