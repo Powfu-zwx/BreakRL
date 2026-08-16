@@ -31,3 +31,5 @@ chapters:
     title: 14. GRPO 与 RLVR：可验证奖励
   - file: failure-atlas
     title: RL 失败模式图鉴
+  - file: failure-atlas-en
+    title: Failure Atlas (English)

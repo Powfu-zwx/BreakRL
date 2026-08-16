@@ -9,7 +9,7 @@ From multi-armed bandits to RLHF · DPO · GRPO/RLVR — each chapter pairs a wr
 <p>
   <a href="README.md"><b>中文</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>Failure atlas</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
   <a href="#chapters">Chapters</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#citation">Citation</a>
@@ -30,7 +30,7 @@ From multi-armed bandits to RLHF · DPO · GRPO/RLVR — each chapter pairs a wr
 What sets this book apart: **every chapter's experiments are ablation contrasts** — you don't just see the algorithm work, you watch it fail when a key mechanism is removed.
 
 - **Ablation contrasts**: PPO without clipping collapses to −8000, DQN without replay stalls at ~10 points, RLHF without a KL anchor gets reward-hacked — three figures per chapter, half showing the mechanism and half its failure;
-- **Failure atlas**: every failure case is organized as *symptom → mechanism → reproduction → fix* in a [lookup table](https://powfu-zwx.github.io/BreakRL/failure-atlas.html) — when training doesn't converge, find the root cause by symptom;
+- **Failure atlas**: every failure case is organized as *symptom → mechanism → reproduction → fix* in a [lookup table](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) — when training doesn't converge, find the root cause by symptom;
 - **Fully reproducible**: small models, small tasks, 3–20 random seeds per chapter; any chapter's full experiment suite runs in minutes on a single CPU/GPU machine;
 - **Positioning**: incumbent Chinese textbooks (Hands-on RL, EasyRL) teach how algorithms *work*; BreakRL teaches how they *fail*, and covers the LLM post-training trilogy that remains scarce in open-source Chinese materials.
 
@@ -59,7 +59,7 @@ Chapters 1–10 form the classic mainline (value learning → policy optimizatio
 
 A symptom-driven lookup table of 17 failure modes: "returns collapse off a cliff", "Q keeps rising while the policy gets worse", "offline training loss is fine but returns collapse", "the reward is fine, it just won't learn"… Each entry gives the causal mechanism, a one-click reproducible ablation, and a fix.
 
-→ [powfu-zwx.github.io/BreakRL/failure-atlas.html](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)
+→ [powfu-zwx.github.io/BreakRL/failure-atlas-en.html](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html)
 
 ## Quick Start
 
