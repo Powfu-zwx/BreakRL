@@ -17,8 +17,17 @@ html:
   use_repository_button: true
 
 sphinx:
+  local_extensions:
+    breakrl_locale: scripts
+    prepare_site_assets: scripts
+  extra_extensions:
+    - breakrl_locale
+    - prepare_site_assets
   config:
     language: zh_CN
+    exclude_patterns:
+      - ".github/**"
+      - "PROJECT_AUDIT.md"
     html_css_files:
       - lang-toggle.css
     html_js_files:

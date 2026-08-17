@@ -31,7 +31,7 @@
 
 - **消融对照**：PPO 去掉 clip 崩到 −8000、DQN 去掉回放卡在 10 分、RLHF 去掉 KL 锚被 reward hacking 击穿——每章三张图，机制与失败各占一半；
 - **失败模式图鉴**：全部失败案例按「症状 → 机制 → 复现 → 修复」汇总成[速查表](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，训练不收敛时按症状查根因；
-- **全部可复现**：小模型、小任务、多随机种子（各章 3–20 个），单机 CPU/GPU 分钟级跑完任意一章的全部实验；
+- **全部可复现**：小模型、小任务、多随机种子（各章 3–20 个）；基础章节通常分钟级，Decision Transformer CPU 训练可能数小时，DPO 约 1 小时，GRPO 约 40 分钟，PPO 约 30–60 分钟，SAC 约 20–40 分钟，具体以 Notebook 和硬件为准；
 - **定位差异**：在位教材《动手学强化学习》与蘑菇书 EasyRL 讲「算法怎么工作」，BreakRL 讲「算法怎么失败」，并覆盖 RLHF / DPO / GRPO 后训练主线。
 
 ## 章节
@@ -92,7 +92,8 @@ conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex
 **在线站点**：Jupyter Book 渲染 `_toc.yml` 中的实验 Notebook（只读已保存输出，不重新执行），push 到 main 后 [`site.yml`](.github/workflows/site.yml) 自动构建并部署到 GitHub Pages（首次需在 Settings → Pages 将 Source 设为 GitHub Actions）。站点右上角的「中文 / EN」按钮可在中英双语之间切换，选择会被记住，再次访问自动进入所选语言的页面。本地预览：
 
 ```bash
-uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html/
+python -m pip install -r requirements-site.txt
+jupyter-book build .   # 产物在 _build/html/
 ```
 
 ## 贡献
@@ -120,4 +121,4 @@ uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # 产物在 _build/html
 
 ## 许可
 
-文字、PDF、TeX 与视觉材料采用 [CC BY 4.0](LICENSE)；Jupyter Notebook 中的代码采用 [MIT 许可](LICENSE-CODE)。
+文字、PDF、TeX、视觉材料与生成的数据文件采用 [CC BY 4.0](LICENSE)；Jupyter Notebook 与仓库辅助脚本中的代码采用 [MIT 许可](LICENSE-CODE)。Notebook 中的说明文字与输出仍按 CC BY 4.0 处理。

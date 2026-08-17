@@ -58,7 +58,11 @@
 (\hat TQ)(s,a)=\mathbb E_{\hat p}[r+\gamma(1-d)\max_{a'}Q(s',a')].
 \]
 
-若奖励有界 $|r|\le R_{\max}$，且 $V_Q=\max_{s,a}|Q(s,a)|$，则对取值于 $[-V_Q, V_Q]$ 的函数 $(1-d)\max_{a'}Q(s',a')$ 应用 $|\mathbb E_{\hat p}f-\mathbb E_pf|\le(\sup f-\inf f)\cdot\mathrm{TV}$：
+若奖励有界 $|r|\le R_{\max}$，且 $V_Q=\max_{s,a}|Q(s,a)|$，则函数 $(1-d)\max_{a'}Q(s',a')$ 的取值范围为 $[-V_Q,V_Q]$。应用
+\[
+|\mathbb E_{\hat p}f-\mathbb E_pf|\le(\sup f-\inf f)\cdot\mathrm{TV}
+\]
+即可得到：
 
 \[
 \bigl|(\hat TQ-TQ)(s,a)\bigr|

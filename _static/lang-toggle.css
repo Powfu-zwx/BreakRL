@@ -14,6 +14,8 @@
 
 .lang-switch .lang-opt {
   display: inline-block;
+  border: 0;
+  font: inherit;
   padding: 0.45rem 0.7rem;
   cursor: pointer;
   color: inherit;
@@ -26,12 +28,20 @@
   background-color: rgba(127, 127, 127, 0.15);
 }
 
+.lang-switch .lang-opt:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--pst-color-accent, #c132af);
+  outline-offset: -2px;
+}
+
 .lang-switch .lang-opt.active {
   background-color: var(--pst-color-primary, #2166ac);
   color: #ffffff;
 }
 
-@media (max-width: 991.98px) {
+/* The theme moves the persistent controls to the mobile host at 960px. */
+@media (max-width: 959.98px) {
   .navbar-header-items__end .lang-switch {
     display: none;
   }

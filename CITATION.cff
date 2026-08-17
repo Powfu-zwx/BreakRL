@@ -2,14 +2,16 @@ cff-version: 1.2.0
 message: "If you use BreakRL in teaching, research, or other public work, please cite it."
 type: software
 title: "BreakRL: Reinforcement Learning Fundamentals"
-version: 1.1.0
-date-released: "2026-08-16"
-license: CC-BY-4.0
+version: 1.2.0
+date-released: "2026-08-17"
+license:
+  - CC-BY-4.0
+  - MIT
 repository-code: "https://github.com/Powfu-zwx/BreakRL"
 doi: 10.5281/zenodo.21966485
 authors:
   - name: "BreakRL Contributors"
-abstract: "An ablation-driven reinforcement learning textbook available in Chinese and English, from multi-armed bandits and deep model-free reinforcement learning to offline and model-based reinforcement learning, a Decision Transformer bridge, and LLM post-training (RLHF, DPO, and GRPO/RLVR), with a 17-entry failure atlas."
+abstract: "An ablation-driven reinforcement learning textbook available in Chinese and English, from multi-armed bandits and deep model-free reinforcement learning to offline and model-based reinforcement learning, a Decision Transformer bridge, and LLM post-training (RLHF, DPO, and GRPO/RLVR), with a 17-entry failure atlas. Text, PDFs, TeX, visual materials, and generated data are CC BY 4.0; notebook and repository helper-script code is MIT."
 keywords:
   - reinforcement learning
   - deep reinforcement learning

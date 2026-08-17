@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{amsmath,amssymb}
+\usepackage{array}
 \usepackage{geometry}
 \usepackage{graphicx}
 
@@ -106,7 +107,7 @@ Once Fault 3 triggers, the four faults couple into a self-reinforcing loop:
 
 \[
 \text{no entropy} \;\Rightarrow\; \pi \text{ becomes deterministic rapidly}
-\;\Rightarrow\; \text{every episode degenerates into the same short trajectory}
+\;\Rightarrow\; \text{every episode repeats the same short trajectory}
 \]
 \[
 \Rightarrow\; V_\phi \text{ fits those trajectories quickly (} \delta_t \approx 0 \text{)}
@@ -228,7 +229,7 @@ The corresponding \textbf{critic target} (the return estimate):
 \subsection*{The full algorithm}
 
 \begin{enumerate}
-  \item \textbf{Rollout (no gradients)}: run one episode with the current $\pi_\theta$ and $V_\phi$, recording $(s_t,a_t,r_t,V_\phi(s_t))_{t=0}^{T}$;
+  \item \textbf{Rollout (no gradients)}: run one episode with $\pi_\theta$ and $V_\phi$; record $(s_t,a_t,r_t,V_\phi(s_t))_{t=0}^{T}$;
   \item \textbf{Compute GAE advantages}: recurse backwards from the end; compute return targets $\hat{R}_t = \hat{A}_t + V_\phi(s_t)$;
   \item \textbf{Normalize advantages}: $\hat{A}_t \leftarrow (\hat{A}_t - \bar{A}) / (\sigma_A + \varepsilon)$, stabilizing gradient magnitudes;
   \item \textbf{Critic update (higher learning rate)}:
@@ -259,16 +260,18 @@ Revisit Figure~\ref{fig:adv}'s A2C curve (the red bell): the advantage keeps gro
 % ============================================================
 \section*{Algorithm comparison}
 
-\[
-\begin{array}{c|c|c|c}
-\text{Method} & \text{Advantage estimate} & \text{Update timing} & \text{Bias / variance} \\
+\begin{center}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.24\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}}
+\textbf{Method} & \textbf{Advantage estimate} & \textbf{Update timing} & \textbf{Bias / variance} \\
 \hline
-\text{REINFORCE} & G_t & \text{end of episode} & \text{low bias, very high variance} \\
-\text{REINFORCE + Baseline} & G_t - V(s_t) & \text{end of episode} & \text{low bias, high variance (improved)} \\
-\text{naive AC} & \delta_t & \text{online, per step} & \text{high bias, low variance (but collapses)} \\
-\text{A2C} & \hat{A}^{\text{GAE}(\gamma,\lambda)} & \text{batched after episode} & \text{tunable via } \lambda\text{, stable} \\
-\end{array}
-\]
+\textbf{REINFORCE} & $G_t$ & end of episode & low bias, very high variance \\
+\textbf{REINFORCE + Baseline} & $G_t - V(s_t)$ & end of episode & low bias, high variance (improved) \\
+\textbf{naive AC} & $\delta_t$ & online, per step & high bias, low variance (but collapses) \\
+\textbf{A2C} & $\hat{A}^{\text{GAE}(\gamma,\lambda)}$ & batched after episode & tunable via $\lambda$, stable \\
+\end{tabular}
+\end{center}
 
 \subsection*{Why not just use Monte Carlo returns in A2C?}
 
@@ -297,7 +300,7 @@ Actor-Critic is the bridge from basic algorithms to modern deep RL:
 
   \item \textbf{The Actor-Critic route (fusion)}: this chapter merges the two --- the actor optimizes the policy while the critic supplies a low-variance baseline. GAE tunes the bias--variance trade-off $\to$ \textbf{PPO} (next chapter) adds a clip constraint on the AC framework to bound each policy update $\to$ \textbf{SAC} pushes entropy regularization to a firmer theoretical footing with automatic temperature tuning.
 
-  \item \textbf{The shadow of offline RL}: in offline methods such as IQL (Implicit Q-Learning) the critic still needs accurate value estimates; the two-timescale principle reappears in another guise --- \underline{how to keep the critic from overfitting out-of-distribution states when coverage is thin} is precisely the question offline RL answers.
+  \item \textbf{The shadow of offline RL}: in offline methods such as IQL (Implicit Q-Learning) the critic still needs accurate value estimates; the two-timescale principle reappears in another guise --- \textbf{how to keep the critic from overfitting out-of-distribution states when coverage is thin} is precisely the question offline RL answers.
 \end{enumerate}
 
 Remove PPO's clip objective, keeping GAE + entropy + gradient clipping --- how different is what remains from this chapter's A2C? What exactly does PPO's clip prevent?

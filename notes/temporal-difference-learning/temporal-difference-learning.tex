@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 
 \geometry{a4paper, margin=2.5cm}
+\setlength{\emergencystretch}{4em}
 
 \begin{document}
 
@@ -290,7 +291,9 @@ Q($\lambda$) & off & 是 & $\lambda$-加权回报 + 资格迹 & 在线多步 \\
   \item \textbf{资格迹}的思想 $\to$ Retrace 算法 $\to$ 结合经验回放实现高效 off-policy 多步学习。
 \end{enumerate}
 
+{\raggedright
 学完本章，你掌握了「不依赖模型」的价值学习核心——TD 用 bootstrapping 换方差、SARSA/Q-Learning 区分 on/off-policy、N 步与资格迹在偏差-方差之间调节。下一章 DQN 把 Q-Learning 的表格换成神经网络，并用经验回放与目标网络驯服它的不稳定性。
+\par}
 
 \subsection*{参考资料}
 

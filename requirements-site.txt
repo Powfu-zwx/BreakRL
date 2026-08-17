@@ -1,0 +1,3 @@
+# Pinned site build toolchain. Notebook execution remains disabled in the book.
+jupyter-book==1.0.4.post1
+nbformat==5.10.4

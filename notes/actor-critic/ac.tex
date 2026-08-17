@@ -257,8 +257,9 @@ GAE 计算需要完整的 TD 误差序列，因此要先完成一整局 rollout�
   \item \textbf{Critic 更新（高学习率）}：
         \[
         L_{\text{critic}} = \frac{1}{2}\left\|\,V_\phi(s_t) - \hat{R}_t\,\right\|^2,
-        \quad \text{梯度裁剪后以 } \alpha_w \text{ 步进}；
-        \]
+         \quad \text{梯度裁剪后以 } \alpha_w \text{ 步进}
+         \]
+         ；
   \item \textbf{Actor 更新（低学习率）}：
         \[
         L_{\text{actor}} = -\hat{A}_t\log\pi_\theta(a_t \mid s_t) - \beta\,\mathcal{H}[\pi_\theta(\cdot\mid s_t)],
@@ -327,7 +328,7 @@ Actor-Critic 是从基础算法迈向现代深度 RL 的关键桥梁：
         \textbf{SAC} 在最大熵框架下自动调节温度系数 $\beta$，将熵正则化推向更严格的理论基础。
 
   \item \textbf{离线 RL 的影子}：IQL（Implicit Q-Learning）等离线方法中，Critic 仍然需要准确的价值估计；
-        两时间尺度原则以不同形式复现——\underline{如何在数据集覆盖不足时让 Critic 不过拟合超出分布的状态}，
+         两时间尺度原则以不同形式复现——\textbf{如何在数据集覆盖不足时让 Critic 不过拟合超出分布的状态}，
         正是离线 RL 要回答的核心问题。
 \end{enumerate}
 

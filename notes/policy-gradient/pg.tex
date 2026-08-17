@@ -178,15 +178,16 @@ H(\pi(\cdot \mid s)) = -\sum_a \pi(a \mid s) \log \pi(a \mid s)
 
 \textbf{关键超参数注意事项}：
 
-\[
-\begin{array}{l|l}
+\begin{center}
+\small
+\begin{tabular}{l|l}
 \textbf{设置} & \textbf{原因} \\
 \hline
-\alpha_V < \alpha_\pi & 防 V(s) 过拟合已实现回报（记忆化会让 A_t \approx 0） \\[4pt]
-\text{不对 } A_t \text{ 做 z-score} & V(s) 已提供自然的中心化，再归一化易消灭信号 \\[4pt]
-\text{clip\_grad\_norm} & 单条轨迹梯度方差大，梯度裁剪防止步长过大 \\
-\end{array}
-\]
+$\alpha_V < \alpha_\pi$ & 防 $V(s)$ 过拟合已实现回报（记忆化会让 $A_t \approx 0$） \\[4pt]
+不对 $A_t$ 做 z-score & $V(s)$ 已提供自然的中心化，再归一化易消灭信号 \\[4pt]
+\texttt{clip\_grad\_norm} & 单条轨迹梯度方差大，梯度裁剪防止步长过大 \\
+\end{tabular}
+\end{center}
 
 % ============================================================
 \section*{Policy Gradient 在 RL 体系中的位置}

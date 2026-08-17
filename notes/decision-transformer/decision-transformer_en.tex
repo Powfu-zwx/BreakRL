@@ -1,10 +1,12 @@
 \documentclass{article}
 
 \usepackage{amsmath,amssymb}
+\usepackage{array}
 \usepackage{geometry}
 \usepackage{graphicx}
 
 \geometry{a4paper, margin=2.5cm}
+\setlength{\emergencystretch}{1em}
 
 \begin{document}
 
@@ -99,8 +101,8 @@ The experiment lays this bare (Figure~3): a deterministic $8\times 8$ grid world
 \section*{The full algorithm}
 
 \begin{enumerate}
-  \item \textbf{Serialize}: write each trajectory as a $(\hat R_t, s_t, a_t)$ stream; standardize states by the data's mean/variance and scale RTG by the data's maximum return;
-  \item \textbf{Train}: sample windows of length $\le K$ (right-aligned) and minimize the action cross-entropy --- pure supervision, no environment interaction;
+  \item \textbf{Serialize}: serialize trajectories as a $(\hat R_t, s_t, a_t)$ stream; standardize states by data mean/variance and scale RTG by its maximum return;
+  \item \textbf{Train}: sample right-aligned windows of length $\le K$; minimize action cross-entropy --- pure supervision, no environment interaction;
   \item \textbf{Evaluate}: initialize $\hat R_1 = \text{target}$; each step take the action greedily (or by sampling) and recurse $\hat R_{t+1} = \hat R_t - r_t$; keep the last $K$ tokens as context.
 \end{enumerate}
 
@@ -110,7 +112,9 @@ Practical notes: keep the target return \textbf{within the data's range} (this s
 \section*{Comparison with neighbors}
 
 \begin{center}
-\begin{tabular}{c|c|c|c}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.23\textwidth}|>{\raggedright\arraybackslash}p{0.27\textwidth}|>{\raggedright\arraybackslash}p{0.23\textwidth}}
  & \textbf{BC} & \textbf{CQL / IQL} & \textbf{DT} \\
 \hline
 Learning signal & supervised imitation & Bellman + pessimism & supervised + RTG conditioning \\
@@ -138,7 +142,7 @@ The takeaway: \textbf{DT proves that sequence modeling suffices to reproduce the
 \subsection*{References}
 
 \begin{enumerate}
-  \item Chen et al.\ (2021). Decision Transformer: Reinforcement Learning via Sequence Modeling. \textit{NeurIPS}.
+  \item Chen et al.\ (2021). Decision Transformer: Reinforcement Learning via Sequence Modeling.\allowbreak\ \textit{NeurIPS}.
   \item Janner et al.\ (2021). Offline Reinforcement Learning as One Big Sequence Modeling Problem. \textit{NeurIPS}.
   \item Brandfonbrener, Whitney \& Kakade (2022). When Does Return-Conditioned Supervised Learning Work for Offline Reinforcement Learning? \textit{NeurIPS}.
   \item Emmons et al.\ (2022). Where Did the Distribution Shift? A Causal Analysis of Behavior Cloning and Offline RL. \textit{NeurIPS}.

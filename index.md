@@ -1,6 +1,6 @@
 # BreakRL
 
-面向中文读者的强化学习教学材料，覆盖从基础决策到深度强化学习、离线与模型式强化学习、决策 Transformer 的序列建模视角，以及 LLM 后训练三部曲（RLHF、DPO、GRPO/RLVR）。
+面向中英文读者的强化学习教学材料，覆盖从基础决策到深度强化学习、离线与模型式强化学习、决策 Transformer 的序列建模视角，以及 LLM 后训练三部曲（RLHF、DPO、GRPO/RLVR）。
 
 与同类教材的区别：每章实验都是**消融对照**——不只展示算法怎么跑通，更让你亲眼看到去掉关键机制后它如何失败。
 
@@ -29,7 +29,7 @@
 
 复现实验的环境配置见仓库 [README](https://github.com/Powfu-zwx/BreakRL#快速开始)。
 
-文字、PDF 与视觉材料采用 [CC BY 4.0](https://github.com/Powfu-zwx/BreakRL/blob/main/LICENSE)；Notebook 代码采用 [MIT 许可](https://github.com/Powfu-zwx/BreakRL/blob/main/LICENSE-CODE)。
+文字、PDF、TeX、视觉材料与生成的数据文件采用 [CC BY 4.0](https://github.com/Powfu-zwx/BreakRL/blob/main/LICENSE)；Notebook 与仓库辅助脚本中的代码采用 [MIT 许可](https://github.com/Powfu-zwx/BreakRL/blob/main/LICENSE-CODE)。
 
 ---
 
@@ -39,7 +39,7 @@
 
 - **Ablation-first**: PPO without clipping collapses to −8000, DQN without replay stalls at ~10 points, RLHF without a KL anchor gets reward-hacked;
 - **[The RL Failure Atlas](failure-atlas-en.md)** (in English): 17 failure modes as *symptom → mechanism → reproduction → fix* — start here when training won't converge;
-- **Fully reproducible**: small models, 3–20 seeds per chapter, minutes on a single CPU/GPU machine.
+- **Fully reproducible**: small models and 3–20 seeds per chapter; Decision Transformer can take several hours on CPU, DPO about an hour, GRPO about 40 minutes, PPO about 30–60 minutes, and SAC about 20–40 minutes, with exact runtimes documented by each Notebook.
 
 The full book is available in both Chinese and English; the table below links the English editions. The [English README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.en.md) mirrors this in the repository. Use the 中文/EN switch in the top bar to toggle between editions at any time; the choice is remembered.
 

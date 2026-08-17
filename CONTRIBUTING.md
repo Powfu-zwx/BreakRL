@@ -49,4 +49,4 @@ conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex   # TeX 改动后必
 
 ## 许可与发布
 
-文字、PDF、TeX 与视觉材料采用 [CC BY 4.0](LICENSE)，Notebook 代码采用 [MIT](LICENSE-CODE)。版本号与 release 由维护者按 [`CITATION.cff`](CITATION.cff) 统一管理。
+文字、PDF、TeX、视觉材料与生成的数据文件采用 [CC BY 4.0](LICENSE)，Notebook 与仓库辅助脚本中的代码采用 [MIT](LICENSE-CODE)。Notebook 中的说明文字与输出仍按 CC BY 4.0 处理。版本号与 release 由维护者按 [`CITATION.cff`](CITATION.cff) 统一管理。

@@ -13,7 +13,7 @@
 
 \subsection*{First, a story}
 
-You want a language model to ``answer better''. Better means accurate, restrained, helpful, non-hallucinating --- you try writing all of that into a reward function and quickly give up: these criteria are neither complete nor precise to specify.
+You want a language model to ``answer better''. Better means accurate, restrained, helpful, and free of hallucinations. Writing all of that into a reward function quickly fails: the criteria are neither complete nor precise.
 
 \textbf{The naive approach}: hand-designed scoring rules --- longer answers gain points, polite phrases gain points, keyword hits gain points. The model instantly learns to farm the rules: infinite verbosity, piled pleasantries --- high scores, terrible answers.
 

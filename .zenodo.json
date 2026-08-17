@@ -1,6 +1,8 @@
 {
   "title": "BreakRL: Reinforcement Learning Fundamentals",
-  "description": "An ablation-driven reinforcement learning textbook available in Chinese and English. Each of the 14 chapters pairs a written derivation (PDF) with reproducible experiments in which key mechanisms are removed so readers can watch the algorithm fail. Covers bandits, MDPs, temporal-difference learning, DQN, policy gradients, Actor-Critic, PPO, SAC, offline RL (CQL/IQL), model-based RL (Dyna-Q), Decision Transformer, and the LLM post-training trilogy (RLHF, DPO, GRPO/RLVR), plus a 17-entry failure atlas organized as symptom, mechanism, reproduction, and fix. Text is CC BY 4.0; notebook code is MIT.",
+  "version": "1.2.0",
+  "publication_date": "2026-08-17",
+  "description": "An ablation-driven reinforcement learning textbook available in Chinese and English. Each of the 14 chapters pairs a written derivation (PDF) with reproducible experiments in which key mechanisms are removed so readers can watch the algorithm fail. Covers bandits, MDPs, temporal-difference learning, DQN, policy gradients, Actor-Critic, PPO, SAC, offline RL (CQL/IQL), model-based RL (Dyna-Q), Decision Transformer, and the LLM post-training trilogy (RLHF, DPO, GRPO/RLVR), plus a 17-entry failure atlas organized as symptom, mechanism, reproduction, and fix. Text, PDFs, TeX, visual materials, and generated data are CC BY 4.0; notebook and repository helper-script code is MIT. The Zenodo record should select both licenses for this mixed-license upload.",
   "creators": [
     {
       "name": "BreakRL Contributors"
@@ -17,7 +19,7 @@
     "teaching material",
     "ablation study"
   ],
-  "language": "zh",
+  "language": "mul",
   "access_right": "open",
   "upload_type": "software"
 }

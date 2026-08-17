@@ -1,10 +1,12 @@
 \documentclass{article}
 
 \usepackage{amsmath,amssymb}
+\usepackage{array}
 \usepackage{geometry}
 \usepackage{graphicx}
 
 \geometry{a4paper, margin=2.5cm}
+\setlength{\emergencystretch}{1em}
 
 \begin{document}
 
@@ -201,7 +203,9 @@ where $\lambda>0$ is the \textbf{temperature} trading off behavior cloning again
 \subsection*{One disease, two medicines}
 
 \begin{center}
-\begin{tabular}{c|c|c}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.26\textwidth}|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}}
  & \textbf{CQL} & \textbf{IQL} \\
 \hline
 Object of pessimism & the value function (pushes OOD Q down) & the action set (never evaluates OOD) \\

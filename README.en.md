@@ -31,7 +31,7 @@ What sets this book apart: **every chapter's experiments are ablation contrasts*
 
 - **Ablation contrasts**: PPO without clipping collapses to −8000, DQN without replay stalls at ~10 points, RLHF without a KL anchor gets reward-hacked — three figures per chapter, half showing the mechanism and half its failure;
 - **Failure atlas**: every failure case is organized as *symptom → mechanism → reproduction → fix* in a [lookup table](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) — when training doesn't converge, find the root cause by symptom;
-- **Fully reproducible**: small models, small tasks, 3–20 random seeds per chapter; any chapter's full experiment suite runs in minutes on a single CPU/GPU machine;
+- **Fully reproducible**: small models, small tasks, 3–20 random seeds per chapter; basic chapters usually finish in minutes, while Decision Transformer training on CPU can take several hours, DPO about an hour, GRPO about 40 minutes, PPO about 30–60 minutes, and SAC about 20–40 minutes, depending on the hardware and notebook;
 - **Positioning**: incumbent textbooks (Hands-on RL, EasyRL) teach how algorithms *work*; BreakRL teaches how they *fail*, and covers the RLHF / DPO / GRPO post-training mainline.
 
 ## Chapters
@@ -92,7 +92,8 @@ conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex
 **Online site**: Jupyter Book renders the experiment notebooks listed in `_toc.yml` (saved outputs only, no re-execution). Pushing to main triggers [`site.yml`](.github/workflows/site.yml) to build and deploy to GitHub Pages. The 中文/EN switch in the site's top bar toggles between editions; the choice is remembered, so revisits land directly on the selected language's pages. Local preview:
 
 ```bash
-uvx --from "jupyter-book>=1.0,<2" jupyter-book build .   # output in _build/html/
+python -m pip install -r requirements-site.txt
+jupyter-book build .   # output in _build/html/
 ```
 
 ## Contributing
@@ -120,4 +121,4 @@ Use "Cite this repository" on the repository page to export a citation; metadata
 
 ## License
 
-Text, PDFs, TeX and visual materials are licensed under [CC BY 4.0](LICENSE); code in the Jupyter notebooks under the [MIT License](LICENSE-CODE).
+Text, PDFs, TeX, visual materials, and generated data are licensed under [CC BY 4.0](LICENSE); code in the Jupyter notebooks and repository helper scripts is under the [MIT License](LICENSE-CODE). Notebook prose and outputs remain under CC BY 4.0.

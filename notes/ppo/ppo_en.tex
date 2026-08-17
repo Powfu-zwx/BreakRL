@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{amsmath,amssymb}
+\usepackage{array}
 \usepackage{geometry}
 \usepackage{graphicx}
 
@@ -244,7 +245,8 @@ The actor and critic \textbf{share the network parameters} $\theta$; one backpro
 
 \begin{center}
 \small
-\begin{tabular}{l|l|l|l}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.29\textwidth}|>{\raggedright\arraybackslash}p{0.24\textwidth}|>{\raggedright\arraybackslash}p{0.22\textwidth}}
 \textbf{Method} & \textbf{Sample efficiency} & \textbf{Stability} & \textbf{Complexity} \\
 \hline
 REINFORCE  & very low (one update per batch) & low (high variance) & simplest \\
