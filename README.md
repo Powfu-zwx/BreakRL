@@ -8,6 +8,7 @@
 
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>最小演示</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
   <a href="README.en.md"><b>English</b></a>
 </p>
@@ -18,8 +19,8 @@ BreakRL 是一本以实验为主线的强化学习教材，适合正在学习 RL
 
 ## 三分钟开始
 
-1. 打开[在线教材](https://powfu-zwx.github.io/BreakRL/)，从第 1 章开始；
-2. 阅读[多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit.pdf)，先理解探索与利用；
+1. 先看[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，用一个滑块理解“损失下降、回报塌缩”；
+2. 打开[在线教材](https://powfu-zwx.github.io/BreakRL/)，从第 1 章开始；
 3. 再看[失败模式图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，按症状查找一个“为什么会失败”的案例。
 
 不需要安装环境：站点展示的是仓库中保存的实验输出。只有想修改代码或重新运行 Notebook 时，才需要准备本地环境。
