@@ -14,7 +14,15 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 
 </div>
 
-BreakRL is an experiment-first textbook on reinforcement learning. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
+BreakRL is an experiment-first reinforcement learning textbook for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
+
+## Start in three minutes
+
+1. Open the [online book](https://powfu-zwx.github.io/BreakRL/) and start with Chapter 1;
+2. Read [Multi-Armed Bandits](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) to build an intuition for exploration and exploitation;
+3. Use the [Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) to look up one symptom and its mechanism.
+
+No setup is needed for reading: the site displays saved experiment outputs. Install the local environment only if you want to edit or rerun a notebook.
 
 The learning loop is simple:
 
