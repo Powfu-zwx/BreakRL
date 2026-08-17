@@ -4,6 +4,14 @@
 
 BreakRL 是一本以实验为主线的强化学习教材：每章先解释算法为什么有效，再通过消融实验展示去掉关键机制后的失败。
 
+## 三分钟开始
+
+1. 从[第 1 章：多臂老虎机](notes/multi-armed-bandit/multi-armed-bandit_experiments)开始；
+2. 先读机制解释，再观察 Notebook 中已经保存的结果；
+3. 遇到训练异常时，打开[RL 失败模式图鉴](failure-atlas)按症状查找。
+
+阅读站点不需要安装环境，也不会自动执行训练。
+
 ## 怎么读
 
 1. 先读正文 PDF，理解问题、公式和机制；
@@ -40,6 +48,14 @@ BreakRL 是一本以实验为主线的强化学习教材：每章先解释算法
 **Learn reinforcement learning through failure.**
 
 BreakRL is an experiment-first textbook: each chapter explains why an algorithm works, then uses ablations to show what fails when a key mechanism is removed.
+
+## Start in three minutes
+
+1. Start with [Chapter 1: Multi-Armed Bandits](notes/multi-armed-bandit/multi-armed-bandit_experiments_en);
+2. Read the mechanism first, then inspect the saved notebook results;
+3. When training behaves unexpectedly, use the [RL Failure Atlas](failure-atlas-en) to search by symptom.
+
+You do not need an environment to read the site, and it does not execute training automatically.
 
 ## How to read
 
