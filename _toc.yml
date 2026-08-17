@@ -1,6 +1,10 @@
 format: jb-book
 root: index
 parts:
+  - caption: "从这里开始 / Start here"
+    chapters:
+      - file: demo
+        title: "最小演示 / Minimum demo"
   - caption: "中文版"
     chapters:
       - file: notes/multi-armed-bandit/multi-armed-bandit_experiments

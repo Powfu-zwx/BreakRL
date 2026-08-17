@@ -8,6 +8,7 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>Demo</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
   <a href="README.md"><b>中文</b></a>
 </p>
@@ -18,8 +19,8 @@ BreakRL is an experiment-first reinforcement learning textbook for learners, fir
 
 ## Start in three minutes
 
-1. Open the [online book](https://powfu-zwx.github.io/BreakRL/) and start with Chapter 1;
-2. Read [Multi-Armed Bandits](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) to build an intuition for exploration and exploitation;
+1. Try the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag one slider to see loss fall while return collapses;
+2. Open the [online book](https://powfu-zwx.github.io/BreakRL/) and start with Chapter 1;
 3. Use the [Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) to look up one symptom and its mechanism.
 
 No setup is needed for reading: the site displays saved experiment outputs. Install the local environment only if you want to edit or rerun a notebook.
