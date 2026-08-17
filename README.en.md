@@ -2,123 +2,76 @@
 
 <img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
 
-**An ablation-driven reinforcement learning textbook**
+**Learn reinforcement learning through failure**
 
-From multi-armed bandits to RLHF · DPO · GRPO/RLVR — each chapter pairs a written derivation with a reproducible ablation experiment
+From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built around an ablation experiment
 
 <p>
-  <a href="README.md"><b>中文</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
-  <a href="#chapters">Chapters</a> ·
-  <a href="#quick-start">Quick start</a> ·
-  <a href="#citation">Citation</a>
-</p>
-
-<p>
-  <a href="https://github.com/Powfu-zwx/BreakRL/tags"><img src="https://img.shields.io/github/v/tag/Powfu-zwx/BreakRL?label=release&style=flat-square&color=2166AC" alt="release"></a>
-  <a href="https://doi.org/10.5281/zenodo.21966485"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg" alt="DOI" style="max-width:100%"></a>
-  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/quality.yml?branch=main&label=checks&style=flat-square" alt="checks"></a>
-  <a href="https://powfu-zwx.github.io/BreakRL/"><img src="https://img.shields.io/github/actions/workflow/status/Powfu-zwx/BreakRL/site.yml?branch=main&label=site&style=flat-square" alt="site"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-CC%20BY%204.0%20%2B%20MIT-97ca00?style=flat-square" alt="license"></a>
+  <a href="README.md"><b>中文</b></a>
 </p>
 
 </div>
 
----
+BreakRL is an experiment-first textbook on reinforcement learning. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
 
-What sets this book apart: **every chapter's experiments are ablation contrasts** — you don't just see the algorithm work, you watch it fail when a key mechanism is removed.
+The learning loop is simple:
 
-- **Ablation contrasts**: PPO without clipping collapses to −8000, DQN without replay stalls at ~10 points, RLHF without a KL anchor gets reward-hacked — three figures per chapter, half showing the mechanism and half its failure;
-- **Failure atlas**: every failure case is organized as *symptom → mechanism → reproduction → fix* in a [lookup table](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) — when training doesn't converge, find the root cause by symptom;
-- **Fully reproducible**: small models, small tasks, 3–20 random seeds per chapter; basic chapters usually finish in minutes, while Decision Transformer training on CPU can take several hours, DPO about an hour, GRPO about 40 minutes, PPO about 30–60 minutes, and SAC about 20–40 minutes, depending on the hardware and notebook;
-- **Positioning**: incumbent textbooks (Hands-on RL, EasyRL) teach how algorithms *work*; BreakRL teaches how they *fail*, and covers the RLHF / DPO / GRPO post-training mainline.
+1. Read the derivation and mechanism;
+2. Open the notebook and observe the algorithm on a small task;
+3. Compare the ablations and separate “it runs” from “it works.”
+
+## Learning path
+
+| Stage | Chapters | Focus |
+| --- | --- | --- |
+| Foundations | 1–3 | Exploration, MDPs, and temporal-difference learning |
+| Deep RL | 4–8 | DQN, policy gradients, Actor-Critic, PPO, and SAC |
+| New views | 9–11 | Offline RL, model-based RL, and Decision Transformer |
+| LLM post-training | 12–14 | RLHF, DPO, and GRPO/RLVR |
 
 ## Chapters
 
-| # | Chapter | Text | Experiments |
-|---|---------|------|-------------|
-| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) |
-| 2 | Markov decision processes | [PDF](notes/mdp/mdp_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments_en.html) |
-| 3 | Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html) |
-| 4 | DQN: neural value learning | [PDF](notes/dqn/dqn_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments_en.html) |
-| 5 | Policy gradient / REINFORCE | [PDF](notes/policy-gradient/pg_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments_en.html) |
-| 6 | Actor-Critic / A2C | [PDF](notes/actor-critic/ac_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) |
-| 7 | PPO: constrained policy updates | [PDF](notes/ppo/ppo_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) |
-| 8 | SAC: maximum-entropy continuous control | [PDF](notes/sac/sac_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) |
-| 9 | Offline RL: CQL and IQL | [PDF](notes/offline-rl/offline-rl_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) |
-| 10 | Model-based RL: from environment models to Dyna-Q | [PDF](notes/model-based-rl/model-based-rl_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) |
-| 11 | Decision Transformer: RL as sequence modeling | [PDF](notes/decision-transformer/decision-transformer_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) |
-| 12 | RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) |
-| 13 | DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments_en.html) |
-| 14 | GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo_en.pdf) | [Read online](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments_en.html) |
+| # | Topic | Text | Experiments |
+| --- | --- | --- | --- |
+| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) |
+| 2 | Markov decision processes | [PDF](notes/mdp/mdp_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments_en.html) |
+| 3 | Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html) |
+| 4 | DQN: neural value learning | [PDF](notes/dqn/dqn_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments_en.html) |
+| 5 | Policy gradient / REINFORCE | [PDF](notes/policy-gradient/pg_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments_en.html) |
+| 6 | Actor-Critic / A2C | [PDF](notes/actor-critic/ac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) |
+| 7 | PPO: constrained policy updates | [PDF](notes/ppo/ppo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) |
+| 8 | SAC: maximum-entropy continuous control | [PDF](notes/sac/sac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) |
+| 9 | Offline RL: CQL and IQL | [PDF](notes/offline-rl/offline-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) |
+| 10 | Model-based RL: Dyna-Q | [PDF](notes/model-based-rl/model-based-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) |
+| 11 | Decision Transformer | [PDF](notes/decision-transformer/decision-transformer_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) |
+| 12 | RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) |
+| 13 | DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments_en.html) |
+| 14 | GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments_en.html) |
 
-Chapters 1–10 form the classic mainline (value learning → policy optimization → offline and model-based methods), chapter 11 bridges classic RL and LLMs through sequence modeling, and chapters 12–14 are the LLM post-training trilogy. New chapters start from the skeleton in [`notes/rl_note_template.tex`](notes/rl_note_template.tex).
+## The Failure Atlas
 
-## The RL Failure Atlas
+When training does not converge, start with the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a reward that looks fine but never learns.
 
-A symptom-driven lookup table of 17 failure modes: "returns collapse off a cliff", "Q keeps rising while the policy gets worse", "offline training loss is fine but returns collapse", "the reward is fine, it just won't learn"… Each entry gives the causal mechanism, a one-click reproducible ablation, and a fix.
+[Open the RL Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html): each entry follows “symptom → mechanism → reproduction → fix.”
 
-→ [powfu-zwx.github.io/BreakRL/failure-atlas-en.html](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html)
+## Run the experiments
 
-## Quick Start
-
-Experiments use the conda environment **`rl_env`** (Python 3.10, PyTorch, Gymnasium); dependencies follow [`requirements.txt`](requirements.txt):
+Reading requires no setup. To run the notebooks, use Python 3.10 with PyTorch and Gymnasium:
 
 ```bash
 conda create -n rl_env python=3.10
 conda activate rl_env
 python -m pip install -r requirements.txt
 python -m ipykernel install --user --name rl_env --display-name rl_env
-```
-
-Run the notebooks (`run_jupyter.py` ships a Windows certificate-store workaround; if your machine doesn't need it, run `python -m jupyter lab` directly):
-
-```bash
-conda activate rl_env
 python run_jupyter.py
 ```
 
-Open `notes/<chapter>/*_experiments.ipynb` and select the **rl_env** kernel. When re-running experiments, write outputs to a temporary directory outside the repository to avoid overwriting tracked artifacts.
+Open `notes/<chapter>/*_experiments_en.ipynb` and select the `rl_env` kernel. The site displays saved notebook outputs and does not train models while you read.
 
-## Build & Site
+## Citation and license
 
-**Chapter PDFs**: TeX compiles with XeLaTeX + ctex (e.g., on Overleaf) or with Tectonic from the local conda env `tex_env`. The template and all chapters follow the `[!htbp]` figure convention; do not hand-edit PDFs without a TeX toolchain.
+For teaching, learning, or research use, see [CITATION.cff](CITATION.cff). Text, PDFs, TeX, figures, and generated data use [CC BY 4.0](LICENSE); code in notebooks and helper scripts uses the [MIT License](LICENSE-CODE).
 
-```bash
-conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex
-```
-
-**Online site**: Jupyter Book renders the experiment notebooks listed in `_toc.yml` (saved outputs only, no re-execution). Pushing to main triggers [`site.yml`](.github/workflows/site.yml) to build and deploy to GitHub Pages. The 中文/EN switch in the site's top bar toggles between editions; the choice is remembered, so revisits land directly on the selected language's pages. Local preview:
-
-```bash
-python -m pip install -r requirements-site.txt
-jupyter-book build .   # output in _build/html/
-```
-
-## Contributing
-
-Issues and pull requests are welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the full guide. In short:
-
-1. Edit the TeX, notebooks, or experiment assets under `notes/`;
-2. Run the structural check: `python scripts/check_consistency.py` (read-only validation of chapter structure, TeX figure conventions, and `_toc.yml` coverage; the same check runs automatically on GitHub Actions for every push and pull request);
-3. Review the full diff and commit;
-4. Releases and version bumps are handled by the maintainer per [`CITATION.cff`](CITATION.cff).
-
-## Citation
-
-Use "Cite this repository" on the repository page to export a citation; metadata and the current version live in [`CITATION.cff`](CITATION.cff). All releases are archived on Zenodo: concept DOI [`10.5281/zenodo.21966485`](https://doi.org/10.5281/zenodo.21966485) (always resolves to the latest version).
-
-```bibtex
-@software{breakrl,
-  title  = {BreakRL: Reinforcement Learning Fundamentals},
-  author = {{BreakRL Contributors}},
-  year   = {2026},
-  doi    = {10.5281/zenodo.21966485},
-  url    = {https://github.com/Powfu-zwx/BreakRL}
-}
-```
-
-## License
-
-Text, PDFs, TeX, visual materials, and generated data are licensed under [CC BY 4.0](LICENSE); code in the Jupyter notebooks and repository helper scripts is under the [MIT License](LICENSE-CODE). Notebook prose and outputs remain under CC BY 4.0.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
