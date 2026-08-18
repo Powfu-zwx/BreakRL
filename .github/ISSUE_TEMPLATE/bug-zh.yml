@@ -1,0 +1,45 @@
+name: 缺陷报告（中文）
+description: 报告正文、实验、配图或站点中的问题
+title: "[bug] "
+body:
+  - type: markdown
+    attributes:
+      value: For English, use the "Bug report" template.
+  - type: dropdown
+    id: area
+    attributes:
+      label: 范围
+      options:
+        - 章节正文 / PDF / TeX
+        - 实验 Notebook
+        - 失败模式图鉴
+        - 网站或演示
+        - 仓库工具
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: 位置
+      description: 章节号、文件路径或站点 URL
+      placeholder: notes/ppo/ppo_experiments.ipynb，图 2
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 如果问题只出现在站点已保存的输出里、不需要重跑实验，可以留空。

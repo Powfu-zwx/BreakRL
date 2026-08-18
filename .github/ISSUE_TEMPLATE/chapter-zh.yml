@@ -1,0 +1,34 @@
+name: 章节提案（中文）
+description: 提议新章节，或对现有章节做大幅度改写
+title: "[chapter] "
+body:
+  - type: markdown
+    attributes:
+      value: 新章节必须中英双语同时交付，并包含 TeX/PDF、实验 Notebook 和三张图。约定见 CONTRIBUTING.zh.md。For English, use "Chapter proposal".
+  - type: input
+    id: title
+    attributes:
+      label: 暂定标题
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 为什么需要这一章
+      description: 它补上当前 14 章路径里的哪一块缺口
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: 失败优先实验
+      description: 打算去掉哪一个机制，读者应看到怎样的失败
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围
+      description: 环境、算法家族，以及明确不覆盖的内容
+    validations:
+      required: true

@@ -1,0 +1,36 @@
+name: Chapter proposal
+description: Propose a new chapter or a substantial rewrite
+title: "[chapter] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New chapters must ship in both languages, with TeX/PDF, an experiment notebook, and three figures.
+        See CONTRIBUTING.md. 中文请用「章节提案（中文）」模板。
+  - type: input
+    id: title
+    attributes:
+      label: Working title
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this chapter
+      description: What gap it fills in the current 14-chapter path
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure-first experiment
+      description: Which mechanism you would remove, and what a reader should see fail
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Environment, algorithm family, and what you are explicitly not covering
+    validations:
+      required: true

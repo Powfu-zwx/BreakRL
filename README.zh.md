@@ -7,8 +7,8 @@
   <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="仓库检查" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
   <a href="https://doi.org/10.5281/zenodo.21966485"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg"></a>
   <a href="requirements.txt"><img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-3776AB"></a>
-  <a href="LICENSE"><img alt="正文许可 CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
-  <a href="LICENSE-CODE"><img alt="代码许可 MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
+  <a href="LICENSE-CC-BY-4.0"><img alt="正文许可 CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
+  <a href="LICENSE-MIT"><img alt="代码许可 MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
 </p>
 
 **用失败学强化学习**
@@ -98,6 +98,6 @@ python run_jupyter.py
 
 ## 引用与许可
 
-如果 BreakRL 对你的学习、教学或研究有帮助，请参考 [CITATION.cff](CITATION.cff) 引用。正文、PDF、TeX、图表和生成数据采用 [CC BY 4.0](LICENSE)；Notebook 和辅助脚本中的代码采用 [MIT](LICENSE-CODE)。
+如果 BreakRL 对你的学习、教学或研究有帮助，请参考 [CITATION.cff](CITATION.cff) 引用。正文、PDF、TeX、图表和生成数据采用 [CC BY 4.0](LICENSE-CC-BY-4.0)；Notebook 和辅助脚本中的代码采用 [MIT](LICENSE-MIT)。版本记录见 [CHANGELOG.md](CHANGELOG.md)。
 
-贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+贡献方式见 [CONTRIBUTING.zh.md](CONTRIBUTING.zh.md)。

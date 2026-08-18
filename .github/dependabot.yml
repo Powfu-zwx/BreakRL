@@ -4,7 +4,20 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: weekly
+    ignore:
+      # Jupyter Book 2 is a breaking major; the site is pinned to 1.x.
+      - dependency-name: jupyter-book
+        versions: [">=2.0.0"]
+      # Experiment extras use lower bounds. Dependabot raising those floors
+      # is not a useful update until the verified combination is locked.
+      - dependency-name: numpy
+      - dependency-name: matplotlib
+      - dependency-name: torch

@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a problem in the text, experiments, figures, or site
+title: "[bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for a report. Please include enough detail to reproduce the problem.
+        中文请用「缺陷报告（中文）」模板。
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Chapter text / PDF / TeX
+        - Experiment notebook
+        - Failure atlas
+        - Website or demo
+        - Repository tooling
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Chapter number, file path, or site URL
+      placeholder: notes/ppo/ppo_experiments_en.ipynb, Figure 2
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: Leave blank if the issue is in saved site output and does not require rerunning an experiment.

@@ -1,0 +1,40 @@
+name: 失败模式提交（中文）
+description: 为失败模式图鉴提交新的「症状 → 机制 → 复现 → 修复」条目
+title: "[atlas] "
+labels: [failure-atlas]
+body:
+  - type: markdown
+    attributes:
+      value: For English, use "Failure-mode submission".
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 症状
+      description: 读者可按症状检索的现象，例如「回报断崖式崩盘」「损失还在降、生成越来越糟」
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: 环境与算法
+      description: 算法名、任务/环境、关键超参
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现方式
+      description: notebook / 代码片段 / 配置，可附最小示例
+    validations:
+      required: true
+  - type: textarea
+    id: mechanism
+    attributes:
+      label: 猜测的机制
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: 验证过的修复
+      description: 改了什么之后症状消失

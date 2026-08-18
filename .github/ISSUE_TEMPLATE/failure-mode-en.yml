@@ -1,0 +1,42 @@
+name: Failure-mode submission
+description: Propose a symptom → mechanism → reproduction → fix entry for the Failure Atlas
+title: "[atlas] "
+labels: [failure-atlas]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Each atlas entry follows symptom → mechanism → reproduction → fix.
+        中文请用「失败模式提交（中文）」模板。
+  - type: textarea
+    id: symptom
+    attributes:
+      label: Symptom
+      description: What a reader can search for, such as collapsing return while loss still falls
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Environment and algorithm
+      description: Algorithm, task or environment, and key hyperparameters
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: Notebook, snippet, or configuration. A minimal example helps.
+    validations:
+      required: true
+  - type: textarea
+    id: mechanism
+    attributes:
+      label: Proposed mechanism
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Verified fix
+      description: What you changed after which the symptom disappeared
