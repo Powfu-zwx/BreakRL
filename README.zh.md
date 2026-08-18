@@ -19,7 +19,7 @@
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>最小演示</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
-  <a href="README.en.md"><b>English</b></a>
+  <a href="README.md"><b>English</b></a>
 </p>
 
 </div>
@@ -32,14 +32,6 @@ BreakRL 是一本以实验为主线的强化学习教材，适合正在学习 RL
 
 <p align="center">
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html">打开最小演示</a>，拖动数据覆盖率：损失可以继续下降，回报却在覆盖不足时塌缩。
-</p>
-
-<p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html"><img src="assets/readme-offline-rl-ood.png" alt="朴素离线 DQN：估计 Q 值持续上升，真实回报先升后跌，始终低于行为克隆基线" width="720"></a>
-</p>
-
-<p align="center">
-  第 9 章实验，不是示意：朴素离线 DQN 的 Q 估计与真实回报脱钩，贪心策略始终低于行为克隆。
 </p>
 
 ## 三分钟开始

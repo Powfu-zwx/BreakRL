@@ -19,7 +19,7 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>Demo</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
-  <a href="README.md"><b>中文</b></a>
+  <a href="README.zh.md"><b>中文</b></a>
 </p>
 
 </div>
@@ -32,14 +32,6 @@ BreakRL is an experiment-first reinforcement learning textbook for learners, fir
 
 <p align="center">
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html">Open the minimum demo</a> and drag data coverage: the loss can keep falling while return collapses when coverage is too low.
-</p>
-
-<p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html"><img src="assets/readme-offline-rl-ood.png" alt="Naive offline DQN: estimated Q keeps rising while actual return peaks then falls, staying below the behavior-cloning baseline" width="720"></a>
-</p>
-
-<p align="center">
-  Chapter 9 is a real ablation, not a cartoon: naive offline DQN decouples estimated Q from return, and the greedy policy stays below behavior cloning.
 </p>
 
 ## Start in three minutes
