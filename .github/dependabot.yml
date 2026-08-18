@@ -21,3 +21,5 @@ updates:
       - dependency-name: numpy
       - dependency-name: matplotlib
       - dependency-name: torch
+      - dependency-name: gymnasium
+      - dependency-name: jupyterlab
