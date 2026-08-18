@@ -2,6 +2,15 @@
 
 <img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
 
+<p>
+  <a href="https://powfu-zwx.github.io/BreakRL/"><img alt="Read online" src="https://img.shields.io/badge/read-online-0e8a16"></a>
+  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="Repository quality" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
+  <a href="https://doi.org/10.5281/zenodo.21966485"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg"></a>
+  <a href="requirements.txt"><img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-3776AB"></a>
+  <a href="LICENSE"><img alt="Text license CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
+  <a href="LICENSE-CODE"><img alt="Code license MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
+</p>
+
 **Learn reinforcement learning through failure**
 
 From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built around an ablation experiment
