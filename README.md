@@ -26,6 +26,22 @@
 
 BreakRL 是一本以实验为主线的强化学习教材，适合正在学习 RL、准备阅读 RL 论文，或希望用小实验理解算法机制的读者。每章先讲清楚一个算法为什么有效，再去掉其中的关键机制，让你看到它为什么失败。
 
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo.gif" alt="最小演示：低数据覆盖率时 TD loss 下降，实际回报塌缩" width="720"></a>
+</p>
+
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">打开最小演示</a>，拖动数据覆盖率：损失可以继续下降，回报却在覆盖不足时塌缩。
+</p>
+
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html"><img src="assets/readme-offline-rl-ood.png" alt="朴素离线 DQN：估计 Q 值持续上升，真实回报先升后跌，始终低于行为克隆基线" width="720"></a>
+</p>
+
+<p align="center">
+  第 9 章实验，不是示意：朴素离线 DQN 的 Q 估计与真实回报脱钩，贪心策略始终低于行为克隆。
+</p>
+
 ## 三分钟开始
 
 1. 先看[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，用一个滑块理解“损失下降、回报塌缩”；

@@ -26,6 +26,22 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 
 BreakRL is an experiment-first reinforcement learning textbook for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
 
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo-en.gif" alt="Minimum demo: at low data coverage, TD loss falls while actual return collapses" width="720"></a>
+</p>
+
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">Open the minimum demo</a> and drag data coverage: the loss can keep falling while return collapses when coverage is too low.
+</p>
+
+<p align="center">
+  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html"><img src="assets/readme-offline-rl-ood.png" alt="Naive offline DQN: estimated Q keeps rising while actual return peaks then falls, staying below the behavior-cloning baseline" width="720"></a>
+</p>
+
+<p align="center">
+  Chapter 9 is a real ablation, not a cartoon: naive offline DQN decouples estimated Q from return, and the greedy policy stays below behavior cloning.
+</p>
+
 ## Start in three minutes
 
 1. Try the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag one slider to see loss fall while return collapses;
