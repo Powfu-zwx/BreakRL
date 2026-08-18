@@ -3,96 +3,96 @@
 <img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
 
 <p>
-  <a href="https://powfu-zwx.github.io/BreakRL/"><img alt="在线阅读" src="https://img.shields.io/badge/read-online-0e8a16"></a>
-  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="仓库检查" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
+  <a href="https://powfu-zwx.github.io/BreakRL/"><img alt="Read online" src="https://img.shields.io/badge/read-online-0e8a16"></a>
+  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="Repository quality" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
   <a href="https://doi.org/10.5281/zenodo.21966485"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg"></a>
   <a href="requirements.txt"><img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-3776AB"></a>
-  <a href="LICENSE"><img alt="正文许可 CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
-  <a href="LICENSE-CODE"><img alt="代码许可 MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
+  <a href="LICENSE"><img alt="Text license CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
+  <a href="LICENSE-CODE"><img alt="Code license MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
 </p>
 
-**用失败学强化学习**
+**Learn reinforcement learning through failure**
 
-从多臂老虎机到 RLHF、DPO、GRPO/RLVR，每章都把算法放进一组消融实验里
+From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built around an ablation experiment
 
 <p>
-  <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>最小演示</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
-  <a href="README.en.md"><b>English</b></a>
+  <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>Demo</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
+  <a href="README.md"><b>中文</b></a>
 </p>
 
 </div>
 
-BreakRL 是一本以实验为主线的强化学习教材，适合正在学习 RL、准备阅读 RL 论文，或希望用小实验理解算法机制的读者。每章先讲清楚一个算法为什么有效，再去掉其中的关键机制，让你看到它为什么失败。
+BreakRL is an experiment-first reinforcement learning textbook for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
 
 <p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo.gif" alt="最小演示：低数据覆盖率时 TD loss 下降，实际回报塌缩" width="720"></a>
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo-en.gif" alt="Minimum demo: at low data coverage, TD loss falls while actual return collapses" width="720"></a>
 </p>
 
 <p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">打开最小演示</a>，拖动数据覆盖率：损失可以继续下降，回报却在覆盖不足时塌缩。
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">Open the minimum demo</a> and drag data coverage: the loss can keep falling while return collapses when coverage is too low.
 </p>
 
 <p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html"><img src="assets/readme-offline-rl-ood.png" alt="朴素离线 DQN：估计 Q 值持续上升，真实回报先升后跌，始终低于行为克隆基线" width="720"></a>
+  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html"><img src="assets/readme-offline-rl-ood.png" alt="Naive offline DQN: estimated Q keeps rising while actual return peaks then falls, staying below the behavior-cloning baseline" width="720"></a>
 </p>
 
 <p align="center">
-  第 9 章实验，不是示意：朴素离线 DQN 的 Q 估计与真实回报脱钩，贪心策略始终低于行为克隆。
+  Chapter 9 is a real ablation, not a cartoon: naive offline DQN decouples estimated Q from return, and the greedy policy stays below behavior cloning.
 </p>
 
-## 三分钟开始
+## Start in three minutes
 
-1. 先看[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，用一个滑块理解“损失下降、回报塌缩”；
-2. 打开[在线教材](https://powfu-zwx.github.io/BreakRL/)，从第 1 章开始；
-3. 再看[失败模式图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，按症状查找一个“为什么会失败”的案例。
+1. Try the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag one slider to see loss fall while return collapses;
+2. Open the [online book](https://powfu-zwx.github.io/BreakRL/) and start with Chapter 1;
+3. Use the [Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) to look up one symptom and its mechanism.
 
-不需要安装环境：站点展示的是仓库中保存的实验输出。只有想修改代码或重新运行 Notebook 时，才需要准备本地环境。
+No setup is needed for reading: the site displays saved experiment outputs. Install the local environment only if you want to edit or rerun a notebook.
 
-你会反复经历同一个学习循环：
+The learning loop is simple:
 
-1. 读正文，理解问题、公式和机制；
-2. 看 Notebook，观察算法在小任务上的行为；
-3. 对比消融实验，把“能运行”与“真正有效”区分开。
+1. Read the derivation and mechanism;
+2. Open the notebook and observe the algorithm on a small task;
+3. Compare the ablations and separate “it runs” from “it works.”
 
-## 学习路线
+## Learning path
 
-| 阶段 | 章节 | 重点 |
+| Stage | Chapters | Focus |
 | --- | --- | --- |
-| 基础 | 1–3 | 探索、MDP、时序差分 |
-| 深度强化学习 | 4–8 | DQN、策略梯度、Actor-Critic、PPO、SAC |
-| 新视角 | 9–11 | 离线 RL、模型式 RL、Decision Transformer |
-| LLM 后训练 | 12–14 | RLHF、DPO、GRPO/RLVR |
+| Foundations | 1–3 | Exploration, MDPs, and temporal-difference learning |
+| Deep RL | 4–8 | DQN, policy gradients, Actor-Critic, PPO, and SAC |
+| New views | 9–11 | Offline RL, model-based RL, and Decision Transformer |
+| LLM post-training | 12–14 | RLHF, DPO, and GRPO/RLVR |
 
-## 章节
+## Chapters
 
-| # | 主题 | 正文 | 实验 |
+| # | Topic | Text | Experiments |
 | --- | --- | --- | --- |
-| 1 | 多臂老虎机：探索与利用 | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments.html) |
-| 2 | 马尔可夫决策过程 | [PDF](notes/mdp/mdp.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments.html) |
-| 3 | 时序差分学习 | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments.html) |
-| 4 | DQN：神经网络价值学习 | [PDF](notes/dqn/dqn.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments.html) |
-| 5 | Policy Gradient / REINFORCE | [PDF](notes/policy-gradient/pg.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments.html) |
-| 6 | Actor-Critic / A2C | [PDF](notes/actor-critic/ac.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments.html) |
-| 7 | PPO：约束策略更新 | [PDF](notes/ppo/ppo.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments.html) |
-| 8 | SAC：最大熵连续控制 | [PDF](notes/sac/sac.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments.html) |
-| 9 | 离线强化学习：CQL 与 IQL | [PDF](notes/offline-rl/offline-rl.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) |
-| 10 | 模型式强化学习：Dyna-Q | [PDF](notes/model-based-rl/model-based-rl.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments.html) |
-| 11 | Decision Transformer | [PDF](notes/decision-transformer/decision-transformer.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments.html) |
-| 12 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) |
-| 13 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments.html) |
-| 14 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments.html) |
+| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) |
+| 2 | Markov decision processes | [PDF](notes/mdp/mdp_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments_en.html) |
+| 3 | Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html) |
+| 4 | DQN: neural value learning | [PDF](notes/dqn/dqn_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments_en.html) |
+| 5 | Policy gradient / REINFORCE | [PDF](notes/policy-gradient/pg_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments_en.html) |
+| 6 | Actor-Critic / A2C | [PDF](notes/actor-critic/ac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) |
+| 7 | PPO: constrained policy updates | [PDF](notes/ppo/ppo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) |
+| 8 | SAC: maximum-entropy continuous control | [PDF](notes/sac/sac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) |
+| 9 | Offline RL: CQL and IQL | [PDF](notes/offline-rl/offline-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) |
+| 10 | Model-based RL: Dyna-Q | [PDF](notes/model-based-rl/model-based-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) |
+| 11 | Decision Transformer | [PDF](notes/decision-transformer/decision-transformer_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) |
+| 12 | RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) |
+| 13 | DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments_en.html) |
+| 14 | GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments_en.html) |
 
-## 失败模式图鉴
+## The Failure Atlas
 
-训练不收敛时，可以从症状开始查找：回报崩盘、Q 值上涨但策略变差、离线损失正常但回报塌缩，或者奖励看起来没问题却始终学不动。
+When training does not converge, start with the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a reward that looks fine but never learns.
 
-[打开 RL 失败模式图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)：每条记录都按“症状 → 机制 → 复现 → 修复”组织。
+[Open the RL Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html): each entry follows “symptom → mechanism → reproduction → fix.”
 
-## 开始实验
+## Run the experiments
 
-如果只想阅读，不需要安装环境。想运行 Notebook，可以准备 Python 3.10、PyTorch 和 Gymnasium：
+Reading requires no setup. To run the notebooks, use Python 3.10 with PyTorch and Gymnasium:
 
 ```bash
 conda create -n rl_env python=3.10
@@ -102,10 +102,10 @@ python -m ipykernel install --user --name rl_env --display-name rl_env
 python run_jupyter.py
 ```
 
-然后打开 `notes/<章节>/*_experiments.ipynb`，选择 `rl_env` 内核。站点展示的是仓库中保存的实验输出，不会在阅读时自动训练。
+Open `notes/<chapter>/*_experiments_en.ipynb` and select the `rl_env` kernel. The site displays saved notebook outputs and does not train models while you read.
 
-## 引用与许可
+## Citation and license
 
-如果 BreakRL 对你的学习、教学或研究有帮助，请参考 [CITATION.cff](CITATION.cff) 引用。正文、PDF、TeX、图表和生成数据采用 [CC BY 4.0](LICENSE)；Notebook 和辅助脚本中的代码采用 [MIT](LICENSE-CODE)。
+For teaching, learning, or research use, see [CITATION.cff](CITATION.cff). Text, PDFs, TeX, figures, and generated data use [CC BY 4.0](LICENSE); code in notebooks and helper scripts uses the [MIT License](LICENSE-CODE).
 
-贡献方式见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
