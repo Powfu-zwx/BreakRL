@@ -13,7 +13,7 @@
   var coverageHint = document.getElementById('breakrl-demo-coverage-hint');
   var status = document.getElementById('breakrl-demo-status');
   var metric = document.getElementById('breakrl-demo-metric');
-  var language = 'zh';
+  var language = 'en';
   var width = 760;
   var height = 390;
   var margin = { top: 28, right: 58, bottom: 54, left: 62 };
@@ -85,6 +85,9 @@
     root.setAttribute('data-lang', language);
     root.querySelectorAll('[data-zh][data-en]').forEach(function (node) {
       node.textContent = translated(node);
+    });
+    root.querySelectorAll('[data-zh-href][data-en-href]').forEach(function (node) {
+      node.setAttribute('href', node.getAttribute(language === 'en' ? 'data-en-href' : 'data-zh-href'));
     });
     root.querySelectorAll('[data-demo-language]').forEach(function (button) {
       var active = button.getAttribute('data-demo-language') === language;

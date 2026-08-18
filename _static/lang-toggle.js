@@ -221,7 +221,7 @@
   }
 
   function currentLang() {
-    return pageLanguage(window.location.pathname) || storedLang() || LANG_ZH;
+    return pageLanguage(window.location.pathname) || storedLang() || LANG_EN;
   }
 
   function setDirectText(selector, text) {
@@ -300,7 +300,7 @@
     group.setAttribute('role', 'group');
     group.setAttribute('aria-label', '语言');
 
-    [LANG_ZH, LANG_EN].forEach(function (lang) {
+    [LANG_EN, LANG_ZH].forEach(function (lang) {
       var option = document.createElement('button');
       option.className = 'lang-opt';
       option.type = 'button';
@@ -374,8 +374,8 @@
 
     document.querySelectorAll('.bd-sidebar-secondary a').forEach(function (link) {
       var href = link.getAttribute('href');
-      var isZh = href === '#' || href === '#breakrl';
-      var isEn = href === '#breakrl-english';
+      var isEn = href === '#' || href === '#breakrl-english';
+      var isZh = href === '#breakrl';
       if (!isZh && !isEn) {
         return;
       }
@@ -443,7 +443,7 @@
       }
     }
     hosts.forEach(installButton);
-    setLangState(saved || pageLang || LANG_ZH);
+    setLangState(saved || pageLang || LANG_EN);
   }
 
   window.BreakRLLanguageToggle = {

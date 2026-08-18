@@ -85,11 +85,21 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         except (OSError, UnicodeError) as error:
             errors.append(f"cannot read {relative}: {error}")
             continue
-        is_english_page = relative.name == "failure-atlas-en.html" or relative.name.endswith("_en.html")
+        is_english_page = relative.name == "failure-atlas-en.html" or relative.name.endswith(
+            "_en.html"
+        )
+        is_chinese_page = relative.name == "failure-atlas.html" or (
+            relative.name.endswith("_experiments.html")
+            and not relative.name.endswith("_experiments_en.html")
+        )
         if is_english_page and parser.html_lang != "en":
             errors.append(f"{relative}: English page must declare html lang=\"en\"")
         if is_english_page and parser.docsearch_language != "en":
             errors.append(f"{relative}: English page must declare docsearch:language=en")
+        if is_chinese_page and parser.html_lang not in {"zh-CN", "zh_CN", "zh"}:
+            errors.append(f"{relative}: Chinese page must declare html lang=\"zh-CN\"")
+        if is_chinese_page and parser.docsearch_language not in {"zh-CN", "zh_CN", "zh"}:
+            errors.append(f"{relative}: Chinese page must declare docsearch:language=zh-CN")
         for value in parser.links:
             target = _local_target(build_root, path, value)
             if target is not None and not target.exists():

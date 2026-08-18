@@ -107,6 +107,9 @@ assert.equal(
   '/BreakRL/notes/dqn/dqn_experiments_en.html?from=deep-link#section'
 );
 
+assert.match(source, /saved \|\| pageLang \|\| LANG_EN/);
+assert.match(source, /\[LANG_EN, LANG_ZH\]/);
+assert.match(source, /href === '#' \|\| href === '#breakrl-english'/);
 assert.match(source, /setAttribute\('aria-pressed'/);
 assert.match(source, /role', 'group'/);
 assert.match(source, /bd-sidebar-secondary/);

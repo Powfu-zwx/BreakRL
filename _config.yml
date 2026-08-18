@@ -24,7 +24,7 @@ sphinx:
     - breakrl_locale
     - prepare_site_assets
   config:
-    language: zh_CN
+    language: en
     exclude_patterns:
       - ".github/**"
       - "PROJECT_AUDIT.md"
