@@ -20,7 +20,7 @@ __pycache__/
 venv/
 
 # Site build
-_build/
+book/_build/
 
 # OS / IDE
 .DS_Store

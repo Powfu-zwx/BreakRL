@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const sourcePath = path.join(__dirname, '..', '_static', 'lang-toggle.js');
+const sourcePath = path.join(__dirname, '..', 'book', '_static', 'lang-toggle.js');
 const source = fs.readFileSync(sourcePath, 'utf8');
 const location = {
   pathname: '/BreakRL/notes/dqn/dqn_experiments.html',

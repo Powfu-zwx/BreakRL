@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         New chapters must ship in both languages, with TeX/PDF, an experiment notebook, and three figures.
-        See CONTRIBUTING.md. 中文请用「章节提案（中文）」模板。
+        See docs/CONTRIBUTING.md. 中文请用「章节提案（中文）」模板。
   - type: input
     id: title
     attributes:

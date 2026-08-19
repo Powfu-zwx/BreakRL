@@ -1,12 +1,4 @@
-"""Colab bootstrap for BreakRL experiment notebooks.
-
-Opening a notebook from GitHub copies only the `.ipynb`. This module is the
-single owner of: detect Colab, clone the repository, install experiment
-extras, and `chdir` into `notes/<chapter>/` so relative data paths work.
-
-Local Jupyter skips that work. Notebooks must not copy this logic; they call
-the generated first code cell from ``bootstrap_source``.
-"""
+"""Colab bootstrap for BreakRL experiment notebooks."""
 from __future__ import annotations
 
 import os
@@ -16,12 +8,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+from paths import NOTES_PREFIX
+
 GITHUB_REPO = "Powfu-zwx/BreakRL"
 REPO_URL = f"https://github.com/{GITHUB_REPO}.git"
 RAW_SETUP_URL = (
     f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/scripts/colab_setup.py"
 )
 COLAB_ROOT = Path("/content/BreakRL")
+NOTES_DIR = Path(NOTES_PREFIX)
 COLAB_NOTEBOOK_BASE = (
     f"https://colab.research.google.com/github/{GITHUB_REPO}/blob/main"
 )
@@ -56,7 +51,6 @@ def requirement_name(line: str) -> str:
 
 
 def experiment_requirements(requirements_path: Path) -> list[str]:
-    """Return pip specs from requirements.txt, omitting JupyterLab."""
     lines = []
     for raw in requirements_path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
@@ -73,7 +67,6 @@ def packages_to_install(requirements: list[str], *, skip: set[str]) -> list[str]
 
 
 def installed_pip_skips() -> set[str]:
-    # Colab ships a CUDA PyTorch build; reinstalling from pip replaces it.
     skip: set[str] = set()
     if _importable("torch"):
         skip.add("torch")
@@ -81,7 +74,6 @@ def installed_pip_skips() -> set[str]:
 
 
 def bootstrap_source(chapter: str) -> str:
-    """Exact first code cell for both language editions of a chapter."""
     slug = validate_chapter(chapter)
     return (
         f"BREAKRL_CHAPTER = {slug!r}\n"
@@ -114,7 +106,6 @@ def setup(
     dest: Path | None = None,
     runner=subprocess.check_call,
 ) -> Path:
-    """Install extras and enter ``notes/<chapter>`` on Colab; no-op locally."""
     slug = validate_chapter(chapter)
     if on_colab is None:
         on_colab = in_colab()
@@ -129,7 +120,7 @@ def setup(
     if to_install:
         runner([sys.executable, "-m", "pip", "install", "-q", *to_install])
 
-    chapter_dir = root / "notes" / slug
+    chapter_dir = root / NOTES_DIR / slug
     os.chdir(chapter_dir)
     print(f"BreakRL: working directory {chapter_dir}")
     return chapter_dir
@@ -147,7 +138,7 @@ def _repo_is_ready(root: Path, chapter: str) -> bool:
     return (
         (root / ".git").is_dir()
         and (root / "requirements.txt").is_file()
-        and (root / "notes" / chapter).is_dir()
+        and (root / NOTES_DIR / chapter).is_dir()
     )
 
 
@@ -161,7 +152,7 @@ def _ensure_repo(root: Path, chapter: str, runner) -> None:
         runner(command)
     if not _repo_is_ready(root, chapter):
         raise FileNotFoundError(
-            f"cloned {root} but missing requirements.txt or notes/{chapter}"
+            f"cloned {root} but missing requirements.txt or {NOTES_DIR / chapter}"
         )
 
 

@@ -1,8 +1,8 @@
-# Jupyter Book 站点配置。构建：jupyter-book build .（CI 见 .github/workflows/site.yml）
+# Jupyter Book 配置。构建：jupyter-book build book
 title: BreakRL
 author: BreakRL Contributors
 copyright: "2026, BreakRL Contributors"
-logo: assets/breakrl-wordmark.png
+logo: ../assets/breakrl-wordmark.png
 only_build_toc_files: true
 
 execute:
@@ -18,8 +18,8 @@ html:
 
 sphinx:
   local_extensions:
-    breakrl_locale: scripts
-    prepare_site_assets: scripts
+    breakrl_locale: ../scripts
+    prepare_site_assets: ../scripts
   extra_extensions:
     - breakrl_locale
     - prepare_site_assets

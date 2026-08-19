@@ -23,7 +23,7 @@ body:
     attributes:
       label: 位置
       description: 章节号、文件路径或站点 URL
-      placeholder: notes/ppo/ppo_experiments.ipynb，图 2
+      placeholder: book/notes/ppo/ppo_experiments.ipynb，图 2
     validations:
       required: true
   - type: textarea

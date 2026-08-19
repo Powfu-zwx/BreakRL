@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Contributing guide
-    url: https://github.com/Powfu-zwx/BreakRL/blob/main/CONTRIBUTING.md
+    url: https://github.com/Powfu-zwx/BreakRL/blob/main/docs/CONTRIBUTING.md
     about: Environment setup, chapter layout, and how to send a pull request
   - name: 中文贡献指南
-    url: https://github.com/Powfu-zwx/BreakRL/blob/main/CONTRIBUTING.zh.md
+    url: https://github.com/Powfu-zwx/BreakRL/blob/main/docs/CONTRIBUTING.zh.md
     about: 环境准备、章节约定与提交方式

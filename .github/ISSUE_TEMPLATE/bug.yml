@@ -25,7 +25,7 @@ body:
     attributes:
       label: Location
       description: Chapter number, file path, or site URL
-      placeholder: notes/ppo/ppo_experiments_en.ipynb, Figure 2
+      placeholder: book/notes/ppo/ppo_experiments_en.ipynb, Figure 2
     validations:
       required: true
   - type: textarea

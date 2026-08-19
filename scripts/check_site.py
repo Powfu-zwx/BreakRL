@@ -4,9 +4,13 @@ from pathlib import Path
 import sys
 from urllib.parse import unquote, urlsplit
 
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
 
-ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BUILD = ROOT / "_build" / "html"
+from paths import BOOK_BUILD  # noqa: E402
+
+DEFAULT_BUILD = BOOK_BUILD
 
 
 class LinkParser(HTMLParser):

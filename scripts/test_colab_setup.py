@@ -19,6 +19,9 @@ from colab_setup import (  # noqa: E402
     setup,
     validate_chapter,
 )
+from paths import NOTES, NOTES_PREFIX  # noqa: E402
+
+NOTES_DIR = Path(NOTES_PREFIX)
 
 
 def _fail(errors: list[str], message: str) -> None:
@@ -59,7 +62,7 @@ def test_bootstrap_source() -> list[str]:
         _fail(errors, "executing bootstrap_source locally did not set BREAKRL_CHAPTER")
     from check_consistency import chapter_dirs
 
-    for chapter in chapter_dirs(ROOT):
+    for chapter in chapter_dirs():
         try:
             exec(bootstrap_source(chapter.name), {})
         except Exception as error:
@@ -74,10 +77,10 @@ def test_bootstrap_source() -> list[str]:
 
 def test_colab_url() -> list[str]:
     errors = []
-    url = colab_notebook_url("notes/ppo/ppo_experiments_en.ipynb")
+    url = colab_notebook_url(f"{NOTES_PREFIX}/ppo/ppo_experiments_en.ipynb")
     expected = (
         "https://colab.research.google.com/github/Powfu-zwx/BreakRL/"
-        "blob/main/notes/ppo/ppo_experiments_en.ipynb"
+        f"blob/main/{NOTES_PREFIX}/ppo/ppo_experiments_en.ipynb"
     )
     if url != expected:
         _fail(errors, f"colab_notebook_url mismatch: {url}")
@@ -107,7 +110,7 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
             root = Path(cmd[-1])
             (root / ".git").mkdir(parents=True)
             (root / "scripts").mkdir()
-            (root / "notes" / "offline-rl").mkdir(parents=True)
+            (root / NOTES_DIR / "offline-rl").mkdir(parents=True)
             (root / "requirements.txt").write_text(
                 (ROOT / "requirements.txt").read_text(encoding="utf-8"),
                 encoding="utf-8",
@@ -121,7 +124,7 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
             dest=dest,
             runner=runner,
         )
-        if chapter_dir != dest / "notes" / "offline-rl":
+        if chapter_dir != dest / NOTES_DIR / "offline-rl":
             _fail(errors, f"setup returned unexpected chapter dir: {chapter_dir}")
         if Path.cwd() != chapter_dir:
             _fail(errors, "Colab setup did not chdir into the chapter directory")
@@ -159,7 +162,7 @@ def test_incomplete_clone_is_replaced(tmp_path: Path) -> list[str]:
         if len(cmd) > 1 and cmd[1] == "clone":
             root = Path(cmd[-1])
             (root / ".git").mkdir(parents=True)
-            (root / "notes" / "offline-rl").mkdir(parents=True)
+            (root / NOTES_DIR / "offline-rl").mkdir(parents=True)
             (root / "requirements.txt").write_text("numpy>=2\n", encoding="utf-8")
 
     before = Path.cwd()
@@ -175,9 +178,8 @@ def test_incomplete_clone_is_replaced(tmp_path: Path) -> list[str]:
 
 
 def test_smoke_imports() -> list[str]:
-    """Runtime smoke used with --smoke; skipped in CI."""
     errors = []
-    npz = ROOT / "notes" / "offline-rl" / "offline_rl_medium.npz"
+    npz = NOTES / "offline-rl" / "offline_rl_medium.npz"
     try:
         import numpy as np
 
@@ -214,7 +216,6 @@ def test_smoke_imports() -> list[str]:
 
 
 def test_smoke_second_cells() -> list[str]:
-    """Execute the first real setup cell of each Chinese notebook (imports only)."""
     errors = []
     try:
         import matplotlib
@@ -224,7 +225,7 @@ def test_smoke_second_cells() -> list[str]:
         return [f"import-cell smoke missing import: {error}"]
 
     matplotlib.use("Agg")
-    for chapter in chapter_dirs(ROOT):
+    for chapter in chapter_dirs():
         path = next(iter(sorted(chapter.glob("*_experiments.ipynb"))))
         notebook = nbformat.read(path, as_version=4)
         codes = [cell for cell in notebook.cells if cell.cell_type == "code"]
@@ -262,7 +263,7 @@ def test_smoke_bandit() -> list[str]:
         return [f"bandit smoke missing import: {error}"]
 
     matplotlib.use("Agg")
-    path = ROOT / "notes" / "multi-armed-bandit" / "multi-armed-bandit_experiments.ipynb"
+    path = NOTES / "multi-armed-bandit" / "multi-armed-bandit_experiments.ipynb"
     notebook = nbformat.read(path, as_version=4)
     namespace: dict[str, object] = {"__name__": "__main__"}
     import tempfile

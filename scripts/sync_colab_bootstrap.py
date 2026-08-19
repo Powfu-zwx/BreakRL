@@ -11,10 +11,13 @@ import sys
 import uuid
 from pathlib import Path
 
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+
 from check_consistency import chapter_dirs
 from colab_setup import bootstrap_source
-
-ROOT = Path(__file__).resolve().parents[1]
+from paths import REPO_ROOT
 FIRST_CODE_CELL = '\n  {\n   "cell_type": "code",'
 LEGACY_PIP_MARKERS = ("# !pip install gymnasium", "# If needed, uncomment")
 
@@ -124,10 +127,10 @@ def sync_notebook(path: Path, chapter: str) -> str:
 
 
 def main() -> int:
-    for chapter in chapter_dirs(ROOT):
+    for chapter in chapter_dirs():
         for path in sorted(chapter.glob("*_experiments*.ipynb")):
             action = sync_notebook(path, chapter.name)
-            print(f"{action}: {path.relative_to(ROOT).as_posix()}")
+            print(f"{action}: {path.relative_to(REPO_ROOT).as_posix()}")
     return 0
 
 

@@ -61,20 +61,20 @@ The learning loop is simple:
 
 | # | Topic | Text | Experiments | Run |
 | --- | --- | --- | --- | --- |
-| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.ipynb) |
-| 2 | Markov decision processes | [PDF](notes/mdp/mdp_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/mdp/mdp_experiments_en.ipynb) |
-| 3 | Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.ipynb) |
-| 4 | DQN: neural value learning | [PDF](notes/dqn/dqn_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/dqn/dqn_experiments_en.ipynb) |
-| 5 | Policy gradient / REINFORCE | [PDF](notes/policy-gradient/pg_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/policy-gradient/pg_experiments_en.ipynb) |
-| 6 | Actor-Critic / A2C | [PDF](notes/actor-critic/ac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/actor-critic/ac_experiments_en.ipynb) |
-| 7 | PPO: constrained policy updates | [PDF](notes/ppo/ppo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/ppo/ppo_experiments_en.ipynb) |
-| 8 | SAC: maximum-entropy continuous control | [PDF](notes/sac/sac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/sac/sac_experiments_en.ipynb) |
-| 9 | Offline RL: CQL and IQL | [PDF](notes/offline-rl/offline-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/offline-rl/offline-rl_experiments_en.ipynb) |
-| 10 | Model-based RL: Dyna-Q | [PDF](notes/model-based-rl/model-based-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/model-based-rl/model-based-rl_experiments_en.ipynb) |
-| 11 | Decision Transformer | [PDF](notes/decision-transformer/decision-transformer_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/decision-transformer/decision-transformer_experiments_en.ipynb) |
-| 12 | RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/rlhf/rlhf_experiments_en.ipynb) |
-| 13 | DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/dpo/dpo_experiments_en.ipynb) |
-| 14 | GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/notes/grpo/grpo_experiments_en.ipynb) |
+| 1 | Multi-armed bandits: exploration vs exploitation | [PDF](book/notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.ipynb) |
+| 2 | Markov decision processes | [PDF](book/notes/mdp/mdp_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/mdp/mdp_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/mdp/mdp_experiments_en.ipynb) |
+| 3 | Temporal-difference learning | [PDF](book/notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.ipynb) |
+| 4 | DQN: neural value learning | [PDF](book/notes/dqn/dqn_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dqn/dqn_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dqn/dqn_experiments_en.ipynb) |
+| 5 | Policy gradient / REINFORCE | [PDF](book/notes/policy-gradient/pg_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/policy-gradient/pg_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/policy-gradient/pg_experiments_en.ipynb) |
+| 6 | Actor-Critic / A2C | [PDF](book/notes/actor-critic/ac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/actor-critic/ac_experiments_en.ipynb) |
+| 7 | PPO: constrained policy updates | [PDF](book/notes/ppo/ppo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/ppo/ppo_experiments_en.ipynb) |
+| 8 | SAC: maximum-entropy continuous control | [PDF](book/notes/sac/sac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/sac/sac_experiments_en.ipynb) |
+| 9 | Offline RL: CQL and IQL | [PDF](book/notes/offline-rl/offline-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments_en.ipynb) |
+| 10 | Model-based RL: Dyna-Q | [PDF](book/notes/model-based-rl/model-based-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/model-based-rl/model-based-rl_experiments_en.ipynb) |
+| 11 | Decision Transformer | [PDF](book/notes/decision-transformer/decision-transformer_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/decision-transformer/decision-transformer_experiments_en.ipynb) |
+| 12 | RLHF: from preferences to rewards | [PDF](book/notes/rlhf/rlhf_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments_en.ipynb) |
+| 13 | DPO: preference optimization without a reward model | [PDF](book/notes/dpo/dpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/dpo/dpo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_experiments_en.ipynb) |
+| 14 | GRPO and RLVR: verifiable rewards | [PDF](book/notes/grpo/grpo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_experiments_en.ipynb) |
 
 ## The Failure Atlas
 
@@ -95,13 +95,22 @@ conda create -n rl_env python=3.10
 conda activate rl_env
 python -m pip install -r requirements.txt
 python -m ipykernel install --user --name rl_env --display-name rl_env
-python run_jupyter.py
+python scripts/run_jupyter.py
 ```
 
-Open `notes/<chapter>/*_experiments_en.ipynb` and select the `rl_env` kernel.
+Open `book/notes/<chapter>/*_experiments_en.ipynb` and select the `rl_env` kernel.
 
 ## Citation and license
 
-For teaching, learning, or research use, see [CITATION.cff](CITATION.cff). Text, PDFs, TeX, figures, and generated data use [CC BY 4.0](LICENSE-CC-BY-4.0); code in notebooks and helper scripts uses the [MIT License](LICENSE-MIT). Release history is in [CHANGELOG.md](CHANGELOG.md).
+For teaching, learning, or research use, see [CITATION.cff](CITATION.cff). Text, PDFs, TeX, figures, and generated data use [CC BY 4.0](LICENSE-CC-BY-4.0); code in notebooks and helper scripts uses the [MIT License](LICENSE-MIT). Release history is in [docs/CHANGELOG.md](docs/CHANGELOG.md).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance.
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for contribution guidance.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| [`book/`](book/) | Online book: chapters, experiments, demo, and failure atlas |
+| [`scripts/`](scripts/) | Consistency checks, Colab bootstrap, and build helpers |
+| [`docs/`](docs/) | Contributing guide, security policy, and changelog |
+| [`assets/`](assets/) | README branding and demo GIFs |

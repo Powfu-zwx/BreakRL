@@ -4,7 +4,7 @@ title: "[chapter] "
 body:
   - type: markdown
     attributes:
-      value: 新章节必须中英双语同时交付，并包含 TeX/PDF、实验 Notebook 和三张图。约定见 CONTRIBUTING.zh.md。For English, use "Chapter proposal".
+      value: 新章节必须中英双语同时交付，并包含 TeX/PDF、实验 Notebook 和三张图。约定见 docs/CONTRIBUTING.zh.md。For English, use "Chapter proposal".
   - type: input
     id: title
     attributes:

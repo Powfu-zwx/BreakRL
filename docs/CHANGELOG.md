@@ -4,6 +4,7 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
+- Reorganize the repository into `book/`, `docs/`, and `scripts/` with a single path module.
 - Add a Colab launch button for every chapter notebook, with a generated first-cell bootstrap that clones the chapter files and installs experiment extras.
 - Fix the Colab bootstrap to use a full shallow clone so `requirements.txt` and chapter data are actually present.
 - Make English the default README and Jupyter Book language; keep Chinese as `README.zh.md` and a toggleable site edition.

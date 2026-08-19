@@ -1,38 +1,24 @@
-"""Read-only structural checks for the BreakRL repository.
-
-Invariants:
-- every chapter directory under notes/ holds exactly one main .tex (plus an
-  optional *_en.tex English edition), a .pdf with the same stem, exactly one
-  *_experiments.ipynb that parses, and three figure PDFs;
-- a chapter's English assets are paired by basename, and the English
-  notebook has the same cell order, code, and saved outputs as the Chinese
-  notebook (only markdown is translated);
-- figure environments use the [!htbp] convention and referenced graphics
-  exist next to the .tex;
-- _toc.yml chapter entries and chapter notebooks cover each other, and its
-  root documents exist;
-- every experiment notebook's first code cell is the Colab bootstrap, and
-  README.md / README.zh.md / index.md contain the matching Colab URLs.
-"""
+"""Read-only structural checks for the BreakRL repository."""
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
+from paths import BOOK, NOTES, REPO_ROOT
+
 _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
+
 FIGURE_ENVIRONMENT = re.compile(r"\\begin\{figure\}\[([^]]+)\]")
 INCLUDE_GRAPHIC = re.compile(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}")
 TOC_FILE_ENTRY = re.compile(r"^\s*-\s+file:\s+(\S+)", re.MULTILINE)
 
 
-def chapter_dirs(root: Path = ROOT) -> list[Path]:
-    notes = root / "notes"
-    if not notes.is_dir():
+def chapter_dirs() -> list[Path]:
+    if not NOTES.is_dir():
         return []
-    return sorted(path for path in notes.iterdir() if path.is_dir())
+    return sorted(path for path in NOTES.iterdir() if path.is_dir())
 
 
 def _cell_source(cell: Any) -> str:
@@ -50,18 +36,17 @@ def _load_notebook(path: Path, nbformat: Any, errors: list[str], label: str) -> 
         return None
 
 
-def check_chapters(root: Path = ROOT) -> list[str]:
+def check_chapters() -> list[str]:
     errors = []
-    notes = root / "notes"
-    if not notes.is_dir():
-        return ["missing notes directory"]
+    if not NOTES.is_dir():
+        return [f"missing {NOTES.relative_to(REPO_ROOT).as_posix()} directory"]
     try:
         import nbformat
     except ImportError:
         return ["nbformat is required to validate notebooks"]
 
-    for chapter in chapter_dirs(root):
-        rel = chapter.relative_to(root)
+    for chapter in chapter_dirs():
+        rel = chapter.relative_to(REPO_ROOT)
         tex_files = sorted(chapter.glob("*.tex"))
         en_tex = [path for path in tex_files if path.stem.endswith("_en")]
         main_tex = [path for path in tex_files if not path.stem.endswith("_en")]
@@ -81,7 +66,7 @@ def check_chapters(root: Path = ROOT) -> list[str]:
                 f"{rel}: expected exactly one *_experiments.ipynb, found {len(notebooks)}"
             )
         for path in notebooks:
-            _load_notebook(path, nbformat, errors, str(path.relative_to(root)))
+            _load_notebook(path, nbformat, errors, str(path.relative_to(REPO_ROOT)))
 
         figures = sorted(chapter.glob("fig*.pdf"))
         if len(figures) != 3:
@@ -117,16 +102,15 @@ def _compare_notebooks(cn: Any, en: Any, rel: Path, errors: list[str]) -> None:
             break
 
 
-def check_bilingual(root: Path = ROOT) -> list[str]:
-    """Pair English assets by basename and compare notebook code and outputs."""
+def check_bilingual() -> list[str]:
     errors = []
     try:
         import nbformat
     except ImportError:
         return ["nbformat is required to validate notebooks"]
 
-    for chapter in chapter_dirs(root):
-        rel = chapter.relative_to(root)
+    for chapter in chapter_dirs():
+        rel = chapter.relative_to(REPO_ROOT)
         cn_notebooks = sorted(chapter.glob("*_experiments.ipynb"))
         en_tex = sorted(chapter.glob("*_en.tex"))
         en_notebooks = sorted(chapter.glob("*_experiments_en.ipynb"))
@@ -144,8 +128,8 @@ def check_bilingual(root: Path = ROOT) -> list[str]:
                 errors.append(f"{rel}: missing English notebook {en_path.name}")
             if not cn_path.exists() or not en_path.exists():
                 continue
-            cn = _load_notebook(cn_path, nbformat, errors, str(cn_path.relative_to(root)))
-            en = _load_notebook(en_path, nbformat, errors, str(en_path.relative_to(root)))
+            cn = _load_notebook(cn_path, nbformat, errors, str(cn_path.relative_to(REPO_ROOT)))
+            en = _load_notebook(en_path, nbformat, errors, str(en_path.relative_to(REPO_ROOT)))
             if cn is not None and en is not None:
                 _compare_notebooks(cn, en, rel, errors)
 
@@ -166,21 +150,20 @@ def check_bilingual(root: Path = ROOT) -> list[str]:
     return errors
 
 
-def check_tex(root: Path = ROOT) -> list[str]:
+def check_tex() -> list[str]:
     errors = []
-    notes = root / "notes"
-    if not notes.is_dir():
-        return ["missing notes directory"]
-    for path in sorted(notes.rglob("*.tex")):
+    if not NOTES.is_dir():
+        return [f"missing {NOTES.relative_to(REPO_ROOT).as_posix()} directory"]
+    for path in sorted(NOTES.rglob("*.tex")):
         try:
             text = path.read_text(encoding="utf-8")
         except OSError as error:
-            errors.append(f"{path.relative_to(root)}: cannot read TeX: {error}")
+            errors.append(f"{path.relative_to(REPO_ROOT)}: cannot read TeX: {error}")
             continue
         for match in FIGURE_ENVIRONMENT.finditer(text):
             if match.group(1) != "!htbp":
                 errors.append(
-                    f"{path.relative_to(root)}: figure uses [{match.group(1)}], expected [!htbp]"
+                    f"{path.relative_to(REPO_ROOT)}: figure uses [{match.group(1)}], expected [!htbp]"
                 )
         for match in INCLUDE_GRAPHIC.finditer(text):
             graphic = Path(match.group(1))
@@ -193,45 +176,49 @@ def check_tex(root: Path = ROOT) -> list[str]:
                     path.parent / f"{graphic}{suffix}" for suffix in (".pdf", ".png", ".jpg")
                 ]
             if not any(candidate.exists() for candidate in candidates):
-                errors.append(f"{path.relative_to(root)}: missing graphic {graphic}")
+                errors.append(f"{path.relative_to(REPO_ROOT)}: missing graphic {graphic}")
     return errors
 
 
-def check_toc(root: Path = ROOT) -> list[str]:
+def _resolve_toc_entry(entry: str) -> Path:
+    if entry.startswith("notes/"):
+        return NOTES / f"{entry.removeprefix('notes/')}.ipynb"
+    return BOOK / f"{entry}.md"
+
+
+def check_toc() -> list[str]:
     errors = []
-    toc_path = root / "_toc.yml"
+    toc_path = BOOK / "_toc.yml"
+    toc_label = toc_path.relative_to(REPO_ROOT).as_posix()
     if not toc_path.exists():
-        return ["missing _toc.yml"]
+        return [f"missing {toc_label}"]
     toc_text = toc_path.read_text(encoding="utf-8")
     entries = TOC_FILE_ENTRY.findall(toc_text)
     root_entry = re.search(r"^root:\s+(\S+)", toc_text, re.MULTILINE)
     if root_entry:
         entries.append(root_entry.group(1))
     else:
-        errors.append("_toc.yml: missing root entry")
+        errors.append(f"{toc_label}: missing root entry")
 
     toc_notebooks = set()
     for entry in entries:
+        source = _resolve_toc_entry(entry)
         if entry.startswith("notes/"):
-            source = root / f"{entry}.ipynb"
             toc_notebooks.add(source)
-        else:
-            source = root / f"{entry}.md"
         if not source.exists():
-            errors.append(f"_toc.yml: missing source for entry {entry}")
+            errors.append(f"{toc_label}: missing source for entry {entry}")
 
     repo_notebooks = {
         notebook
-        for chapter in chapter_dirs(root)
+        for chapter in chapter_dirs()
         for notebook in chapter.glob("*_experiments.ipynb")
     }
     for notebook in sorted(repo_notebooks - toc_notebooks):
-        errors.append(f"_toc.yml: chapter notebook not listed: {notebook.relative_to(root)}")
+        errors.append(f"{toc_label}: chapter notebook not listed: {notebook.relative_to(REPO_ROOT)}")
     return errors
 
 
-def check_colab_entry_points(root: Path = ROOT) -> list[str]:
-    """Every chapter notebook has the generated bootstrap cell and a Colab URL."""
+def check_colab_entry_points() -> list[str]:
     from colab_setup import bootstrap_source, colab_notebook_url
 
     errors = []
@@ -240,17 +227,18 @@ def check_colab_entry_points(root: Path = ROOT) -> list[str]:
     except ImportError:
         return ["nbformat is required to validate notebooks"]
 
-    readme_en = (root / "README.md").read_text(encoding="utf-8")
-    readme_zh = (root / "README.zh.md").read_text(encoding="utf-8")
-    index_text = (root / "index.md").read_text(encoding="utf-8")
-    for chapter in chapter_dirs(root):
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_zh = (REPO_ROOT / "README.zh.md").read_text(encoding="utf-8")
+    index_text = (BOOK / "index.md").read_text(encoding="utf-8")
+    index_label = (BOOK / "index.md").relative_to(REPO_ROOT).as_posix()
+    for chapter in chapter_dirs():
         wanted = bootstrap_source(chapter.name)
         notebooks = sorted(chapter.glob("*_experiments*.ipynb"))
         if not notebooks:
-            errors.append(f"{chapter.relative_to(root)}: missing experiment notebooks")
+            errors.append(f"{chapter.relative_to(REPO_ROOT)}: missing experiment notebooks")
             continue
         for path in notebooks:
-            rel = path.relative_to(root)
+            rel = path.relative_to(REPO_ROOT)
             notebook = _load_notebook(path, nbformat, errors, str(rel))
             if notebook is None:
                 continue
@@ -268,7 +256,7 @@ def check_colab_entry_points(root: Path = ROOT) -> list[str]:
             elif url not in readme_zh:
                 errors.append(f"README.zh.md: missing Colab URL for {rel.as_posix()}")
             if url not in index_text:
-                errors.append(f"index.md: missing Colab URL for {rel.as_posix()}")
+                errors.append(f"{index_label}: missing Colab URL for {rel.as_posix()}")
     return errors
 
 
@@ -286,9 +274,9 @@ def main() -> int:
         return 1
 
     chapters = chapter_dirs()
-    tex_files = sorted((ROOT / "notes").rglob("*.tex"))
-    notebooks = sorted((ROOT / "notes").rglob("*_experiments*.ipynb"))
-    figures = sorted((ROOT / "notes").rglob("fig*.pdf"))
+    tex_files = sorted(NOTES.rglob("*.tex"))
+    notebooks = sorted(NOTES.rglob("*_experiments*.ipynb"))
+    figures = sorted(NOTES.rglob("fig*.pdf"))
     print(
         f"validated {len(chapters)} chapters, {len(notebooks)} notebooks, "
         f"{len(tex_files)} TeX files, and {len(figures)} figures"
