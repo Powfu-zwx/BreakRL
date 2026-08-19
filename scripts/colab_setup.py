@@ -1,7 +1,7 @@
 """Colab bootstrap for BreakRL experiment notebooks.
 
 Opening a notebook from GitHub copies only the `.ipynb`. This module is the
-single owner of: detect Colab, clone the chapter files, install experiment
+single owner of: detect Colab, clone the repository, install experiment
 extras, and `chdir` into `notes/<chapter>/` so relative data paths work.
 
 Local Jupyter skips that work. Notebooks must not copy this logic; they call
@@ -27,7 +27,6 @@ COLAB_NOTEBOOK_BASE = (
 )
 CHAPTER_SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 EDITOR_PACKAGES = frozenset({"jupyterlab"})
-CHAPTER_SPARSE_ROOTS = ("scripts",)
 
 
 def colab_notebook_url(repo_relative: str) -> str:
@@ -95,44 +94,17 @@ def bootstrap_source(chapter: str) -> str:
         "    from pathlib import Path\n"
         "\n"
         "    _setup = Path('/content/_breakrl_colab_setup.py')\n"
-        "    urllib.request.urlretrieve(\n"
-        f"        {RAW_SETUP_URL!r},\n"
-        "        _setup,\n"
+        "    _req = urllib.request.Request(\n"
+        f"        {RAW_SETUP_URL!r} + '?v=2',\n"
+        "        headers={'Cache-Control': 'no-cache'},\n"
         "    )\n"
+        "    _setup.write_bytes(urllib.request.urlopen(_req).read())\n"
         "    runpy.run_path(str(_setup))['setup'](BREAKRL_CHAPTER)\n"
     )
 
 
 def clone_commands(dest: Path) -> list[list[str]]:
-    return [
-        [
-            "git",
-            "clone",
-            "--depth",
-            "1",
-            "--filter=blob:none",
-            "--sparse",
-            REPO_URL,
-            str(dest),
-        ]
-    ]
-
-
-def sparse_checkout_command(chapter: str) -> list[str]:
-    slug = validate_chapter(chapter)
-    return [
-        "git",
-        "sparse-checkout",
-        "set",
-        "--cone",
-        *CHAPTER_SPARSE_ROOTS,
-        f"notes/{slug}",
-    ]
-
-
-def sparse_add_command(chapter: str) -> list[str]:
-    slug = validate_chapter(chapter)
-    return ["git", "sparse-checkout", "add", f"notes/{slug}"]
+    return [["git", "clone", "--depth", "1", REPO_URL, str(dest)]]
 
 
 def setup(
@@ -152,15 +124,12 @@ def setup(
     root = Path(dest) if dest is not None else COLAB_ROOT
     _ensure_repo(root, slug, runner)
     _install_system(runner)
-    req_path = root / "requirements.txt"
-    requirements = experiment_requirements(req_path)
+    requirements = experiment_requirements(root / "requirements.txt")
     to_install = packages_to_install(requirements, skip=installed_pip_skips())
     if to_install:
         runner([sys.executable, "-m", "pip", "install", "-q", *to_install])
 
     chapter_dir = root / "notes" / slug
-    if not chapter_dir.is_dir():
-        raise FileNotFoundError(f"missing Colab chapter directory: {chapter_dir}")
     os.chdir(chapter_dir)
     print(f"BreakRL: working directory {chapter_dir}")
     return chapter_dir
@@ -174,17 +143,26 @@ def _importable(name: str) -> bool:
     return True
 
 
+def _repo_is_ready(root: Path, chapter: str) -> bool:
+    return (
+        (root / ".git").is_dir()
+        and (root / "requirements.txt").is_file()
+        and (root / "notes" / chapter).is_dir()
+    )
+
+
 def _ensure_repo(root: Path, chapter: str, runner) -> None:
-    git_dir = root / ".git"
-    if not git_dir.exists():
-        if root.exists():
-            raise FileExistsError(f"Colab clone path exists but is not a git repo: {root}")
-        root.parent.mkdir(parents=True, exist_ok=True)
-        for command in clone_commands(root):
-            runner(command)
-        runner(sparse_checkout_command(chapter), cwd=str(root))
+    if _repo_is_ready(root, chapter):
         return
-    runner(sparse_add_command(chapter), cwd=str(root))
+    if root.exists():
+        shutil.rmtree(root)
+    root.parent.mkdir(parents=True, exist_ok=True)
+    for command in clone_commands(root):
+        runner(command)
+    if not _repo_is_ready(root, chapter):
+        raise FileNotFoundError(
+            f"cloned {root} but missing requirements.txt or notes/{chapter}"
+        )
 
 
 def _install_system(runner) -> None:

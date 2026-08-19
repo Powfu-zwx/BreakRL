@@ -17,7 +17,6 @@ from colab_setup import (  # noqa: E402
     experiment_requirements,
     packages_to_install,
     setup,
-    sparse_checkout_command,
     validate_chapter,
 )
 
@@ -129,8 +128,8 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
         joined = [" ".join(call) for call in calls]
         if not any("clone" in item for item in joined):
             _fail(errors, "Colab setup did not clone the repository")
-        if not any("sparse-checkout" in item and "notes/offline-rl" in item for item in joined):
-            _fail(errors, "Colab setup did not sparse-checkout the chapter")
+        if any("--sparse" in item or "blob:none" in item for item in joined):
+            _fail(errors, "Colab clone still uses a sparse blobless checkout")
         pip_calls = [call for call in calls if call and call[0] == sys.executable]
         if not pip_calls:
             _fail(errors, "Colab setup did not pip-install experiment extras")
@@ -140,10 +139,36 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
                 _fail(errors, "Colab pip install included jupyterlab")
             if "gymnasium" not in pip_text:
                 _fail(errors, "Colab pip install omitted gymnasium")
-        if clone_commands(dest)[0][-1] != str(dest):
+        clone = clone_commands(dest)[0]
+        if clone[-1] != str(dest) or "--depth" not in clone:
             _fail(errors, "clone_commands dest mismatch")
-        if "notes/offline-rl" not in sparse_checkout_command("offline-rl"):
-            _fail(errors, "sparse_checkout_command missing chapter path")
+    finally:
+        os.chdir(before)
+    return errors
+
+
+def test_incomplete_clone_is_replaced(tmp_path: Path) -> list[str]:
+    errors = []
+    dest = tmp_path / "BreakRL"
+    (dest / ".git").mkdir(parents=True)
+    calls: list[list[str]] = []
+
+    def runner(command, cwd=None):  # noqa: ANN001
+        cmd = list(command)
+        calls.append(cmd)
+        if len(cmd) > 1 and cmd[1] == "clone":
+            root = Path(cmd[-1])
+            (root / ".git").mkdir(parents=True)
+            (root / "notes" / "offline-rl").mkdir(parents=True)
+            (root / "requirements.txt").write_text("numpy>=2\n", encoding="utf-8")
+
+    before = Path.cwd()
+    try:
+        setup("offline-rl", on_colab=True, dest=dest, runner=runner)
+        if not any(len(call) > 1 and call[1] == "clone" for call in calls):
+            _fail(errors, "incomplete Colab clone was not replaced")
+        if not (dest / "requirements.txt").is_file():
+            _fail(errors, "reclone did not restore requirements.txt")
     finally:
         os.chdir(before)
     return errors
@@ -276,6 +301,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     with tempfile.TemporaryDirectory() as tmp:
         errors += test_setup_colab_mock(Path(tmp))
+        errors += test_incomplete_clone_is_replaced(Path(tmp) / "incomplete")
     if smoke:
         previous = Path.cwd()
         try:
