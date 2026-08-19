@@ -6,6 +6,10 @@
 
 ## 环境准备
 
+读者可以从 README 的章节表在 Colab 中打开任意一章，不必先装本地环境。每个实验 notebook 的第一个代码单元负责 Colab 引导（克隆仓库、安装实验依赖、进入该章目录）。该单元由 `scripts/colab_setup.py` 生成，并标 `remove-cell` 以免站点渲染它；改完 helper 后运行 `python scripts/sync_colab_bootstrap.py`，不要手改这个单元。`BREAKRL_CHAPTER` 是 `notes/` 下的目录名。
+
+本地修改仍使用：
+
 ```bash
 conda create -n rl_env python=3.10
 conda activate rl_env
@@ -34,6 +38,7 @@ python run_jupyter.py   # Windows 证书库规避；无此问题可直接 python
 
 ```bash
 python scripts/check_consistency.py            # 结构检查（CI 同款）
+python scripts/test_colab_setup.py             # Colab 引导单元测试
 conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex   # TeX 改动后必须重编译 PDF
 ```
 

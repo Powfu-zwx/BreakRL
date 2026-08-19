@@ -10,7 +10,9 @@ Invariants:
 - figure environments use the [!htbp] convention and referenced graphics
   exist next to the .tex;
 - _toc.yml chapter entries and chapter notebooks cover each other, and its
-  root documents exist.
+  root documents exist;
+- every experiment notebook's first code cell is the Colab bootstrap, and
+  README.md / README.zh.md / index.md contain the matching Colab URLs.
 """
 import re
 import sys
@@ -18,6 +20,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
 FIGURE_ENVIRONMENT = re.compile(r"\\begin\{figure\}\[([^]]+)\]")
 INCLUDE_GRAPHIC = re.compile(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}")
 TOC_FILE_ENTRY = re.compile(r"^\s*-\s+file:\s+(\S+)", re.MULTILINE)
@@ -28,6 +33,13 @@ def chapter_dirs(root: Path = ROOT) -> list[Path]:
     if not notes.is_dir():
         return []
     return sorted(path for path in notes.iterdir() if path.is_dir())
+
+
+def _cell_source(cell: Any) -> str:
+    source = cell.source
+    if isinstance(source, list):
+        source = "".join(source)
+    return source.replace("\r\n", "\n")
 
 
 def _load_notebook(path: Path, nbformat: Any, errors: list[str], label: str) -> Any:
@@ -218,12 +230,55 @@ def check_toc(root: Path = ROOT) -> list[str]:
     return errors
 
 
+def check_colab_entry_points(root: Path = ROOT) -> list[str]:
+    """Every chapter notebook has the generated bootstrap cell and a Colab URL."""
+    from colab_setup import bootstrap_source, colab_notebook_url
+
+    errors = []
+    try:
+        import nbformat
+    except ImportError:
+        return ["nbformat is required to validate notebooks"]
+
+    readme_en = (root / "README.md").read_text(encoding="utf-8")
+    readme_zh = (root / "README.zh.md").read_text(encoding="utf-8")
+    index_text = (root / "index.md").read_text(encoding="utf-8")
+    for chapter in chapter_dirs(root):
+        wanted = bootstrap_source(chapter.name)
+        notebooks = sorted(chapter.glob("*_experiments*.ipynb"))
+        if not notebooks:
+            errors.append(f"{chapter.relative_to(root)}: missing experiment notebooks")
+            continue
+        for path in notebooks:
+            rel = path.relative_to(root)
+            notebook = _load_notebook(path, nbformat, errors, str(rel))
+            if notebook is None:
+                continue
+            code_cells = [cell for cell in notebook.cells if cell.cell_type == "code"]
+            if not code_cells:
+                errors.append(f"{rel}: notebook has no code cells")
+                continue
+            actual = _cell_source(code_cells[0]).rstrip("\n")
+            if actual != wanted.rstrip("\n"):
+                errors.append(f"{rel}: first code cell is not the Colab bootstrap")
+            url = colab_notebook_url(rel.as_posix())
+            if path.name.endswith("_experiments_en.ipynb"):
+                if url not in readme_en:
+                    errors.append(f"README.md: missing Colab URL for {rel.as_posix()}")
+            elif url not in readme_zh:
+                errors.append(f"README.zh.md: missing Colab URL for {rel.as_posix()}")
+            if url not in index_text:
+                errors.append(f"index.md: missing Colab URL for {rel.as_posix()}")
+    return errors
+
+
 def main() -> int:
     errors = (
         check_chapters()
         + check_bilingual()
         + check_tex()
         + check_toc()
+        + check_colab_entry_points()
     )
     if errors:
         for error in errors:

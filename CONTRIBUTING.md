@@ -6,6 +6,10 @@ A [Chinese edition](CONTRIBUTING.zh.md) of this guide is also available.
 
 ## Environment
 
+Readers can run any chapter in Colab from the README without this setup. The first code cell of each experiment notebook bootstraps Colab (clone, install extras, `chdir` into the chapter). That cell is generated from `scripts/colab_setup.py` and tagged `remove-cell` so the site does not render it; after changing the helper, run `python scripts/sync_colab_bootstrap.py` and do not hand-edit the cell. `BREAKRL_CHAPTER` is the directory name under `notes/`.
+
+Local editing still uses:
+
 ```bash
 conda create -n rl_env python=3.10
 conda activate rl_env
@@ -34,6 +38,7 @@ A new chapter must also update `_toc.yml`, `README.md`, `README.zh.md`, `index.m
 
 ```bash
 python scripts/check_consistency.py            # same structural check as CI
+python scripts/test_colab_setup.py             # Colab bootstrap unit tests
 conda run -n tex_env tectonic notes/<chapter>/<chapter>.tex   # recompile the PDF after TeX edits
 ```
 
