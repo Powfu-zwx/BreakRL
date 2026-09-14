@@ -1,9 +1,6 @@
 # BreakRL
 
-```{raw} html
-<p class="breakrl-kicker">Bilingual textbook · v1.2</p>
-<p class="breakrl-lede">Learn reinforcement learning through failure.</p>
-```
+**Learn reinforcement learning through failure.**
 
 BreakRL is a bilingual, failure-first textbook: each chapter explains why an algorithm works, then uses ablations to show what fails when a key mechanism is removed.
 
@@ -11,43 +8,17 @@ BreakRL is a bilingual, failure-first textbook: each chapter explains why an alg
 
 ## Start in three minutes
 
-```{raw} html
-<ol class="breakrl-path">
-  <li>
-    <a href="demo.html">
-      <span class="breakrl-path__n">01</span>
-      <span class="breakrl-path__label">Minimum demo</span>
-      <span class="breakrl-path__copy">Drag one slider: the loss falls while return collapses.</span>
-    </a>
-  </li>
-  <li>
-    <a href="failure-atlas-en.html#atlas-8-offline-loss">
-      <span class="breakrl-path__n">02</span>
-      <span class="breakrl-path__label">Failure Atlas #8</span>
-      <span class="breakrl-path__copy">Healthy offline loss, collapsing returns: symptom, mechanism, fix.</span>
-    </a>
-  </li>
-  <li>
-    <a href="offline-rl-text-en.html">
-      <span class="breakrl-path__n">03</span>
-      <span class="breakrl-path__label">Offline RL chapter</span>
-      <span class="breakrl-path__copy">Read the text PDF on this site, then the saved experiment.</span>
-    </a>
-  </li>
-</ol>
-```
+1. Try the [minimum demo](demo) and drag one slider to see loss fall while return collapses;
+2. Open <a href="failure-atlas-en.html#atlas-8-offline-loss">Failure Atlas #8</a> (healthy offline loss, collapsing returns);
+3. Read the Offline RL chapter: [text PDF](offline-rl-text-en) and the [saved experiment](notes/offline-rl/offline-rl_experiments_en.ipynb).
 
 You do not need an environment to read the site, and it does not execute training automatically. The catalog below is the rest of the book — start with the loop above, not Chapter 1.
 
 ## How to read
 
-```{raw} html
-<ol class="breakrl-steps">
-  <li data-step="01">Read the derivation and mechanism.</li>
-  <li data-step="02">Open the experiment notebook and observe the algorithm on a small task.</li>
-  <li data-step="03">Compare the ablations and identify the difference between “it runs” and “it works.”</li>
-</ol>
-```
+1. Read the derivation and mechanism;
+2. Open the experiment notebook and observe the algorithm on a small task;
+3. Compare the ablations and identify the difference between “it runs” and “it works.”
 
 When training does not converge, start with the [RL Failure Atlas](failure-atlas-en.md), organized as “symptom → mechanism → reproduction → fix.”
 

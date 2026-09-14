@@ -1,9 +1,6 @@
 # BreakRL
 
-```{raw} html
-<p class="breakrl-kicker">双语教材 · v1.2</p>
-<p class="breakrl-lede">用失败学强化学习。</p>
-```
+**用失败学强化学习。**
 
 BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算法为什么有效，再通过消融实验展示去掉关键机制后的失败。
 
@@ -11,43 +8,17 @@ BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算
 
 ## 三分钟开始
 
-```{raw} html
-<ol class="breakrl-path">
-  <li>
-    <a href="demo.html">
-      <span class="breakrl-path__n">01</span>
-      <span class="breakrl-path__label">最小演示</span>
-      <span class="breakrl-path__copy">拖动一个滑块：损失下降，回报却塌缩。</span>
-    </a>
-  </li>
-  <li>
-    <a href="failure-atlas.html#atlas-8-offline-loss">
-      <span class="breakrl-path__n">02</span>
-      <span class="breakrl-path__label">失败模式图鉴第 8 条</span>
-      <span class="breakrl-path__copy">离线损失正常、回报塌缩：症状、机制与修复。</span>
-    </a>
-  </li>
-  <li>
-    <a href="offline-rl-text.html">
-      <span class="breakrl-path__n">03</span>
-      <span class="breakrl-path__label">离线强化学习章</span>
-      <span class="breakrl-path__copy">在本站阅读正文 PDF，再看已保存的实验。</span>
-    </a>
-  </li>
-</ol>
-```
+1. 先看[最小演示](demo)，用一个滑块理解“损失下降、回报塌缩”；
+2. 打开<a href="failure-atlas.html#atlas-8-offline-loss">失败模式图鉴第 8 条</a>（离线损失正常、回报塌缩）；
+3. 阅读离线强化学习章：[正文 PDF](offline-rl-text) 与[已保存实验](notes/offline-rl/offline-rl_experiments.ipynb)。
 
 阅读站点不需要安装环境，也不会自动执行训练。下面的目录是全书其余部分——请先走完上面这一环，而不是从第 1 章开始。
 
 ## 怎么读
 
-```{raw} html
-<ol class="breakrl-steps">
-  <li data-step="01">先读正文 PDF，理解问题、公式和机制。</li>
-  <li data-step="02">再看实验 Notebook，观察算法在小任务上的行为。</li>
-  <li data-step="03">最后对比消融结果，找到“能运行”和“真正有效”的差别。</li>
-</ol>
-```
+1. 先读正文 PDF，理解问题、公式和机制；
+2. 再看实验 Notebook，观察算法在小任务上的行为；
+3. 最后对比消融结果，找到“能运行”和“真正有效”的差别。
 
 训练不收敛时，可以直接查 [RL 失败模式图鉴](failure-atlas.md)。每条记录都按“症状 → 机制 → 复现 → 修复”组织。
 

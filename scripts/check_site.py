@@ -12,6 +12,8 @@ if str(_SCRIPTS) not in sys.path:
 from paths import BOOK_BUILD  # noqa: E402
 
 DEFAULT_BUILD = BOOK_BUILD
+_H1_IN_SELECTOR = re.compile(r"(^|[\s,>+~])h1($|[\s,:+.\[#>~])", re.I)
+_DISPLAY_NONE = re.compile(r"display\s*:\s*none", re.I)
 
 
 class LinkParser(HTMLParser):
@@ -41,6 +43,17 @@ class LinkParser(HTMLParser):
 
     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self._process_tag(tag, attrs)
+
+
+def css_hides_h1(css: str) -> bool:
+    """Return True if any CSS rule hides an h1 with display:none."""
+    stripped = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    compact = re.sub(r"\s+", " ", stripped)
+    for match in re.finditer(r"([^{}]+)\{([^{}]+)\}", compact):
+        selector, body = match.group(1), match.group(2)
+        if _H1_IN_SELECTOR.search(selector) and _DISPLAY_NONE.search(body):
+            return True
+    return False
 
 
 def _local_target(build_root: Path, source: Path, value: str) -> Path | None:
@@ -140,6 +153,29 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
             errors.append(f"{path.name}: Offline RL PDF still points at a GitHub blob")
         if 'href="#failure-atlas' in text:
             errors.append(f"{path.name}: Failure Atlas #8 link was rewritten into a broken in-page hash")
+
+    demo = build_root / "demo.html"
+    if not demo.is_file():
+        errors.append("missing demo.html")
+    else:
+        demo_html = demo.read_text(encoding="utf-8")
+        if "<h1" not in demo_html.lower():
+            errors.append("demo.html: missing <h1>; keep a level-one heading in the accessibility tree")
+
+    static = build_root / "_static"
+    for css_path in sorted(static.glob("breakrl*.css")) + sorted(static.glob("lang-toggle.css")):
+        if css_hides_h1(css_path.read_text(encoding="utf-8")):
+            errors.append(f"{css_path.relative_to(build_root)}: must not display:none an h1")
+
+    for svg in static.glob("breakrl-logo.svg"):
+        errors.append(
+            f"{svg.relative_to(build_root)}: do not ship an image wordmark SVG; navbar brand is CSS text / currentColor"
+        )
+    for path in html_files:
+        if "breakrl-logo.svg" in path.read_text(encoding="utf-8"):
+            errors.append(
+                f"{path.relative_to(build_root)}: must not ship an image wordmark SVG; navbar brand is CSS text"
+            )
     return errors
 
 

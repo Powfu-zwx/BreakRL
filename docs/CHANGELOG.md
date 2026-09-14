@@ -4,7 +4,9 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
-- Restyle the flagship site (homepage, demo, Failure Atlas, Offline RL PDF/chapter pages) so it reads as a bilingual textbook product rather than default Jupyter Book chrome.
+- Restyle the flagship site (homepage, demo, Failure Atlas, Offline RL PDF/chapter pages) as light, sparse, Spinning Up-like docs rather than paper/ink cards or default Jupyter Book chrome.
+- Use a CSS text wordmark (`currentColor`) instead of a fixed-fill SVG that disappears on a dark sidebar.
+- Keep the demo page `<h1>` in the accessibility tree (no `display:none` on the only level-one heading).
 - Point the three-minute start at the flagship loop: live demo → Failure Atlas #8 → Offline RL.
 - Serve the homepage in one language at a time (English default, Chinese via the language switch).
 - Open the Offline RL chapter PDFs on the site instead of a GitHub blob.

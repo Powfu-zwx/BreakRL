@@ -3,8 +3,7 @@
 <div id="breakrl-demo" class="breakrl-demo" data-lang="en">
   <div class="breakrl-demo__header">
     <div>
-      <p class="breakrl-demo__eyebrow">FAILURE-FIRST RL</p>
-      <h2 data-zh="损失下降，回报却塌缩" data-en="The loss goes down. The return collapses.">The loss goes down. The return collapses.</h2>
+      <p class="breakrl-demo__headline" data-zh="损失下降，回报却塌缩" data-en="The loss goes down. The return collapses.">The loss goes down. The return collapses.</p>
       <p class="breakrl-demo__lede" data-zh="离线数据没有覆盖的动作，会被 Q 学习的贪心目标高估。于是训练损失看起来正常，策略却学会了数据中从未出现过的动作。"
         data-en="When offline data does not cover an action, the greedy Q-learning target can overestimate it. The loss looks healthy while the policy learns an action the data never contained.">When offline data does not cover an action, the greedy Q-learning target can overestimate it. The loss looks healthy while the policy learns an action the data never contained.</p>
     </div>
