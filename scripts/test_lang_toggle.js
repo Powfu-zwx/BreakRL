@@ -128,6 +128,7 @@ assert.equal(
   '/BreakRL/index-zh.html?from=deep-link#section'
 );
 assert.match(source, /index-zh\.html/);
+assert.match(source, /if \(!cn \|\| !en\)/);
 assert.match(source, /setAttribute\('aria-pressed'/);
 assert.match(source, /role', 'group'/);
 assert.match(source, /bd-sidebar-secondary/);

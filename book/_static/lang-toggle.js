@@ -376,12 +376,13 @@
   function filterIndex(lang) {
     var cn = document.getElementById('breakrl');
     var en = document.getElementById('breakrl-english');
-    if (cn) {
-      cn.hidden = lang === LANG_EN;
+    // Split homepages only have one of these ids. Hiding #breakrl would
+    // conceal the entire English (or Chinese) article body.
+    if (!cn || !en) {
+      return;
     }
-    if (en) {
-      en.hidden = lang === LANG_ZH;
-    }
+    cn.hidden = lang === LANG_EN;
+    en.hidden = lang === LANG_ZH;
 
     document.querySelectorAll('.bd-sidebar-secondary a').forEach(function (link) {
       var href = link.getAttribute('href');
