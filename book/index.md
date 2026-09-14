@@ -9,7 +9,7 @@ BreakRL is a bilingual, failure-first textbook: each chapter explains why an alg
 ## Start in three minutes
 
 1. Try the [minimum demo](demo) and drag one slider to see loss fall while return collapses;
-2. Open [Failure Atlas #8](failure-atlas-en.md#atlas-8-offline-loss) (healthy offline loss, collapsing returns);
+2. Open <a href="failure-atlas-en.html#atlas-8-offline-loss">Failure Atlas #8</a> (healthy offline loss, collapsing returns);
 3. Read the Offline RL chapter: [text PDF](offline-rl-text-en) and the [saved experiment](notes/offline-rl/offline-rl_experiments_en.ipynb).
 
 You do not need an environment to read the site, and it does not execute training automatically. The catalog below is the rest of the book — start with the loop above, not Chapter 1.

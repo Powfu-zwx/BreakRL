@@ -324,9 +324,9 @@ def check_flagship_ring() -> list[str]:
 
     if anchor not in demo or "offline-rl" not in demo:
         errors.append("book/demo.md must link Failure Atlas #8 and the Offline RL chapter")
-    if "{#atlas-8-offline-loss}" not in atlas_en or "demo" not in atlas_en or "offline-rl" not in atlas_en:
+    if 'id="atlas-8-offline-loss"' not in atlas_en or "demo" not in atlas_en or "offline-rl" not in atlas_en:
         errors.append("book/failure-atlas-en.md #8 must keep the demo → atlas → chapter loop")
-    if "{#atlas-8-offline-loss}" not in atlas_zh or "demo" not in atlas_zh or "offline-rl" not in atlas_zh:
+    if 'id="atlas-8-offline-loss"' not in atlas_zh or "demo" not in atlas_zh or "offline-rl" not in atlas_zh:
         errors.append("book/failure-atlas.md #8 must keep the demo → atlas → chapter loop")
     return errors
 

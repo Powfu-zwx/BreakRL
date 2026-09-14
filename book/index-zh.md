@@ -9,7 +9,7 @@ BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算
 ## 三分钟开始
 
 1. 先看[最小演示](demo)，用一个滑块理解“损失下降、回报塌缩”；
-2. 打开[失败模式图鉴第 8 条](failure-atlas.md#atlas-8-offline-loss)（离线损失正常、回报塌缩）；
+2. 打开<a href="failure-atlas.html#atlas-8-offline-loss">失败模式图鉴第 8 条</a>（离线损失正常、回报塌缩）；
 3. 阅读离线强化学习章：[正文 PDF](offline-rl-text) 与[已保存实验](notes/offline-rl/offline-rl_experiments.ipynb)。
 
 阅读站点不需要安装环境，也不会自动执行训练。下面的目录是全书其余部分——请先走完上面这一环，而不是从第 1 章开始。

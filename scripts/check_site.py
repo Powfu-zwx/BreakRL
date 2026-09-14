@@ -115,6 +115,13 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         if not pdf.is_file():
             errors.append(f"missing flagship chapter PDF: notes/offline-rl/{name}")
 
+    for atlas_name in ("failure-atlas-en.html", "failure-atlas.html"):
+        atlas = build_root / atlas_name
+        if not atlas.is_file():
+            errors.append(f"missing {atlas_name}")
+        elif 'id="atlas-8-offline-loss"' not in atlas.read_text(encoding="utf-8"):
+            errors.append(f"{atlas_name}: missing id=\"atlas-8-offline-loss\"")
+
     blob_pdf = re.compile(
         r"github\.com/Powfu-zwx/BreakRL/blob/[^\"']*offline-rl[^\"']*\.pdf"
     )
@@ -131,6 +138,8 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
             errors.append(f"{path.name}: still stacks the {label}")
         if blob_pdf.search(text):
             errors.append(f"{path.name}: Offline RL PDF still points at a GitHub blob")
+        if 'href="#failure-atlas' in text:
+            errors.append(f"{path.name}: Failure Atlas #8 link was rewritten into a broken in-page hash")
     return errors
 
 

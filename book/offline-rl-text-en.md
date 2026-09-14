@@ -1,6 +1,6 @@
 # Offline RL: CQL and IQL
 
-The chapter text opens on this page. It is the same failure mode as the [minimum demo](demo) and [Failure Atlas #8](failure-atlas-en.md#atlas-8-offline-loss) (healthy offline loss, collapsing returns). Saved experiment: [notebook](notes/offline-rl/offline-rl_experiments_en.ipynb).
+The chapter text opens on this page. It is the same failure mode as the [minimum demo](demo) and <a href="failure-atlas-en.html#atlas-8-offline-loss">Failure Atlas #8</a> (healthy offline loss, collapsing returns). Saved experiment: [notebook](notes/offline-rl/offline-rl_experiments_en.ipynb).
 
 [Open the PDF](notes/offline-rl/offline-rl_en.pdf) if the embed is unavailable.
 
