@@ -4,12 +4,18 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
+## 1.2.2 — 2026-09-14
+
 - Reorganize the repository into `book/`, `docs/`, and `scripts/` with a single path module.
 - Add a Colab launch button for every chapter notebook, with a generated first-cell bootstrap that clones the chapter files and installs experiment extras.
 - Fix the Colab bootstrap to use a full shallow clone so `requirements.txt` and chapter data are actually present.
 - Make English the default README and Jupyter Book language; keep Chinese as `README.zh.md` and a toggleable site edition.
 - Show a minimum-demo animation on the README and drop the extra Chapter 9 experiment still from the landing page.
 - Add repository badges for the live site, quality checks, DOI, Python 3.10, and both licenses.
+- State on the README and site that v1.2.x is the current textbook; V2 is an unstarted internal spec and will not empty `main`.
+- Align README wording with a bilingual failure-first RL textbook.
+- Update citation and Zenodo metadata to 1.2.2.
+- Bump `nbformat` to 5.11.1 and `actions/deploy-pages` to 5.0.1.
 
 ## 1.2.1 — 2026-08-17
 
