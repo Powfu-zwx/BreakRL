@@ -122,10 +122,17 @@ a.headerlink:focus-visible {
 .navbar-brand .logo__title,
 .navbar-brand .title,
 .breakrl-brand {
-  color: currentColor;
+  color: var(--breakrl-text);
   font-family: var(--breakrl-sans);
   font-weight: 700;
   text-decoration: none;
+}
+
+.navbar-brand:hover,
+.navbar-brand:hover .logo__title,
+.navbar-brand:hover .title,
+.breakrl-brand:hover {
+  color: var(--breakrl-link);
 }
 
 .bd-sidebar-primary .navbar-brand {
@@ -187,7 +194,8 @@ article.bd-article,
 }
 
 .dropdown-download-buttons,
-.btn-fullscreen-button {
+.btn-fullscreen-button,
+#pst-back-to-top {
   display: none !important;
 }
 
