@@ -5,7 +5,7 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 ## Unreleased
 
 - Restyle the flagship site (homepage, demo, Failure Atlas, Offline RL PDF/chapter pages) as light, sparse, Spinning Up-like docs rather than paper/ink cards or default Jupyter Book chrome.
-- Restyle code: light monospace blocks, no pink inline literals, no green notebook cell bar.
+- Restyle code: light Source Code Pro blocks, no pink inline literals, no green notebook cell bar.
 - Use a CSS text wordmark (`currentColor`) instead of a fixed-fill SVG that disappears on a dark sidebar.
 - Keep the demo page `<h1>` in the accessibility tree (no `display:none` on the only level-one heading).
 - Tighten flagship copy: the demo is a teaching plot (default metric matches the script), Atlas #8 does not talk about deployment, Atlas #13 uses the toy-task true score rather than “human spot checks,” and chapters 12–14 are labeled as toy post-training.
