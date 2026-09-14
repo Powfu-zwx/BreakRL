@@ -329,7 +329,9 @@ pre {
 
 div.highlight pre,
 div[class*="highlight-"] pre,
-pre.literal-block {
+pre.literal-block,
+html[data-theme="light"] .highlight pre,
+html[data-theme="dark"] .highlight pre {
   background: transparent;
   border: 0;
   box-shadow: none;
