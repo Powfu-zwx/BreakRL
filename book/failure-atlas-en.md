@@ -1,6 +1,6 @@
 # The RL Failure Atlas
 
-When training won't converge, look up the **symptom you're seeing**. Each entry gives the causal mechanism, a reproducible ablation, and a fix; every experiment comes from this book's chapter notebooks — follow the links to read the English editions online, or re-run locally to verify. The full book is available in both Chinese and English. [中文版](failure-atlas.md)
+When training won't converge, look up the **symptom you're seeing**. Each entry gives the causal mechanism, a reproducible ablation, and a fix; every experiment comes from this book's chapter notebooks — follow the links to read the English editions online, or re-run locally to verify. A first stop is [entry 8](#atlas-8-offline-loss): healthy offline loss, collapsing returns. The full book is available in both Chinese and English. [中文版](failure-atlas.md)
 
 ## 1. Return curves are pure noise; no trend to be seen
 
@@ -51,11 +51,12 @@ When training won't converge, look up the **symptom you're seeing**. Each entry 
 - **Reproduce**: [SAC chapter](notes/sac/sac_experiments_en.ipynb) Figure 2 (single vs double Q); the extreme offline version is entry 8.
 - **Fix**: Clipped Double Q — the bootstrap target uses $\min(Q_1, Q_2)$.
 
-## 8. Offline training: healthy loss, collapsing returns
+## 8. Offline training: healthy loss, collapsing returns {#atlas-8-offline-loss}
 
 - **Symptom**: TD loss on offline data decreases normally, but the learned greedy policy's true return rises briefly then falls, staying far below the behavior-cloning (BC) baseline; Q estimates no longer track the policy's true value.
 - **Mechanism**: Extrapolation error — the $\max$ in the target probes actions that never appear in the data; their overestimates have no empirical basis and are amplified by bootstrapping. This is distribution shift manifesting in value learning.
 - **Reproduce**: [Offline RL chapter](notes/offline-rl/offline-rl_experiments_en.ipynb) Figure 1.
+- **Path**: [minimum demo](demo) → this entry → [chapter PDF](offline-rl-text-en).
 - **Fix**: CQL writes pessimism into the value function (a conservative penalty), or IQL writes it into the action set (in-sample learning); benchmark any offline method against BC before deployment.
 
 ## 9. Some seeds converge, others get permanently stuck

@@ -229,8 +229,10 @@ def check_colab_entry_points() -> list[str]:
 
     readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
     readme_zh = (REPO_ROOT / "README.zh.md").read_text(encoding="utf-8")
-    index_text = (BOOK / "index.md").read_text(encoding="utf-8")
-    index_label = (BOOK / "index.md").relative_to(REPO_ROOT).as_posix()
+    index_en = (BOOK / "index.md").read_text(encoding="utf-8")
+    index_zh = (BOOK / "index-zh.md").read_text(encoding="utf-8")
+    index_en_label = (BOOK / "index.md").relative_to(REPO_ROOT).as_posix()
+    index_zh_label = (BOOK / "index-zh.md").relative_to(REPO_ROOT).as_posix()
     for chapter in chapter_dirs():
         wanted = bootstrap_source(chapter.name)
         notebooks = sorted(chapter.glob("*_experiments*.ipynb"))
@@ -253,10 +255,79 @@ def check_colab_entry_points() -> list[str]:
             if path.name.endswith("_experiments_en.ipynb"):
                 if url not in readme_en:
                     errors.append(f"README.md: missing Colab URL for {rel.as_posix()}")
-            elif url not in readme_zh:
-                errors.append(f"README.zh.md: missing Colab URL for {rel.as_posix()}")
-            if url not in index_text:
-                errors.append(f"{index_label}: missing Colab URL for {rel.as_posix()}")
+                if url not in index_en:
+                    errors.append(f"{index_en_label}: missing Colab URL for {rel.as_posix()}")
+            else:
+                if url not in readme_zh:
+                    errors.append(f"README.zh.md: missing Colab URL for {rel.as_posix()}")
+                if url not in index_zh:
+                    errors.append(f"{index_zh_label}: missing Colab URL for {rel.as_posix()}")
+    return errors
+
+
+def _section_between(text: str, start: str, end: str, label: str, errors: list[str]) -> str:
+    start_at = text.find(start)
+    end_at = text.find(end)
+    if start_at < 0 or end_at < 0 or end_at <= start_at:
+        errors.append(f"{label}: missing section {start!r} .. {end!r}")
+        return ""
+    return text[start_at:end_at]
+
+
+def check_flagship_ring() -> list[str]:
+    errors = []
+    anchor = "#atlas-8-offline-loss"
+    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_zh = (REPO_ROOT / "README.zh.md").read_text(encoding="utf-8")
+    index_en = (BOOK / "index.md").read_text(encoding="utf-8")
+    index_zh = (BOOK / "index-zh.md").read_text(encoding="utf-8")
+    demo = (BOOK / "demo.md").read_text(encoding="utf-8")
+    atlas_en = (BOOK / "failure-atlas-en.md").read_text(encoding="utf-8")
+    atlas_zh = (BOOK / "failure-atlas.md").read_text(encoding="utf-8")
+
+    en_start = _section_between(
+        readme_en, "## Start in three minutes", "## Learning path", "README.md", errors
+    )
+    zh_start = _section_between(
+        readme_zh, "## 三分钟开始", "## 学习路线", "README.zh.md", errors
+    )
+    if en_start:
+        for needle in ("demo.html", f"failure-atlas-en.html{anchor}", "offline-rl"):
+            if needle not in en_start:
+                errors.append(f"README.md three-minute start is missing {needle}")
+        if "and start with Chapter 1" in en_start:
+            errors.append("README.md three-minute start still sends readers to Chapter 1")
+    if zh_start:
+        for needle in ("demo.html", f"failure-atlas.html{anchor}", "offline-rl"):
+            if needle not in zh_start:
+                errors.append(f"README.zh.md three-minute start is missing {needle}")
+        if "打开[在线教材]" in zh_start:
+            errors.append("README.zh.md three-minute start still sends readers to Chapter 1")
+
+    if "三分钟开始" in index_en or "用失败学强化学习" in index_en:
+        errors.append("book/index.md still stacks the Chinese homepage body")
+    if "Start in three minutes" in index_zh or "Learn reinforcement learning through failure" in index_zh:
+        errors.append("book/index-zh.md still stacks the English homepage body")
+    for label, text, needles in (
+        ("book/index.md", index_en, ("demo", "atlas-8-offline-loss", "offline-rl")),
+        ("book/index-zh.md", index_zh, ("demo", "atlas-8-offline-loss", "offline-rl")),
+    ):
+        for needle in needles:
+            if needle not in text:
+                errors.append(f"{label}: missing flagship link {needle}")
+        if "github.com/Powfu-zwx/BreakRL/blob/" in text and "offline-rl" in text:
+            if re.search(
+                r"github\.com/Powfu-zwx/BreakRL/blob/[^)\s]*offline-rl[^)\s]*\.pdf",
+                text,
+            ):
+                errors.append(f"{label}: Offline RL PDF still points at a GitHub blob")
+
+    if anchor not in demo or "offline-rl" not in demo:
+        errors.append("book/demo.md must link Failure Atlas #8 and the Offline RL chapter")
+    if "{#atlas-8-offline-loss}" not in atlas_en or "demo" not in atlas_en or "offline-rl" not in atlas_en:
+        errors.append("book/failure-atlas-en.md #8 must keep the demo → atlas → chapter loop")
+    if "{#atlas-8-offline-loss}" not in atlas_zh or "demo" not in atlas_zh or "offline-rl" not in atlas_zh:
+        errors.append("book/failure-atlas.md #8 must keep the demo → atlas → chapter loop")
     return errors
 
 
@@ -267,6 +338,7 @@ def main() -> int:
         + check_tex()
         + check_toc()
         + check_colab_entry_points()
+        + check_flagship_ring()
     )
     if errors:
         for error in errors:

@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -52,10 +53,35 @@ def prepare_build_assets(app):
     prepare_assets(output_folder=Path(app.outdir).parent / "jupyter_execute")
 
 
+FLAGSHIP_CHAPTER_PDFS = (
+    NOTES / "offline-rl" / "offline-rl.pdf",
+    NOTES / "offline-rl" / "offline-rl_en.pdf",
+)
+
+
+def copy_flagship_chapter_pdfs(outdir: Path) -> int:
+    dest_dir = Path(outdir) / "notes" / "offline-rl"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    copied = 0
+    for src in FLAGSHIP_CHAPTER_PDFS:
+        if not src.is_file():
+            raise FileNotFoundError(src)
+        shutil.copy2(src, dest_dir / src.name)
+        copied += 1
+    return copied
+
+
+def copy_flagship_chapter_pdfs_on_build(app, exception):
+    if exception:
+        return
+    copy_flagship_chapter_pdfs(Path(app.outdir))
+
+
 def setup(app):
     app.connect("builder-inited", prepare_build_assets)
+    app.connect("build-finished", copy_flagship_chapter_pdfs_on_build)
     return {
-        "version": "1.0",
+        "version": "1.1",
         "parallel_read_safe": True,
         "parallel_write_safe": True,
     }

@@ -4,6 +4,10 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
+- Point the three-minute start at the flagship loop: live demo → Failure Atlas #8 → Offline RL.
+- Serve the homepage in one language at a time (English default, Chinese via the language switch).
+- Open the Offline RL chapter PDFs on the site instead of a GitHub blob.
+
 ## 1.2.2 — 2026-09-14
 
 - Reorganize the repository into `book/`, `docs/`, and `scripts/` with a single path module.

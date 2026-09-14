@@ -1,6 +1,7 @@
 """Check the generated Jupyter Book for missing local links and stray pages."""
 from html.parser import HTMLParser
 from pathlib import Path
+import re
 import sys
 from urllib.parse import unquote, urlsplit
 
@@ -92,7 +93,7 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         is_english_page = relative.name == "failure-atlas-en.html" or relative.name.endswith(
             "_en.html"
         )
-        is_chinese_page = relative.name == "failure-atlas.html" or (
+        is_chinese_page = relative.name in {"failure-atlas.html", "index-zh.html", "offline-rl-text.html"} or (
             relative.name.endswith("_experiments.html")
             and not relative.name.endswith("_experiments_en.html")
         )
@@ -108,6 +109,28 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
             target = _local_target(build_root, path, value)
             if target is not None and not target.exists():
                 errors.append(f"{relative}: missing local target {value}")
+
+    for name in ("offline-rl.pdf", "offline-rl_en.pdf"):
+        pdf = build_root / "notes" / "offline-rl" / name
+        if not pdf.is_file():
+            errors.append(f"missing flagship chapter PDF: notes/offline-rl/{name}")
+
+    blob_pdf = re.compile(
+        r"github\.com/Powfu-zwx/BreakRL/blob/[^\"']*offline-rl[^\"']*\.pdf"
+    )
+    homepage_checks = (
+        (build_root / "index.html", "三分钟开始", "Chinese homepage body"),
+        (build_root / "index-zh.html", "Start in three minutes", "English homepage body"),
+    )
+    for path, stacked_marker, label in homepage_checks:
+        if not path.is_file():
+            errors.append(f"missing homepage: {path.relative_to(build_root)}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if stacked_marker in text:
+            errors.append(f"{path.name}: still stacks the {label}")
+        if blob_pdf.search(text):
+            errors.append(f"{path.name}: Offline RL PDF still points at a GitHub blob")
     return errors
 
 

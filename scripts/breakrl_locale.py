@@ -7,7 +7,7 @@ language toggle see the correct page locale.
 
 
 def is_chinese_page(pagename):
-    if pagename == "failure-atlas":
+    if pagename in {"failure-atlas", "index-zh", "offline-rl-text"}:
         return True
     return pagename.endswith("_experiments") and not pagename.endswith("_experiments_en")
 

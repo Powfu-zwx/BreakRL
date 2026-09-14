@@ -46,3 +46,12 @@
     display: none;
   }
 }
+
+.breakrl-chapter-pdf {
+  display: block;
+  width: 100%;
+  height: 85vh;
+  min-height: 32rem;
+  border: 1px solid var(--pst-color-border, rgba(127, 127, 127, 0.35));
+  background: var(--pst-color-background, #fff);
+}

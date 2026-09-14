@@ -18,7 +18,8 @@
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>最小演示</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html"><b>失败模式图鉴</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss"><b>图鉴第 8 条</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html"><b>离线 RL</b></a> ·
   <a href="README.md"><b>English</b></a>
 </p>
 
@@ -39,10 +40,10 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 ## 三分钟开始
 
 1. 先看[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，用一个滑块理解“损失下降、回报塌缩”；
-2. 打开[在线教材](https://powfu-zwx.github.io/BreakRL/)，从第 1 章开始；
-3. 再看[失败模式图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)，按症状查找一个“为什么会失败”的案例。
+2. 打开[失败模式图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)：离线损失正常、回报塌缩；
+3. 阅读[离线强化学习章](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) — [正文 PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text.html)。
 
-不需要安装环境：站点展示的是仓库中保存的实验输出。想重跑某一章，从下面的章节表打开 Colab 即可；只有要在本地改 Notebook 时，才需要准备 conda 环境。
+不需要安装环境：站点展示的是仓库中保存的实验输出。想重跑某一章，从下面的章节表打开 Colab 即可；只有要在本地改 Notebook 时，才需要准备 conda 环境。下面的目录是全书其余部分；请先走完上面这一环，而不是从第 1 章开始。
 
 你会反复经历同一个学习循环：
 
@@ -71,7 +72,7 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 | 6 | Actor-Critic / A2C | [PDF](book/notes/actor-critic/ac.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/actor-critic/ac_experiments.ipynb) |
 | 7 | PPO：约束策略更新 | [PDF](book/notes/ppo/ppo.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/ppo/ppo_experiments.ipynb) |
 | 8 | SAC：最大熵连续控制 | [PDF](book/notes/sac/sac.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/sac/sac_experiments.ipynb) |
-| 9 | 离线强化学习：CQL 与 IQL | [PDF](book/notes/offline-rl/offline-rl.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments.ipynb) |
+| 9 | 离线强化学习：CQL 与 IQL | [PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text.html) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments.ipynb) |
 | 10 | 模型式强化学习：Dyna-Q | [PDF](book/notes/model-based-rl/model-based-rl.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/model-based-rl/model-based-rl_experiments.ipynb) |
 | 11 | Decision Transformer | [PDF](book/notes/decision-transformer/decision-transformer.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/decision-transformer/decision-transformer_experiments.ipynb) |
 | 12 | RLHF：从偏好到奖励 | [PDF](book/notes/rlhf/rlhf.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments.ipynb) |
@@ -82,7 +83,7 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 
 训练不收敛时，可以从症状开始查找：回报崩盘、Q 值上涨但策略变差、离线损失正常但回报塌缩，或者奖励看起来没问题却始终学不动。
 
-[打开 RL 失败模式图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)：每条记录都按“症状 → 机制 → 复现 → 修复”组织。
+先看[图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)（离线损失正常、回报塌缩），或[浏览完整图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)。每条记录都按“症状 → 机制 → 复现 → 修复”组织。
 
 ## 开始实验
 
