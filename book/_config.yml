@@ -17,6 +17,7 @@ html:
   use_repository_button: true
   use_download_button: false
   use_fullscreen_button: false
+  home_page_in_navbar: false
   extra_footer: |
     <p class="breakrl-footer">BreakRL is a bilingual, failure-first RL textbook. Text CC BY 4.0. Code MIT.</p>
 

@@ -244,7 +244,10 @@ html[data-breakrl-lang="zh"] .bd-sidebar-primary .navbar-brand::after {
   content: "失败优先教材";
 }
 
-.bd-sidebar-primary p.caption,
+.bd-sidebar-primary .search-button-field,
+.bd-sidebar-primary .sidebar-primary-item:has(.search-button-field) {
+  display: none;
+}
 .bd-sidebar-primary p.caption .caption-text {
   color: var(--breakrl-muted);
   font-family: var(--breakrl-sans);
@@ -477,13 +480,9 @@ article.bd-article {
 
 .breakrl-atlas article.bd-article > section > section li p strong {
   color: var(--breakrl-blue-deep);
-  display: inline-block;
   font-family: var(--breakrl-sans);
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  min-width: 7.2rem;
-  text-transform: uppercase;
 }
 
 .breakrl-atlas article.bd-article > section > section:has(#atlas-8-offline-loss) {
@@ -707,15 +706,14 @@ html:has(.lang-switch) .breakrl-demo__language {
     min-height: 0;
   }
 
-  .breakrl-atlas article.bd-article > section > section li p strong {
-    display: block;
-    margin-bottom: 0.15rem;
-    min-width: 0;
-  }
-
   .breakrl-chapter-pdf {
     height: 70vh;
     min-height: 22rem;
+  }
+
+  .bd-header-article .btn-source-repository-button,
+  .bd-header-article .theme-switch-button {
+    display: none;
   }
 }
 

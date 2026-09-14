@@ -18,7 +18,7 @@
   var language = 'en';
   var width = 760;
   var height = 390;
-  var margin = { top: 28, right: 58, bottom: 54, left: 62 };
+  var margin = { top: 28, right: 72, bottom: 54, left: 70 };
   var plotWidth = width - margin.left - margin.right;
   var plotHeight = height - margin.top - margin.bottom;
 
@@ -239,16 +239,27 @@
       r: 5
     }, curves);
 
+    var lossY = yScale(finalLoss) + 4;
+    var returnY = yScale(finalReturn) + 4;
+    if (Math.abs(lossY - returnY) < 16) {
+      if (lossY >= returnY) {
+        lossY += 9;
+        returnY -= 9;
+      } else {
+        lossY -= 9;
+        returnY += 9;
+      }
+    }
     var lossLabel = createSvgElement('text', {
       class: 'breakrl-demo__series-label',
       x: finalX + 9,
-      y: yScale(finalLoss) + 4
+      y: lossY
     }, curves);
     lossLabel.textContent = 'TD loss';
     var returnLabel = createSvgElement('text', {
       class: 'breakrl-demo__series-label',
       x: finalX + 9,
-      y: yScale(finalReturn) + 4
+      y: returnY
     }, curves);
     returnLabel.textContent = language === 'zh' ? '实际回报' : 'Return';
   }
