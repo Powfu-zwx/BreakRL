@@ -316,6 +316,7 @@ div.cell_output .output.traceback {
   border-left-width: 1px;
   border-radius: 0;
   box-shadow: none;
+  overflow-x: auto;
 }
 
 div.cell_input div.highlight,
