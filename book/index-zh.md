@@ -2,25 +2,25 @@
 
 **用失败学强化学习。**
 
-BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算法为什么有效，再通过消融实验展示去掉关键机制后的失败。
+BreakRL 是一本双语、失败优先的强化学习教材：每章先讲机制，再去掉它，让你看见失败。
 
 **当前教材：** v1.2.x。V2 仍是未开工的内部规格，不会替换或清空 `main`。
 
 ## 三分钟开始
 
-1. 先看[最小演示](demo)，用一个滑块理解“损失下降、回报塌缩”；
+1. 打开[最小演示](demo)，拖动覆盖率滑块（教学示意，不训练模型）；
 2. 打开<a href="failure-atlas.html#atlas-8-offline-loss">失败模式图鉴第 8 条</a>（离线损失正常、回报塌缩）；
 3. 阅读离线强化学习章：[正文 PDF](offline-rl-text) 与[已保存实验](notes/offline-rl/offline-rl_experiments.ipynb)。
 
-阅读站点不需要安装环境，也不会自动执行训练。下面的目录是全书其余部分——请先走完上面这一环，而不是从第 1 章开始。
+阅读站点不需要安装。页面只渲染已保存的输出，不会训练。下面的目录是全书其余部分；请先走完上面这一环，而不是从第 1 章开始。
 
 ## 怎么读
 
-1. 先读正文 PDF，理解问题、公式和机制；
+1. 先读正文，弄清问题、公式和机制；
 2. 再看实验 Notebook，观察算法在小任务上的行为；
-3. 最后对比消融结果，找到“能运行”和“真正有效”的差别。
+3. 对比消融：能跑完不等于方法有效。
 
-训练不收敛时，可以直接查 [RL 失败模式图鉴](failure-atlas.md)。每条记录都按“症状 → 机制 → 复现 → 修复”组织。
+训练不收敛时，按症状查 [RL 失败模式图鉴](failure-atlas.md)（“症状 → 机制 → 复现 → 修复”）。
 
 ## 全部章节
 
@@ -40,5 +40,7 @@ BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算
 | 12. RLHF：从偏好到奖励 | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf.pdf) | [在线阅读](notes/rlhf/rlhf_experiments.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments.ipynb) |
 | 13. DPO：不训奖励模型的偏好优化 | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo.pdf) | [在线阅读](notes/dpo/dpo_experiments.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_experiments.ipynb) |
 | 14. GRPO 与 RLVR：可验证奖励 | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo.pdf) | [在线阅读](notes/grpo/grpo_experiments.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_experiments.ipynb) |
+
+第 12–14 章用玩具序列和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
 
 本站点只展示仓库中保存的 Notebook 输出，不会在阅读时自动执行训练。想运行实验，请从章节表打开 Colab，或按仓库 [中文 README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.zh.md#开始实验) 安装本地环境。

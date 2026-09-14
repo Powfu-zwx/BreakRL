@@ -33,7 +33,7 @@
 
   <div class="breakrl-demo__readout" role="status" aria-live="polite">
     <strong id="breakrl-demo-status">Failure mode: the loss falls while actual return collapses late in training.</strong>
-    <span id="breakrl-demo-metric" class="breakrl-demo__metric">Final return 0.08 · TD loss 0.08</span>
+    <span id="breakrl-demo-metric" class="breakrl-demo__metric">Final return 0.08 · TD loss 0.11</span>
   </div>
 
   <div class="breakrl-demo__legend" aria-label="Legend">
