@@ -2,7 +2,9 @@
 
 **Learn reinforcement learning through failure.**
 
-BreakRL is an experiment-first textbook: each chapter explains why an algorithm works, then uses ablations to show what fails when a key mechanism is removed.
+BreakRL is a bilingual, failure-first textbook: each chapter explains why an algorithm works, then uses ablations to show what fails when a key mechanism is removed.
+
+**Current textbook:** v1.2.x. A V2 rewrite is an unstarted internal spec; it will not replace or empty `main`.
 
 ## Start in three minutes
 
@@ -47,7 +49,9 @@ The site displays saved notebook outputs and does not train models while you rea
 
 **用失败学强化学习。**
 
-BreakRL 是一本以实验为主线的强化学习教材：每章先解释算法为什么有效，再通过消融实验展示去掉关键机制后的失败。
+BreakRL 是一本双语、失败优先的强化学习教材：每章先解释算法为什么有效，再通过消融实验展示去掉关键机制后的失败。
+
+**当前教材：** v1.2.x。V2 仍是未开工的内部规格，不会替换或清空 `main`。
 
 ## 三分钟开始
 

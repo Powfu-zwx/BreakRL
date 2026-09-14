@@ -24,7 +24,9 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 
 </div>
 
-BreakRL is an experiment-first reinforcement learning textbook for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
+BreakRL is a bilingual, failure-first reinforcement learning textbook (English default, Chinese edition) for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
+
+**Current textbook:** v1.2.x on `main`. A V2 rewrite is an unstarted internal spec; it will not replace or empty this tree.
 
 <p align="center">
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo-en.gif" alt="Minimum demo: at low data coverage, TD loss falls while actual return collapses" width="720"></a>
