@@ -356,8 +356,8 @@
   function filterToc(lang) {
     document.querySelectorAll('.bd-sidebar p.caption').forEach(function (caption) {
       var text = (caption.textContent || '').trim();
-      var isZh = text === '中文版';
-      var isEn = text === 'English';
+      var isZh = text === '中文版' || text === '章节';
+      var isEn = text === 'English' || text === 'Chapters';
       if (!isZh && !isEn) {
         return;
       }

@@ -2,7 +2,7 @@
 title: BreakRL
 author: BreakRL Contributors
 copyright: "2026, BreakRL Contributors"
-logo: ../assets/breakrl-wordmark.png
+logo: ../assets/breakrl-logo.svg
 only_build_toc_files: true
 
 execute:
@@ -15,6 +15,10 @@ repository:
 
 html:
   use_repository_button: true
+  use_download_button: false
+  use_fullscreen_button: false
+  extra_footer: |
+    <p class="breakrl-footer">BreakRL is a bilingual, failure-first RL textbook. Text CC BY 4.0. Code MIT.</p>
 
 sphinx:
   local_extensions:
@@ -30,5 +34,9 @@ sphinx:
       - "PROJECT_AUDIT.md"
     html_css_files:
       - lang-toggle.css
+      - breakrl.css
+      - breakrl-demo.css
     html_js_files:
       - lang-toggle.js
+      - breakrl.js
+      - breakrl-demo.js

@@ -1,6 +1,6 @@
 #breakrl-demo {
-  --breakrl-demo-blue: var(--pst-color-primary, #2166ac);
-  --breakrl-demo-orange: #c76a2b;
+  --breakrl-demo-blue: var(--breakrl-blue, var(--pst-color-primary, #215a96));
+  --breakrl-demo-orange: var(--breakrl-rust, #c45c32);
   --breakrl-demo-muted: var(--pst-color-text-muted, #6b7280);
   --breakrl-demo-border: var(--pst-color-border, rgba(127, 127, 127, 0.35));
   --breakrl-demo-surface: var(--pst-color-background, transparent);

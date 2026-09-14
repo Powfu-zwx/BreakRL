@@ -1,6 +1,4 @@
-# BreakRL Demo / 最小演示
-
-<link rel="stylesheet" href="_static/breakrl-demo.css">
+# Minimum demo
 
 <div id="breakrl-demo" class="breakrl-demo" data-lang="en">
   <div class="breakrl-demo__header">
@@ -55,5 +53,3 @@
     <a href="offline-rl-text-en.html" data-zh-href="offline-rl-text.html" data-en-href="offline-rl-text-en.html" data-zh="打开正文 PDF" data-en="Open the chapter PDF">Open the chapter PDF</a>
   </p>
 </div>
-
-<script src="_static/breakrl-demo.js"></script>

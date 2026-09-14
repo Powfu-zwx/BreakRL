@@ -1,10 +1,12 @@
 (function () {
   'use strict';
 
+  function boot() {
   var root = document.getElementById('breakrl-demo');
-  if (!root) {
+  if (!root || root.getAttribute('data-breakrl-ready') === '1') {
     return;
   }
+  root.setAttribute('data-breakrl-ready', '1');
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
   var svg = document.getElementById('breakrl-demo-chart');
@@ -258,5 +260,29 @@
     });
   });
 
-  setLanguage(document.documentElement.lang === 'en' ? 'en' : 'zh');
+  function siteLanguage() {
+    var stored = document.documentElement.getAttribute('data-breakrl-lang');
+    if (stored === 'en' || stored === 'zh') {
+      return stored;
+    }
+    return document.documentElement.lang === 'en' ? 'en' : 'zh';
+  }
+
+  setLanguage(siteLanguage());
+  new MutationObserver(function () {
+    var next = siteLanguage();
+    if (next !== language) {
+      setLanguage(next);
+    }
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-breakrl-lang', 'lang']
+  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();
