@@ -13,7 +13,7 @@
 
 **用失败学强化学习**
 
-从多臂老虎机到 RLHF、DPO、GRPO/RLVR，每章都把算法放进一组消融实验里
+每章都是一次消融：从多臂老虎机到 PPO 与 SAC，再到离线 RL，以及玩具任务上的 RLHF / DPO / GRPO。
 
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
@@ -25,7 +25,7 @@
 
 </div>
 
-BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语言，另有中文版），适合正在学习 RL、准备阅读 RL 论文，或希望用小实验理解算法机制的读者。每章先讲清楚一个算法为什么有效，再去掉其中的关键机制，让你看到它为什么失败。
+BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语言，另有中文版）。每章先讲机制，再去掉它，让你看见失败。第 12–14 章用玩具序列和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
 
 **当前教材：** `main` 上的 v1.2.x。V2 仍是未开工的内部规格，不会替换或清空本仓库。
 
@@ -34,22 +34,22 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 </p>
 
 <p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">打开最小演示</a>，拖动数据覆盖率：损失可以继续下降，回报却在覆盖不足时塌缩。
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">打开最小演示</a>，拖动数据覆盖率：覆盖不足时，教学示意里损失可以继续下降，回报却会塌缩。它不训练模型。
 </p>
 
 ## 三分钟开始
 
-1. 先看[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，用一个滑块理解“损失下降、回报塌缩”；
+1. 打开[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，拖动覆盖率滑块（教学示意，不训练）；
 2. 打开[失败模式图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)：离线损失正常、回报塌缩；
 3. 阅读[离线强化学习章](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments.html) — [正文 PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text.html)。
 
-不需要安装环境：站点展示的是仓库中保存的实验输出。想重跑某一章，从下面的章节表打开 Colab 即可；只有要在本地改 Notebook 时，才需要准备 conda 环境。下面的目录是全书其余部分；请先走完上面这一环，而不是从第 1 章开始。
+不需要安装：站点展示的是仓库中保存的实验输出。想重跑某一章，从下面的章节表打开 Colab；只有要在本地改 Notebook 时，才需要 conda 环境。下面的目录是全书其余部分；请先走完上面这一环，而不是从第 1 章开始。
 
-你会反复经历同一个学习循环：
+学习循环是：
 
-1. 读正文，理解问题、公式和机制；
-2. 看 Notebook，观察算法在小任务上的行为；
-3. 对比消融实验，把“能运行”与“真正有效”区分开。
+1. 先读正文，弄清问题、公式和机制；
+2. 再看 Notebook，观察算法在小任务上的行为；
+3. 对比消融：能跑完不等于方法有效。
 
 ## 学习路线
 
@@ -58,7 +58,7 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 | 基础 | 1–3 | 探索、MDP、时序差分 |
 | 深度强化学习 | 4–8 | DQN、策略梯度、Actor-Critic、PPO、SAC |
 | 新视角 | 9–11 | 离线 RL、模型式 RL、Decision Transformer |
-| LLM 后训练 | 12–14 | RLHF、DPO、GRPO/RLVR |
+| 玩具后训练 | 12–14 | 玩具序列与两位数加法上的 RLHF、DPO、GRPO/RLVR |
 
 ## 章节
 
@@ -81,7 +81,7 @@ BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语
 
 ## 失败模式图鉴
 
-训练不收敛时，可以从症状开始查找：回报崩盘、Q 值上涨但策略变差、离线损失正常但回报塌缩，或者奖励看起来没问题却始终学不动。
+训练不收敛时，从症状查起：回报崩盘、Q 值上涨但策略变差、离线损失正常但回报塌缩，或代理奖励上涨而真实质量下降。
 
 先看[图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)（离线损失正常、回报塌缩），或[浏览完整图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)。每条记录都按“症状 → 机制 → 复现 → 修复”组织。
 

@@ -1,10 +1,12 @@
 (function () {
   'use strict';
 
+  function boot() {
   var root = document.getElementById('breakrl-demo');
-  if (!root) {
+  if (!root || root.getAttribute('data-breakrl-ready') === '1') {
     return;
   }
+  root.setAttribute('data-breakrl-ready', '1');
 
   var SVG_NS = 'http://www.w3.org/2000/svg';
   var svg = document.getElementById('breakrl-demo-chart');
@@ -16,7 +18,7 @@
   var language = 'en';
   var width = 760;
   var height = 390;
-  var margin = { top: 28, right: 58, bottom: 54, left: 62 };
+  var margin = { top: 28, right: 72, bottom: 54, left: 70 };
   var plotWidth = width - margin.left - margin.right;
   var plotHeight = height - margin.top - margin.bottom;
 
@@ -237,16 +239,27 @@
       r: 5
     }, curves);
 
+    var lossY = yScale(finalLoss) + 4;
+    var returnY = yScale(finalReturn) + 4;
+    if (Math.abs(lossY - returnY) < 16) {
+      if (lossY >= returnY) {
+        lossY += 9;
+        returnY -= 9;
+      } else {
+        lossY -= 9;
+        returnY += 9;
+      }
+    }
     var lossLabel = createSvgElement('text', {
       class: 'breakrl-demo__series-label',
       x: finalX + 9,
-      y: yScale(finalLoss) + 4
+      y: lossY
     }, curves);
     lossLabel.textContent = 'TD loss';
     var returnLabel = createSvgElement('text', {
       class: 'breakrl-demo__series-label',
       x: finalX + 9,
-      y: yScale(finalReturn) + 4
+      y: returnY
     }, curves);
     returnLabel.textContent = language === 'zh' ? '实际回报' : 'Return';
   }
@@ -258,5 +271,29 @@
     });
   });
 
-  setLanguage(document.documentElement.lang === 'en' ? 'en' : 'zh');
+  function siteLanguage() {
+    var stored = document.documentElement.getAttribute('data-breakrl-lang');
+    if (stored === 'en' || stored === 'zh') {
+      return stored;
+    }
+    return document.documentElement.lang === 'en' ? 'en' : 'zh';
+  }
+
+  setLanguage(siteLanguage());
+  new MutationObserver(function () {
+    var next = siteLanguage();
+    if (next !== language) {
+      setLanguage(next);
+    }
+  }).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-breakrl-lang', 'lang']
+  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();

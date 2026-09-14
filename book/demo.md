@@ -1,12 +1,9 @@
-# BreakRL Demo / 最小演示
-
-<link rel="stylesheet" href="_static/breakrl-demo.css">
+# Minimum demo
 
 <div id="breakrl-demo" class="breakrl-demo" data-lang="en">
   <div class="breakrl-demo__header">
     <div>
-      <p class="breakrl-demo__eyebrow">FAILURE-FIRST RL</p>
-      <h2 data-zh="损失下降，回报却塌缩" data-en="The loss goes down. The return collapses.">The loss goes down. The return collapses.</h2>
+      <p class="breakrl-demo__headline" data-zh="损失下降，回报却塌缩" data-en="The loss goes down. The return collapses.">The loss goes down. The return collapses.</p>
       <p class="breakrl-demo__lede" data-zh="离线数据没有覆盖的动作，会被 Q 学习的贪心目标高估。于是训练损失看起来正常，策略却学会了数据中从未出现过的动作。"
         data-en="When offline data does not cover an action, the greedy Q-learning target can overestimate it. The loss looks healthy while the policy learns an action the data never contained.">When offline data does not cover an action, the greedy Q-learning target can overestimate it. The loss looks healthy while the policy learns an action the data never contained.</p>
     </div>
@@ -36,7 +33,7 @@
 
   <div class="breakrl-demo__readout" role="status" aria-live="polite">
     <strong id="breakrl-demo-status">Failure mode: the loss falls while actual return collapses late in training.</strong>
-    <span id="breakrl-demo-metric" class="breakrl-demo__metric">Final return 0.08 · TD loss 0.08</span>
+    <span id="breakrl-demo-metric" class="breakrl-demo__metric">Final return 0.08 · TD loss 0.11</span>
   </div>
 
   <div class="breakrl-demo__legend" aria-label="Legend">
@@ -55,5 +52,3 @@
     <a href="offline-rl-text-en.html" data-zh-href="offline-rl-text.html" data-en-href="offline-rl-text-en.html" data-zh="打开正文 PDF" data-en="Open the chapter PDF">Open the chapter PDF</a>
   </p>
 </div>
-
-<script src="_static/breakrl-demo.js"></script>

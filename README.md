@@ -13,7 +13,7 @@
 
 **Learn reinforcement learning through failure**
 
-From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built around an ablation experiment
+Each chapter is an ablation: from bandits through PPO and SAC, then offline RL, then toy-task RLHF / DPO / GRPO.
 
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
@@ -25,7 +25,7 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 
 </div>
 
-BreakRL is a bilingual, failure-first reinforcement learning textbook (English default, Chinese edition) for learners, first-time paper readers, and anyone who wants to understand algorithms through small experiments. Each chapter explains why an algorithm works, then removes a key mechanism so you can see why it fails.
+BreakRL is a bilingual, failure-first RL textbook (English default, Chinese edition). Each chapter explains a mechanism, then removes it so you can see the failure. Chapters 12–14 use toy sequence tasks and two-digit addition; they are not a substitute for production RLHF, DPO, or GRPO training.
 
 **Current textbook:** v1.2.x on `main`. A V2 rewrite is an unstarted internal spec; it will not replace or empty this tree.
 
@@ -34,22 +34,22 @@ BreakRL is a bilingual, failure-first reinforcement learning textbook (English d
 </p>
 
 <p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">Open the minimum demo</a> and drag data coverage: the loss can keep falling while return collapses when coverage is too low.
+  <a href="https://powfu-zwx.github.io/BreakRL/demo.html">Open the minimum demo</a> and drag data coverage: at low coverage the teaching plot lets loss keep falling while return collapses. It does not train a model.
 </p>
 
 ## Start in three minutes
 
-1. Try the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag one slider to see loss fall while return collapses;
+1. Open the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag the coverage slider (teaching plot; it does not train);
 2. Open [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss): healthy offline loss, collapsing returns;
 3. Read the [Offline RL chapter](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) — [text PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text-en.html).
 
-No setup is needed for reading: the site displays saved experiment outputs. To rerun a chapter, open it in Colab from the table below, or install a local environment if you want to edit the notebooks. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
+No setup is needed for reading: the site displays saved experiment outputs. To rerun a chapter, open it in Colab from the table below, or install a local environment to edit the notebooks. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
 
-The learning loop is simple:
+The loop is:
 
-1. Read the derivation and mechanism;
-2. Open the notebook and observe the algorithm on a small task;
-3. Compare the ablations and separate “it runs” from “it works.”
+1. Read the chapter text for the problem, formulas, and mechanism;
+2. Open the notebook and watch the algorithm on a small task;
+3. Compare the ablations: a finished run is not the same as a method that works.
 
 ## Learning path
 
@@ -58,7 +58,7 @@ The learning loop is simple:
 | Foundations | 1–3 | Exploration, MDPs, and temporal-difference learning |
 | Deep RL | 4–8 | DQN, policy gradients, Actor-Critic, PPO, and SAC |
 | New views | 9–11 | Offline RL, model-based RL, and Decision Transformer |
-| LLM post-training | 12–14 | RLHF, DPO, and GRPO/RLVR |
+| Toy post-training | 12–14 | RLHF, DPO, and GRPO/RLVR on toy sequence and two-digit-addition tasks |
 
 ## Chapters
 
@@ -81,7 +81,7 @@ The learning loop is simple:
 
 ## The Failure Atlas
 
-When training does not converge, start with the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a reward that looks fine but never learns.
+When training does not converge, start from the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a proxy reward that climbs while true quality falls.
 
 Start with [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) (healthy offline loss, collapsing returns), or [browse the full atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html). Each entry follows “symptom → mechanism → reproduction → fix.”
 

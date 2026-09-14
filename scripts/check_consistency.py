@@ -331,6 +331,36 @@ def check_flagship_ring() -> list[str]:
     return errors
 
 
+def check_flagship_look() -> list[str]:
+    """Keep the site wordmark recolorable and the demo h1 in the accessibility tree."""
+    from check_site import css_hides_h1
+
+    errors = []
+    config = (BOOK / "_config.yml").read_text(encoding="utf-8")
+    if re.search(r"(?m)^\s*logo\s*:", config):
+        errors.append("book/_config.yml must not set an image logo; navbar brand is CSS text / currentColor")
+    logo = REPO_ROOT / "assets" / "breakrl-logo.svg"
+    if logo.is_file():
+        text = logo.read_text(encoding="utf-8", errors="ignore")
+        if "#171513" in text:
+            errors.append(
+                "assets/breakrl-logo.svg uses hardcoded fill #171513; "
+                "do not ship an image SVG the site cannot recolor"
+            )
+        else:
+            errors.append("assets/breakrl-logo.svg must not ship; navbar brand is CSS text / currentColor")
+    demo = (BOOK / "demo.md").read_text(encoding="utf-8")
+    if not re.search(r"(?m)^# ", demo):
+        errors.append("book/demo.md must keep a markdown level-one heading")
+    for css_name in ("breakrl.css", "breakrl-demo.css", "lang-toggle.css"):
+        css_path = BOOK / "_static" / css_name
+        if not css_path.is_file():
+            continue
+        if css_hides_h1(css_path.read_text(encoding="utf-8")):
+            errors.append(f"book/_static/{css_name}: must not display:none an h1")
+    return errors
+
+
 def main() -> int:
     errors = (
         check_chapters()
@@ -339,6 +369,7 @@ def main() -> int:
         + check_toc()
         + check_colab_entry_points()
         + check_flagship_ring()
+        + check_flagship_look()
     )
     if errors:
         for error in errors:

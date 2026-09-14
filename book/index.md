@@ -2,25 +2,25 @@
 
 **Learn reinforcement learning through failure.**
 
-BreakRL is a bilingual, failure-first textbook: each chapter explains why an algorithm works, then uses ablations to show what fails when a key mechanism is removed.
+BreakRL is a bilingual, failure-first textbook. Each chapter explains a mechanism, then removes it so you can see the failure.
 
 **Current textbook:** v1.2.x. A V2 rewrite is an unstarted internal spec; it will not replace or empty `main`.
 
 ## Start in three minutes
 
-1. Try the [minimum demo](demo) and drag one slider to see loss fall while return collapses;
+1. Open the [minimum demo](demo) and drag the coverage slider (a teaching plot; it does not train a model);
 2. Open <a href="failure-atlas-en.html#atlas-8-offline-loss">Failure Atlas #8</a> (healthy offline loss, collapsing returns);
 3. Read the Offline RL chapter: [text PDF](offline-rl-text-en) and the [saved experiment](notes/offline-rl/offline-rl_experiments_en.ipynb).
 
-You do not need an environment to read the site, and it does not execute training automatically. The catalog below is the rest of the book — start with the loop above, not Chapter 1.
+Reading the site needs no install. Pages render saved outputs and do not train. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
 
 ## How to read
 
-1. Read the derivation and mechanism;
-2. Open the experiment notebook and observe the algorithm on a small task;
-3. Compare the ablations and identify the difference between “it runs” and “it works.”
+1. Read the chapter text for the problem, formulas, and mechanism;
+2. Open the experiment notebook and watch the algorithm on a small task;
+3. Compare the ablations: a finished run is not the same as a method that works.
 
-When training does not converge, start with the [RL Failure Atlas](failure-atlas-en.md), organized as “symptom → mechanism → reproduction → fix.”
+When training does not converge, look up the symptom in the [RL Failure Atlas](failure-atlas-en.md) (“symptom → mechanism → reproduction → fix”).
 
 ## All chapters
 
@@ -40,5 +40,7 @@ When training does not converge, start with the [RL Failure Atlas](failure-atlas
 | 12. RLHF: from preferences to rewards | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_en.pdf) | [Read online](notes/rlhf/rlhf_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments_en.ipynb) |
 | 13. DPO: preference optimization without a reward model | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_en.pdf) | [Read online](notes/dpo/dpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_experiments_en.ipynb) |
 | 14. GRPO and RLVR: verifiable rewards | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_en.pdf) | [Read online](notes/grpo/grpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_experiments_en.ipynb) |
+
+Chapters 12–14 use toy sequence tasks and two-digit addition. They show the mechanisms; they are not a substitute for production RLHF, DPO, or GRPO training.
 
 The site displays saved notebook outputs and does not train models while you read. To run the experiments, use Colab in the table above or the local install in the [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.md#run-the-experiments).
