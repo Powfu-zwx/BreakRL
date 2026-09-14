@@ -45,12 +45,14 @@
     <span><i class="breakrl-demo__swatch breakrl-demo__swatch--baseline" aria-hidden="true"></i><span data-zh="行为克隆基线" data-en="Behavior-cloning baseline">Behavior-cloning baseline</span></span>
   </div>
 
-  <p class="breakrl-demo__note" data-zh="这是一个固定的教学示意，不会训练模型，也不代表某次实验的具体数值。想看真实消融结果，请进入完整章节。"
-    data-en="This is a fixed teaching illustration: it does not train a model and does not report the exact numbers from one experiment. Open the full chapter for the saved ablation results.">This is a fixed teaching illustration: it does not train a model and does not report the exact numbers from one experiment. Open the full chapter for the saved ablation results.</p>
+  <p class="breakrl-demo__note" data-zh="这是一个固定的教学示意，不会训练模型，也不代表某次实验的具体数值。同一条失败模式：最小演示 → 图鉴第 8 条 → 离线强化学习章。"
+    data-en="This is a fixed teaching illustration: it does not train a model and does not report the exact numbers from one experiment. Same failure mode: this demo → Failure Atlas #8 → the Offline RL chapter.">This is a fixed teaching illustration: it does not train a model and does not report the exact numbers from one experiment. Same failure mode: this demo → Failure Atlas #8 → the Offline RL chapter.</p>
   <p class="breakrl-demo__links">
-    <a href="notes/offline-rl/offline-rl_experiments_en.html" data-zh-href="notes/offline-rl/offline-rl_experiments.html" data-en-href="notes/offline-rl/offline-rl_experiments_en.html" data-zh="阅读离线强化学习章节" data-en="Read the Offline RL chapter">Read the Offline RL chapter</a>
+    <a href="failure-atlas-en.html#atlas-8-offline-loss" data-zh-href="failure-atlas.html#atlas-8-offline-loss" data-en-href="failure-atlas-en.html#atlas-8-offline-loss" data-zh="失败模式图鉴第 8 条" data-en="Failure Atlas #8">Failure Atlas #8</a>
     <span aria-hidden="true"> · </span>
-    <a href="failure-atlas-en.html" data-zh-href="failure-atlas.html" data-en-href="failure-atlas-en.html" data-zh="查看失败模式图鉴" data-en="Browse the Failure Atlas">Browse the Failure Atlas</a>
+    <a href="notes/offline-rl/offline-rl_experiments_en.html" data-zh-href="notes/offline-rl/offline-rl_experiments.html" data-en-href="notes/offline-rl/offline-rl_experiments_en.html" data-zh="阅读离线强化学习章" data-en="Read the Offline RL chapter">Read the Offline RL chapter</a>
+    <span aria-hidden="true"> · </span>
+    <a href="offline-rl-text-en.html" data-zh-href="offline-rl-text.html" data-en-href="offline-rl-text-en.html" data-zh="打开正文 PDF" data-en="Open the chapter PDF">Open the chapter PDF</a>
   </p>
 </div>
 

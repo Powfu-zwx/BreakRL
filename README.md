@@ -18,7 +18,8 @@ From multi-armed bandits to RLHF, DPO, and GRPO/RLVR, every chapter is built aro
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>Demo</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html"><b>Failure atlas</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss"><b>Failure Atlas #8</b></a> ·
+  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html"><b>Offline RL</b></a> ·
   <a href="README.zh.md"><b>中文</b></a>
 </p>
 
@@ -39,10 +40,10 @@ BreakRL is a bilingual, failure-first reinforcement learning textbook (English d
 ## Start in three minutes
 
 1. Try the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo.html) and drag one slider to see loss fall while return collapses;
-2. Open the [online book](https://powfu-zwx.github.io/BreakRL/) and start with Chapter 1;
-3. Use the [Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html) to look up one symptom and its mechanism.
+2. Open [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss): healthy offline loss, collapsing returns;
+3. Read the [Offline RL chapter](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) — [text PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text-en.html).
 
-No setup is needed for reading: the site displays saved experiment outputs. To rerun a chapter, open it in Colab from the table below, or install a local environment if you want to edit the notebooks.
+No setup is needed for reading: the site displays saved experiment outputs. To rerun a chapter, open it in Colab from the table below, or install a local environment if you want to edit the notebooks. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
 
 The learning loop is simple:
 
@@ -71,7 +72,7 @@ The learning loop is simple:
 | 6 | Actor-Critic / A2C | [PDF](book/notes/actor-critic/ac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/actor-critic/ac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/actor-critic/ac_experiments_en.ipynb) |
 | 7 | PPO: constrained policy updates | [PDF](book/notes/ppo/ppo_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/ppo/ppo_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/ppo/ppo_experiments_en.ipynb) |
 | 8 | SAC: maximum-entropy continuous control | [PDF](book/notes/sac/sac_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/sac/sac_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/sac/sac_experiments_en.ipynb) |
-| 9 | Offline RL: CQL and IQL | [PDF](book/notes/offline-rl/offline-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments_en.ipynb) |
+| 9 | Offline RL: CQL and IQL | [PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text-en.html) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments_en.ipynb) |
 | 10 | Model-based RL: Dyna-Q | [PDF](book/notes/model-based-rl/model-based-rl_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/model-based-rl/model-based-rl_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/model-based-rl/model-based-rl_experiments_en.ipynb) |
 | 11 | Decision Transformer | [PDF](book/notes/decision-transformer/decision-transformer_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/decision-transformer/decision-transformer_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/decision-transformer/decision-transformer_experiments_en.ipynb) |
 | 12 | RLHF: from preferences to rewards | [PDF](book/notes/rlhf/rlhf_en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/rlhf/rlhf_experiments_en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments_en.ipynb) |
@@ -82,7 +83,7 @@ The learning loop is simple:
 
 When training does not converge, start with the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a reward that looks fine but never learns.
 
-[Open the RL Failure Atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html): each entry follows “symptom → mechanism → reproduction → fix.”
+Start with [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) (healthy offline loss, collapsing returns), or [browse the full atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html). Each entry follows “symptom → mechanism → reproduction → fix.”
 
 ## Run the experiments
 

@@ -48,7 +48,9 @@ const pairs = [
   ['notes/rlhf/rlhf_experiments.html', 'notes/rlhf/rlhf_experiments_en.html'],
   ['notes/dpo/dpo_experiments.html', 'notes/dpo/dpo_experiments_en.html'],
   ['notes/grpo/grpo_experiments.html', 'notes/grpo/grpo_experiments_en.html'],
-  ['failure-atlas.html', 'failure-atlas-en.html']
+  ['failure-atlas.html', 'failure-atlas-en.html'],
+  ['offline-rl-text.html', 'offline-rl-text-en.html'],
+  ['index-zh.html', 'index.html']
 ];
 
 for (const [zh, en] of pairs) {
@@ -58,7 +60,15 @@ for (const [zh, en] of pairs) {
   assert.equal(toggle.parallelPath(`/BreakRL/${zh}`, 'zh'), null);
 }
 
-for (const shared of ['/', '/BreakRL/', '/BreakRL/index.html', '/BreakRL/search.html', '/BreakRL/genindex.html']) {
+assert.equal(toggle.parallelPath('/BreakRL/', 'zh'), '/BreakRL/index-zh.html');
+assert.equal(toggle.parallelPath('/BreakRL/index.html', 'zh'), '/BreakRL/index-zh.html');
+assert.equal(toggle.parallelPath('/BreakRL/index-zh.html', 'en'), '/BreakRL/index.html');
+assert.equal(toggle.parallelPath('/BreakRL/index.html', 'en'), null);
+assert.equal(toggle.pageLanguage('/BreakRL/'), 'en');
+assert.equal(toggle.pageLanguage('/BreakRL/index.html'), 'en');
+assert.equal(toggle.pageLanguage('/BreakRL/index-zh.html'), 'zh');
+
+for (const shared of ['/BreakRL/search.html', '/BreakRL/genindex.html']) {
   assert.equal(toggle.parallelPath(shared, 'zh'), null);
   assert.equal(toggle.parallelPath(shared, 'en'), null);
 }
@@ -109,7 +119,16 @@ assert.equal(
 
 assert.match(source, /saved \|\| pageLang \|\| LANG_EN/);
 assert.match(source, /\[LANG_EN, LANG_ZH\]/);
-assert.match(source, /href === '#' \|\| href === '#breakrl-english'/);
+assert.equal(
+  preferredRedirect('/BreakRL/index.html', 'zh'),
+  '/BreakRL/index-zh.html?from=deep-link#section'
+);
+assert.equal(
+  preferredRedirect('/BreakRL/', 'zh'),
+  '/BreakRL/index-zh.html?from=deep-link#section'
+);
+assert.match(source, /index-zh\.html/);
+assert.match(source, /if \(!cn \|\| !en\)/);
 assert.match(source, /setAttribute\('aria-pressed'/);
 assert.match(source, /role', 'group'/);
 assert.match(source, /bd-sidebar-secondary/);

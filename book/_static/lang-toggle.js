@@ -7,11 +7,14 @@
 
   // Only book pages have language counterparts. Shared utility pages stay put.
   var PAGE_MAP = {
-    'index.html': { zh: 'index.html', en: 'index.html' },
+    'index.html': { zh: 'index-zh.html', en: 'index.html' },
+    'index-zh.html': { zh: 'index-zh.html', en: 'index.html' },
     'search.html': { zh: 'search.html', en: 'search.html' },
     'genindex.html': { zh: 'genindex.html', en: 'genindex.html' },
     'failure-atlas.html': { zh: 'failure-atlas.html', en: 'failure-atlas-en.html' },
     'failure-atlas-en.html': { zh: 'failure-atlas.html', en: 'failure-atlas-en.html' },
+    'offline-rl-text.html': { zh: 'offline-rl-text.html', en: 'offline-rl-text-en.html' },
+    'offline-rl-text-en.html': { zh: 'offline-rl-text.html', en: 'offline-rl-text-en.html' },
     'notes/multi-armed-bandit/multi-armed-bandit_experiments.html': {
       zh: 'notes/multi-armed-bandit/multi-armed-bandit_experiments.html',
       en: 'notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html'
@@ -186,6 +189,14 @@
     var path = String(pathname || '').split(/[?#]/)[0];
     if (path === key) {
       return page[lang];
+    }
+    if (key === 'index.html') {
+      if (/\/$/.test(path)) {
+        return path + page[lang];
+      }
+      if (/(?:^|\/)index\.html$/.test(path)) {
+        return path.replace(/index\.html$/, page[lang]);
+      }
     }
     var marker = '/' + key;
     var start = path.lastIndexOf(marker);
@@ -365,12 +376,13 @@
   function filterIndex(lang) {
     var cn = document.getElementById('breakrl');
     var en = document.getElementById('breakrl-english');
-    if (cn) {
-      cn.hidden = lang === LANG_EN;
+    // Split homepages only have one of these ids. Hiding #breakrl would
+    // conceal the entire English (or Chinese) article body.
+    if (!cn || !en) {
+      return;
     }
-    if (en) {
-      en.hidden = lang === LANG_ZH;
-    }
+    cn.hidden = lang === LANG_EN;
+    en.hidden = lang === LANG_ZH;
 
     document.querySelectorAll('.bd-sidebar-secondary a').forEach(function (link) {
       var href = link.getAttribute('href');
