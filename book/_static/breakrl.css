@@ -225,3 +225,235 @@ article.bd-article,
     min-height: 22rem;
   }
 }
+
+/* Code: Spinning Up-like light monospace. No pink literals, no cell chrome. */
+:root {
+  --breakrl-mono: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --breakrl-code-bg: #f6f6f7;
+  --pst-font-family-monospace: var(--breakrl-mono);
+  --mystnb-source-bg-color: var(--breakrl-code-bg);
+  --mystnb-stdout-bg-color: var(--breakrl-code-bg);
+  --mystnb-source-border-color: var(--breakrl-line);
+  --mystnb-source-margin-color: var(--breakrl-line);
+  --mystnb-stdout-border-color: var(--breakrl-line);
+  --mystnb-source-border-radius: 0;
+  --mystnb-source-border-width: 1px;
+}
+
+html[data-theme="light"],
+html:not([data-theme="dark"]) {
+  --pst-color-inline-code: var(--breakrl-text);
+}
+
+html[data-theme="dark"] {
+  --breakrl-code-bg: #1c1c22;
+  --pst-color-inline-code: var(--breakrl-text);
+}
+
+code,
+kbd,
+samp,
+pre,
+.highlight,
+.highlight pre {
+  font-family: var(--breakrl-mono);
+}
+
+code,
+kbd,
+samp {
+  font-size: 0.875em;
+}
+
+code.literal,
+code.docutils,
+:not(pre) > code {
+  background: var(--breakrl-code-bg);
+  border: 0;
+  border-radius: 0.15rem;
+  box-shadow: none;
+  color: var(--breakrl-text);
+  padding: 0.12em 0.35em;
+}
+
+a > code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+div.highlight,
+div.literal-block-wrapper,
+div[class*="highlight-"],
+pre {
+  background: var(--breakrl-code-bg);
+  border: 1px solid var(--breakrl-line);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--breakrl-text);
+}
+
+div.highlight pre,
+div[class*="highlight-"] pre,
+pre.literal-block {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0.85rem 1rem;
+}
+
+div.cell > div.cell_input,
+div.cell_output .output.stream,
+div.cell_output .output.text_plain,
+div.cell_output .output.stderr,
+div.cell_output .output.traceback {
+  background: var(--breakrl-code-bg);
+  border: 1px solid var(--breakrl-line);
+  border-left-color: var(--breakrl-line);
+  border-left-width: 1px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+div.cell_input div.highlight,
+div.cell_input div[class*="highlight-"],
+div.cell_output div.highlight,
+div.cell_output div[class*="highlight-"],
+div.cell_input pre,
+div.cell_output pre {
+  background: transparent;
+  border: 0;
+}
+
+div.cell_output {
+  margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+div.cell_output .output.stderr {
+  background: #fbf6f6;
+}
+
+html[data-theme="dark"] div.cell_output .output.stderr {
+  background: #24181a;
+}
+
+button.copybtn {
+  background: var(--breakrl-code-bg);
+  border: 1px solid var(--breakrl-line);
+  border-radius: 0.15rem;
+  color: var(--breakrl-muted);
+}
+
+/* Sphinx-like tokens: readable, not magenta/cyan. */
+html[data-theme="light"] .highlight {
+  background: var(--breakrl-code-bg);
+  color: #404040;
+}
+
+html[data-theme="light"] .highlight .c,
+html[data-theme="light"] .highlight .c1,
+html[data-theme="light"] .highlight .cm,
+html[data-theme="light"] .highlight .cs,
+html[data-theme="light"] .highlight .ch,
+html[data-theme="light"] .highlight .cp,
+html[data-theme="light"] .highlight .cpf {
+  color: #5a7a82;
+  font-style: italic;
+}
+
+html[data-theme="light"] .highlight .k,
+html[data-theme="light"] .highlight .kc,
+html[data-theme="light"] .highlight .kd,
+html[data-theme="light"] .highlight .kn,
+html[data-theme="light"] .highlight .kp,
+html[data-theme="light"] .highlight .kr,
+html[data-theme="light"] .highlight .ow {
+  color: #207040;
+  font-weight: 700;
+}
+
+html[data-theme="light"] .highlight .s,
+html[data-theme="light"] .highlight .s1,
+html[data-theme="light"] .highlight .s2,
+html[data-theme="light"] .highlight .sa,
+html[data-theme="light"] .highlight .sb,
+html[data-theme="light"] .highlight .sc,
+html[data-theme="light"] .highlight .dl,
+html[data-theme="light"] .highlight .sd,
+html[data-theme="light"] .highlight .se,
+html[data-theme="light"] .highlight .sh,
+html[data-theme="light"] .highlight .si,
+html[data-theme="light"] .highlight .sx,
+html[data-theme="light"] .highlight .sr,
+html[data-theme="light"] .highlight .ss {
+  color: #3d6a96;
+}
+
+html[data-theme="light"] .highlight .m,
+html[data-theme="light"] .highlight .mi,
+html[data-theme="light"] .highlight .mf,
+html[data-theme="light"] .highlight .mh,
+html[data-theme="light"] .highlight .mb,
+html[data-theme="light"] .highlight .mo,
+html[data-theme="light"] .highlight .il,
+html[data-theme="light"] .highlight .l,
+html[data-theme="light"] .highlight .ld,
+html[data-theme="light"] .highlight .nb,
+html[data-theme="light"] .highlight .bp,
+html[data-theme="light"] .highlight .kt {
+  color: #2a7a4d;
+}
+
+html[data-theme="light"] .highlight .nf,
+html[data-theme="light"] .highlight .fm,
+html[data-theme="light"] .highlight .nc,
+html[data-theme="light"] .highlight .nn,
+html[data-theme="light"] .highlight .nd,
+html[data-theme="light"] .highlight .nt {
+  color: #1d5a8a;
+}
+
+html[data-theme="light"] .highlight .n,
+html[data-theme="light"] .highlight .p,
+html[data-theme="light"] .highlight .o,
+html[data-theme="light"] .highlight .nv,
+html[data-theme="light"] .highlight .vc,
+html[data-theme="light"] .highlight .vg,
+html[data-theme="light"] .highlight .vi,
+html[data-theme="light"] .highlight .na {
+  color: #404040;
+}
+
+html[data-theme="dark"] .highlight {
+  background: var(--breakrl-code-bg);
+  color: #d8d8de;
+}
+
+html[data-theme="dark"] .highlight .c,
+html[data-theme="dark"] .highlight .c1,
+html[data-theme="dark"] .highlight .cm {
+  color: #8a9aa3;
+}
+
+html[data-theme="dark"] .highlight .k,
+html[data-theme="dark"] .highlight .kn,
+html[data-theme="dark"] .highlight .kc {
+  color: #8fbf9a;
+}
+
+html[data-theme="dark"] .highlight .s,
+html[data-theme="dark"] .highlight .s1,
+html[data-theme="dark"] .highlight .s2 {
+  color: #8fb4d4;
+}
+
+html[data-theme="dark"] .highlight .n,
+html[data-theme="dark"] .highlight .p,
+html[data-theme="dark"] .highlight .o,
+html[data-theme="dark"] .highlight .nv {
+  color: #d8d8de;
+}
