@@ -25,7 +25,7 @@ When training does not converge, look up the **symptom**. Each entry gives a mec
 
 ## 4. A mid-training cliff: returns collapse
 
-- **Symptom**: Early progress is normal; after some update the return plunges (to the $-8000$ range), then recovers slowly — or never.
+- **Symptom**: Early progress is normal; after some update the return plunges (to the $-8000$ range on LunarLander-v3), then recovers slowly and stays below the clipped run.
 - **Mechanism**: The same batch of data is reused for many epochs with unconstrained updates, pushing the policy away from the data-collecting policy; a few transitions' importance ratios blow far past the boundary and erroneous gradients accumulate.
 - **Reproduce**: [PPO chapter](notes/ppo/ppo_experiments_en.ipynb) Figures 1 and 3.
 - **Fix**: PPO's clip truncates the gradient on out-of-bound ratios, or use a TRPO-style trust region. Note: the mean ratio hides the problem — inspect the tail of the distribution.
@@ -84,12 +84,12 @@ When training does not converge, look up the **symptom**. Each entry gives a mec
 - **Reproduce**: [TD learning chapter](notes/temporal-difference-learning/temporal-difference-learning_experiments_en.ipynb) Figures 1 and 2.
 - **Fix**: Treat $n$ (or $\lambda$) as a first-class hyperparameter; TD tolerates larger step sizes than MC.
 
-## 12. Model-based methods: more planning, worse performance
+## 12. Model-based methods: a wrong model makes planning amplify bias
 
-- **Symptom**: Increasing the number of planning steps lowers or destabilizes success rates in stochastic environments.
-- **Mechanism**: Model bias is amplified by planning — a wrong model representation (e.g., a last-observation model that records a stochastic transition as whatever was last observed) makes planning overgeneralize.
-- **Reproduce**: [Model-based RL chapter](notes/model-based-rl/model-based-rl_experiments_en.ipynb) Figure 3 (contrast Figure 1: in deterministic environments planning is nearly free).
-- **Fix**: Approximate the true transition distribution with an empirical count model; planning returns diminish marginally, so match the planning budget to model quality (see Figure 2 of that chapter).
+- **Symptom**: On stochastic FrozenLake, a last-observation model overgeneralizes. Coverage is low for both models in this run; greedy success stays near zero — read the scatter shape, not the absolute rate.
+- **Mechanism**: Planning amplifies model bias. A last-observation model records a stochastic transition as whatever was last observed, so planning treats accidents as certainties.
+- **Reproduce**: [Model-based RL chapter](notes/model-based-rl/model-based-rl_experiments_en.ipynb) Figure 3. Contrast Figure 1: on deterministic CliffWalking the model is exact, so more planning helps.
+- **Fix**: Use an empirical count model for the transition distribution. Planning returns diminish; match the budget to model quality (Figure 2 of that chapter).
 
 ## 13. RLHF: the proxy reward keeps rising while true quality collapses
 
@@ -119,7 +119,7 @@ When training does not converge, look up the **symptom**. Each entry gives a mec
 - **Reproduce**: [Decision Transformer chapter](notes/decision-transformer/decision-transformer_experiments_en.ipynb) Figure 1 right (OOD targets fail), Figure 2 (three data-quality ceilings).
 - **Fix**: Keep targets inside the data's return range; when the data is near-optimal, DT/SFT suffices — to exceed the data, use value-based methods such as CQL/IQL.
 
-## 17. The offline data clearly suffices, yet the optimal policy can't be stitched together
+## 17. The offline data clearly suffices, yet the optimal policy cannot be stitched together
 
 - **Symptom**: The data covers every transition the optimal path needs (just never within a single trajectory); Q-learning-style methods stitch out the optimum, while DT/BC-style sequence or imitation methods cannot — it looks like poor generalization but is actually the inability to stitch.
 - **Mechanism**: A sequence model's context is a within-trajectory history — it retrieves whole sequences it has seen; it does not compose transitions across trajectories. Dynamic-programming backups never ask which trajectory a transition came from, so they stitch naturally.

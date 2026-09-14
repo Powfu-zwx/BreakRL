@@ -13,7 +13,7 @@
 
 **Learn reinforcement learning through failure**
 
-Each chapter is an ablation: from bandits through PPO and SAC, then offline RL, then toy RLHF / DPO / GRPO.
+Each chapter is an ablation: from bandits through PPO and SAC, then offline RL, then toy-task RLHF / DPO / GRPO.
 
 <p>
   <a href="https://powfu-zwx.github.io/BreakRL/"><b>Read online</b></a> ·
@@ -25,7 +25,7 @@ Each chapter is an ablation: from bandits through PPO and SAC, then offline RL, 
 
 </div>
 
-BreakRL is a bilingual, failure-first RL textbook (English default, Chinese edition). Each chapter explains a mechanism, then removes it so you can see the failure. Chapters 12–14 use toy sequence and arithmetic tasks; they are not a substitute for production RLHF, DPO, or GRPO training.
+BreakRL is a bilingual, failure-first RL textbook (English default, Chinese edition). Each chapter explains a mechanism, then removes it so you can see the failure. Chapters 12–14 use toy sequence tasks and two-digit addition; they are not a substitute for production RLHF, DPO, or GRPO training.
 
 **Current textbook:** v1.2.x on `main`. A V2 rewrite is an unstarted internal spec; it will not replace or empty this tree.
 
@@ -58,7 +58,7 @@ The loop is:
 | Foundations | 1–3 | Exploration, MDPs, and temporal-difference learning |
 | Deep RL | 4–8 | DQN, policy gradients, Actor-Critic, PPO, and SAC |
 | New views | 9–11 | Offline RL, model-based RL, and Decision Transformer |
-| Toy post-training | 12–14 | RLHF, DPO, and GRPO/RLVR on synthetic tasks |
+| Toy post-training | 12–14 | RLHF, DPO, and GRPO/RLVR on toy sequence and two-digit-addition tasks |
 
 ## Chapters
 

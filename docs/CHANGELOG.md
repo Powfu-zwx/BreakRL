@@ -8,6 +8,7 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 - Use a CSS text wordmark (`currentColor`) instead of a fixed-fill SVG that disappears on a dark sidebar.
 - Keep the demo page `<h1>` in the accessibility tree (no `display:none` on the only level-one heading).
 - Tighten flagship copy: the demo is a teaching plot (default metric matches the script), Atlas #8 does not talk about deployment, Atlas #13 uses the toy-task true score rather than “human spot checks,” and chapters 12–14 are labeled as toy post-training.
+- Correct Atlas #12 against the model-based notebook (FrozenLake model bias, not “more planning, worse performance”); name LunarLander on Atlas #4; drop leftover chapter overclaims (production RLHF pipeline, DPO “same final quality,” GRPO vs an unrun batch baseline, CartPole as high-dimensional DQN).
 - Point the three-minute start at the flagship loop: live demo → Failure Atlas #8 → Offline RL.
 - Serve the homepage in one language at a time (English default, Chinese via the language switch).
 - Open the Offline RL chapter PDFs on the site instead of a GitHub blob.

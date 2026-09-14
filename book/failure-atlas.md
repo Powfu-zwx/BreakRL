@@ -25,7 +25,7 @@
 
 ## 4. 训练中途回报断崖式崩盘
 
-- **症状**：前期正常，某次更新后回报暴跌（可到 $-8000$ 量级），之后缓慢恢复或不再恢复。
+- **症状**：前期正常，某次更新后回报暴跌（LunarLander-v3 上可到 $-8000$ 量级），之后缓慢恢复，仍低于有 clip 的版本。
 - **机制**：同一批数据复用多轮、更新无约束，策略被推离数据来源策略；个别 transition 的重要性比值远超界限，错误梯度被放大累积。
 - **复现**：[PPO 章](notes/ppo/ppo_experiments.ipynb) Figure 1、Figure 3。
 - **修复**：PPO clip 截断越界比值的梯度，或 TRPO 式信任域。注意：均值比值看不出问题，要看尾部分布。
@@ -84,12 +84,12 @@
 - **复现**：[时序差分学习章](notes/temporal-difference-learning/temporal-difference-learning_experiments.ipynb) Figure 1、Figure 2。
 - **修复**：把 $n$（或 $\lambda$）当一等公民超参对待；TD 可以用比 MC 更大的步长。
 
-## 12. 模型式方法：规划越多反而越差
+## 12. 模型式方法：错误模型会让规划放大偏差
 
-- **症状**：加大规划步数后，随机环境中成功率不升反降或波动巨大。
-- **机制**：模型偏差被规划放大——错误的模型表示（如 last-observation 把随机转移记成最后一次观测）让规划以偏概全。
-- **复现**：[模型式强化学习章](notes/model-based-rl/model-based-rl_experiments.ipynb) Figure 3（对照 Figure 1：确定性环境中规划几乎免费）。
-- **修复**：用经验计数模型逼近真实转移分布；规划收益边际递减，预算要与模型质量匹配（见该章 Figure 2）。
+- **症状**：随机 FrozenLake 上，last-observation 模型会以偏概全。本实验里两种模型的覆盖都低，贪心成功率接近 0——看散点形态，不要看绝对值。
+- **机制**：规划会放大模型偏差。last-observation 把随机转移记成最后一次观测，规划就把偶然当成必然。
+- **复现**：[模型式强化学习章](notes/model-based-rl/model-based-rl_experiments.ipynb) Figure 3。对照 Figure 1：确定性 CliffWalking 上模型是准的，多规划有帮助。
+- **修复**：用经验计数模型估计转移分布。规划收益边际递减，预算要与模型质量匹配（见该章 Figure 2）。
 
 ## 13. RLHF：代理奖励一直涨，真实质量却在崩
 

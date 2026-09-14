@@ -41,6 +41,6 @@ When training does not converge, look up the symptom in the [RL Failure Atlas](f
 | 13. DPO: preference optimization without a reward model | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_en.pdf) | [Read online](notes/dpo/dpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_experiments_en.ipynb) |
 | 14. GRPO and RLVR: verifiable rewards | [PDF](https://github.com/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_en.pdf) | [Read online](notes/grpo/grpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_experiments_en.ipynb) |
 
-Chapters 12–14 use toy sequence and arithmetic tasks. They show the mechanisms; they are not a substitute for production RLHF, DPO, or GRPO training.
+Chapters 12–14 use toy sequence tasks and two-digit addition. They show the mechanisms; they are not a substitute for production RLHF, DPO, or GRPO training.
 
 The site displays saved notebook outputs and does not train models while you read. To run the experiments, use Colab in the table above or the local install in the [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.md#run-the-experiments).
