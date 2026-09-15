@@ -1,10 +1,17 @@
-"""Materialize saved notebook image outputs for a no-execution book build."""
+"""Place the assets the site links but Jupyter Book does not copy.
+
+Saved notebook image outputs, which myst-nb resolves from disk by content hash
+because the book is not executed, and the files pages embed as raw HTML, which
+Jupyter Book only copies when a markdown link points at them.
+"""
 import base64
 import hashlib
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
@@ -63,36 +70,47 @@ def prepare_build_assets(app):
     prepare_assets(output_folder=Path(app.outdir).parent / "jupyter_execute")
 
 
-# The site renders saved outputs, so a chapter PDF that a text page embeds
-# inline must exist in the build; Jupyter Book copies linked files but not
-# `<object data=...>` targets.
-INLINE_CHAPTER_PDFS = (
-    NOTES / "offline-rl" / "offline-rl.pdf",
-    NOTES / "offline-rl" / "offline-rl_en.pdf",
-)
+# A page that embeds a file with `<object data=...>` gets no help from Jupyter
+# Book: it rewrites markdown links into `_downloads/` and copies the target, but
+# leaves raw HTML alone. The embedded files therefore have to be found in the
+# pages and copied to the path the page names.
+INLINE_OBJECT = re.compile(r"<object[^>]*\sdata=\"([^\"]+)\"")
 
 
-def copy_inline_chapter_pdfs(outdir: Path) -> int:
-    dest_dir = Path(outdir) / "notes" / "offline-rl"
-    dest_dir.mkdir(parents=True, exist_ok=True)
+def inline_assets() -> list[Path]:
+    found = set()
+    for page in sorted(BOOK.rglob("*.md")):
+        if "_build" in page.parts:
+            continue
+        for target in INLINE_OBJECT.findall(page.read_text(encoding="utf-8")):
+            parsed = urlsplit(target)
+            if parsed.scheme or parsed.netloc or parsed.path.startswith("/"):
+                continue
+            asset = (page.parent / parsed.path).resolve()
+            if asset.is_file() and asset.is_relative_to(BOOK):
+                found.add(asset)
+    return sorted(found)
+
+
+def copy_inline_assets(outdir: Path) -> int:
     copied = 0
-    for src in INLINE_CHAPTER_PDFS:
-        if not src.is_file():
-            raise FileNotFoundError(src)
-        shutil.copy2(src, dest_dir / src.name)
+    for src in inline_assets():
+        dest = Path(outdir) / src.relative_to(BOOK)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dest)
         copied += 1
     return copied
 
 
-def copy_inline_chapter_pdfs_on_build(app, exception):
+def copy_inline_assets_on_build(app, exception):
     if exception:
         return
-    copy_inline_chapter_pdfs(Path(app.outdir))
+    copy_inline_assets(Path(app.outdir))
 
 
 def setup(app):
     app.connect("builder-inited", prepare_build_assets)
-    app.connect("build-finished", copy_inline_chapter_pdfs_on_build)
+    app.connect("build-finished", copy_inline_assets_on_build)
     return {
         "version": "1.1",
         "parallel_read_safe": True,

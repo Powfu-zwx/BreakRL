@@ -1,9 +1,12 @@
 """Set the generated HTML locale for Chinese book pages.
 
 The site default language is English. Chinese experiment notebooks and the
-Chinese failure atlas still need zh_CN so screen readers, search, and the
-language toggle see the correct page locale.
+Chinese failure atlas still need a Chinese tag so screen readers, search, and
+the language toggle see the correct page locale. Sphinx writes this value into
+`<html lang>` and `docsearch:language` verbatim, so it has to be a BCP 47 tag.
 """
+
+CHINESE_LANGUAGE = "zh-CN"
 
 
 def is_chinese_page(pagename):
@@ -14,7 +17,7 @@ def is_chinese_page(pagename):
 
 def set_page_language(app, pagename, templatename, context, doctree):
     if is_chinese_page(pagename):
-        context["language"] = "zh_CN"
+        context["language"] = CHINESE_LANGUAGE
 
 
 def setup(app):

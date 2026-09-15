@@ -13,7 +13,10 @@ from breakrl_locale import is_chinese_page  # noqa: E402
 from paths import BOOK_BUILD  # noqa: E402
 
 DEFAULT_BUILD = BOOK_BUILD
-CHINESE_LANG_VALUES = {"zh-CN", "zh_CN", "zh"}
+# Sphinx writes the language into `<html lang>` and `docsearch:language`
+# verbatim, so these are BCP 47 tags. `zh_CN` is a Python locale name, not a
+# tag, and belongs here only as a failure.
+CHINESE_LANG_VALUES = {"zh-CN", "zh"}
 _H1_IN_SELECTOR = re.compile(r"(^|[\s,>+~])h1($|[\s,:+.\[#>~])", re.I)
 _DISPLAY_NONE = re.compile(r"display\s*:\s*none", re.I)
 
@@ -27,18 +30,17 @@ class LinkParser(HTMLParser):
         self.html_lang: str | None = None
         self.docsearch_language: str | None = None
 
-    def _collect(self, attrs: list[tuple[str, str | None]]) -> None:
-        for name, value in attrs:
-            if name in {"href", "src"} and value:
-                self.links.append(value)
-
     def _process_tag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
         if tag == "html":
             self.html_lang = attributes.get("lang")
         if tag == "meta" and attributes.get("name") == "docsearch:language":
             self.docsearch_language = attributes.get("content")
-        self._collect(attrs)
+        # A page embeds its own PDFs with `<object data=...>`, and Jupyter Book
+        # neither rewrites nor copies those. Any other `data` attribute is a
+        # value the site scripts read, not a file.
+        names = {"href", "src"} | ({"data"} if tag in {"object", "embed"} else set())
+        self.links.extend(value for name, value in attrs if name in names and value)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self._process_tag(tag, attrs)

@@ -13,6 +13,19 @@ if str(_SCRIPTS) not in sys.path:
 FIGURE_ENVIRONMENT = re.compile(r"\\begin\{figure\}\[([^]]+)\]")
 INCLUDE_GRAPHIC = re.compile(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}")
 TOC_FILE_ENTRY = re.compile(r"^\s*-\s+file:\s+(\S+)", re.MULTILINE)
+MARKDOWN_LINK = re.compile(r"\]\(([^)\s]+)")
+HTML_HREF = re.compile(r'href="([^"]+)"')
+
+# The reader's entry path: the minimum demo, Failure Atlas #8, then the Offline
+# RL chapter. Each of these pages restates it in its own markup, so the check
+# asks for the link targets and leaves the wording around them to the author.
+# It is a page-level check: it says the path is still offered, not where.
+ENTRY_PAGES = (
+    ("README.md", "failure-atlas-en.html"),
+    ("README.zh.md", "failure-atlas.html"),
+    ("book/index.md", "failure-atlas-en.html"),
+    ("book/index-zh.md", "failure-atlas.html"),
+)
 
 
 def chapter_dirs() -> list[Path]:
@@ -202,6 +215,32 @@ def check_toc() -> list[str]:
     return errors
 
 
+def _link_targets(text: str) -> list[str]:
+    """Every link target in a markdown document, raw HTML anchors included."""
+    return MARKDOWN_LINK.findall(text) + HTML_HREF.findall(text)
+
+
+def check_entry_path() -> list[str]:
+    errors = []
+    for name, atlas in ENTRY_PAGES:
+        path = REPO_ROOT / name
+        if not path.is_file():
+            errors.append(f"missing entry page {name}")
+            continue
+        targets = _link_targets(path.read_text(encoding="utf-8"))
+        wanted = {
+            "the minimum demo": [t for t in targets if t.rstrip("/").endswith(("demo", "demo.html"))],
+            f"{atlas}#atlas-8-offline-loss": [
+                t for t in targets if t.endswith(f"{atlas}#atlas-8-offline-loss")
+            ],
+            "the Offline RL chapter": [t for t in targets if "offline-rl" in t],
+        }
+        for label, matches in wanted.items():
+            if not matches:
+                errors.append(f"{name}: entry path no longer links {label}")
+    return errors
+
+
 def check_colab_entry_points() -> list[str]:
     from colab_setup import bootstrap_source, colab_notebook_url
 
@@ -251,6 +290,7 @@ def main() -> int:
         + check_bilingual()
         + check_tex()
         + check_toc()
+        + check_entry_path()
         + check_colab_entry_points()
     )
     if errors:

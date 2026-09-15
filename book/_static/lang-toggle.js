@@ -107,13 +107,12 @@
     return target + (window.location.search || '') + (window.location.hash || '');
   }
 
-  function pageLanguage(pathname) {
-    var location = pageLocation(pathname);
-    var pair = pagePair(location);
-    if (!pair) {
-      return null;
-    }
-    return location.name === pair.en ? LANG_EN : LANG_ZH;
+  // The build states each page's own language in the HTML it generates
+  // (`scripts/breakrl_locale.py` owns that rule), so the toggle reads it rather
+  // than deriving the same answer a second time.
+  function pageLanguage() {
+    var lang = document.documentElement.getAttribute('lang') || '';
+    return /^zh\b/i.test(lang) ? LANG_ZH : LANG_EN;
   }
 
   function storedLang() {
@@ -289,9 +288,9 @@
   }
 
   function init() {
+    var pageLang = pageLanguage();
     var saved = storedLang();
-    var pageLang = pageLanguage(window.location.pathname);
-    if (saved && pageLang && saved !== pageLang) {
+    if (saved && saved !== pageLang) {
       var target = parallelTarget(saved);
       if (target) {
         window.location.replace(target);
@@ -315,11 +314,11 @@
       }
     }
     hosts.forEach(installButton);
-    setLangState(saved || pageLang || LANG_EN);
+    setLangState(saved || pageLang);
   }
 
   window.BreakRLLanguageToggle = {
-    pageLanguage: pageLanguage,
+    textPages: TEXT_PAGES,
     parallelPath: parallelPath,
     parallelTarget: parallelTarget
   };

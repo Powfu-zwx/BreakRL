@@ -59,16 +59,19 @@ assert.equal(toggle.parallelPath('/BreakRL/', 'zh'), '/BreakRL/index-zh.html');
 assert.equal(toggle.parallelPath('/BreakRL/index.html', 'zh'), '/BreakRL/index-zh.html');
 assert.equal(toggle.parallelPath('/BreakRL/index-zh.html', 'en'), '/BreakRL/index.html');
 assert.equal(toggle.parallelPath('/BreakRL/index.html', 'en'), null);
-assert.equal(toggle.pageLanguage('/BreakRL/'), 'en');
-assert.equal(toggle.pageLanguage('/BreakRL/index.html'), 'en');
-assert.equal(toggle.pageLanguage('/BreakRL/index-zh.html'), 'zh');
+
+// The three text pages are listed by hand, so a rename that skips the list
+// would leave the toggle pointing at a page the book does not build.
+for (const page of Object.keys(toggle.textPages)) {
+  const source = path.join(__dirname, '..', 'book', `${page.replace(/\.html$/, '')}.md`);
+  assert.ok(fs.existsSync(source), `no book source for text page ${page}`);
+}
 
 // Sphinx's search and index pages, and the single-language demo, have no
-// counterpart: the toggle must neither navigate away nor claim a language.
+// counterpart: the toggle must not offer a path off them.
 for (const alone of ['/BreakRL/search.html', '/BreakRL/genindex.html', '/BreakRL/demo.html']) {
   assert.equal(toggle.parallelPath(alone, 'zh'), null);
   assert.equal(toggle.parallelPath(alone, 'en'), null);
-  assert.equal(toggle.pageLanguage(alone), null);
 }
 
 // Editions pair inside the chapter directories, where they are published
@@ -76,10 +79,11 @@ for (const alone of ['/BreakRL/search.html', '/BreakRL/genindex.html', '/BreakRL
 assert.equal(toggle.parallelPath('/BreakRL/setup_experiments.html', 'en'), null);
 
 assert.equal(toggle.parallelTarget('en'), '/BreakRL/notes/dqn/dqn_experiments_en.html?tab=loss#figure-3');
-assert.equal(toggle.pageLanguage('/BreakRL/notes/dqn/dqn_experiments.html'), 'zh');
-assert.equal(toggle.pageLanguage('/BreakRL/notes/dqn/dqn_experiments_en.html'), 'en');
 
-function preferredRedirect(pathname, savedLanguage) {
+// A saved language sends the reader to the other edition of the page they are
+// on. The page's own language comes from the `<html lang>` the build emits, so
+// each case states what the build would have written.
+function preferredRedirect(pathname, savedLanguage, htmlLang) {
   let callback;
   let redirect = null;
   const testWindow = {
@@ -102,7 +106,11 @@ function preferredRedirect(pathname, savedLanguage) {
     addEventListener(_event, handler) {
       callback = handler;
     },
-    documentElement: {}
+    documentElement: {
+      getAttribute(name) {
+        return name === 'lang' ? htmlLang : null;
+      }
+    }
   };
   vm.runInNewContext(source, { window: testWindow, document: testDocument }, { filename: sourcePath });
   callback();
@@ -110,25 +118,20 @@ function preferredRedirect(pathname, savedLanguage) {
 }
 
 assert.equal(
-  preferredRedirect('/BreakRL/notes/dqn/dqn_experiments_en.html', 'zh'),
+  preferredRedirect('/BreakRL/notes/dqn/dqn_experiments_en.html', 'zh', 'en'),
   '/BreakRL/notes/dqn/dqn_experiments.html?from=deep-link#section'
 );
 assert.equal(
-  preferredRedirect('/BreakRL/notes/dqn/dqn_experiments.html', 'en'),
+  preferredRedirect('/BreakRL/notes/dqn/dqn_experiments.html', 'en', 'zh-CN'),
   '/BreakRL/notes/dqn/dqn_experiments_en.html?from=deep-link#section'
 );
 
 assert.equal(
-  preferredRedirect('/BreakRL/notes/dqn/dqn_experiments.html', 'en'),
-  '/BreakRL/notes/dqn/dqn_experiments_en.html?from=deep-link#section'
-);
-
-assert.equal(
-  preferredRedirect('/BreakRL/index.html', 'zh'),
+  preferredRedirect('/BreakRL/index.html', 'zh', 'en'),
   '/BreakRL/index-zh.html?from=deep-link#section'
 );
 assert.equal(
-  preferredRedirect('/BreakRL/', 'zh'),
+  preferredRedirect('/BreakRL/', 'zh', 'en'),
   '/BreakRL/index-zh.html?from=deep-link#section'
 );
 
