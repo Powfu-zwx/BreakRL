@@ -27,8 +27,6 @@
 
 BreakRL 是一本双语、失败优先的强化学习教材（英文为默认语言，另有中文版）。每章先讲机制，再去掉它，让你看见失败。第 12–14 章用玩具序列和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
 
-**当前教材：** `main` 上的 v1.2.x。V2 仍是未开工的内部规格，不会替换或清空本仓库。
-
 <p align="center">
   <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo.gif" alt="最小演示：低数据覆盖率时 TD loss 下降，实际回报塌缩" width="720"></a>
 </p>

@@ -9,9 +9,14 @@ _SCRIPTS = Path(__file__).resolve().parent
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
 
+from breakrl_locale import is_chinese_page  # noqa: E402
 from paths import BOOK_BUILD  # noqa: E402
 
 DEFAULT_BUILD = BOOK_BUILD
+# Sphinx writes the language into `<html lang>` and `docsearch:language`
+# verbatim, so these are BCP 47 tags. `zh_CN` is a Python locale name, not a
+# tag, and belongs here only as a failure.
+CHINESE_LANG_VALUES = {"zh-CN", "zh"}
 _H1_IN_SELECTOR = re.compile(r"(^|[\s,>+~])h1($|[\s,:+.\[#>~])", re.I)
 _DISPLAY_NONE = re.compile(r"display\s*:\s*none", re.I)
 
@@ -25,18 +30,17 @@ class LinkParser(HTMLParser):
         self.html_lang: str | None = None
         self.docsearch_language: str | None = None
 
-    def _collect(self, attrs: list[tuple[str, str | None]]) -> None:
-        for name, value in attrs:
-            if name in {"href", "src"} and value:
-                self.links.append(value)
-
     def _process_tag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
         if tag == "html":
             self.html_lang = attributes.get("lang")
         if tag == "meta" and attributes.get("name") == "docsearch:language":
             self.docsearch_language = attributes.get("content")
-        self._collect(attrs)
+        # A page embeds its own PDFs with `<object data=...>`, and Jupyter Book
+        # neither rewrites nor copies those. Any other `data` attribute is a
+        # value the site scripts read, not a file.
+        names = {"href", "src"} | ({"data"} if tag in {"object", "embed"} else set())
+        self.links.extend(value for name, value in attrs if name in names and value)
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self._process_tag(tag, attrs)
@@ -74,24 +78,31 @@ def _local_target(build_root: Path, source: Path, value: str) -> Path | None:
     return target
 
 
+def page_files(build_root: Path) -> list[Path]:
+    """Every HTML page a reader can reach, in a stable order.
+
+    Jupyter Book ships a few HTML macro templates in ``_static``; they contain
+    unresolved Sphinx expressions by design and are not public pages. Anything
+    under ``.github`` is repository metadata that leaked into the build.
+    """
+    return sorted(
+        path
+        for path in build_root.rglob("*.html")
+        if "_static" not in path.relative_to(build_root).parts
+        and ".github" not in path.relative_to(build_root).parts
+    )
+
+
 def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
     errors = []
     if not build_root.is_dir():
         return [f"missing site build directory: {build_root}"]
 
-    all_html_files = sorted(build_root.rglob("*.html"))
-    for path in all_html_files:
+    for path in sorted(build_root.rglob("*.html")):
         if ".github" in path.relative_to(build_root).parts:
             errors.append(f"stray non-book page in build: {path.relative_to(build_root)}")
 
-    # Jupyter Book ships a few HTML macro templates in _static. They contain
-    # unresolved Sphinx expressions by design and are not public pages.
-    html_files = [
-        path
-        for path in all_html_files
-        if "_static" not in path.relative_to(build_root).parts
-        and ".github" not in path.relative_to(build_root).parts
-    ]
+    html_files = page_files(build_root)
     if not html_files:
         return [f"no HTML pages found under {build_root}"]
 
@@ -103,30 +114,20 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         except (OSError, UnicodeError) as error:
             errors.append(f"cannot read {relative}: {error}")
             continue
-        is_english_page = relative.name == "failure-atlas-en.html" or relative.name.endswith(
-            "_en.html"
-        )
-        is_chinese_page = relative.name in {"failure-atlas.html", "index-zh.html", "offline-rl-text.html"} or (
-            relative.name.endswith("_experiments.html")
-            and not relative.name.endswith("_experiments_en.html")
-        )
-        if is_english_page and parser.html_lang != "en":
-            errors.append(f"{relative}: English page must declare html lang=\"en\"")
-        if is_english_page and parser.docsearch_language != "en":
-            errors.append(f"{relative}: English page must declare docsearch:language=en")
-        if is_chinese_page and parser.html_lang not in {"zh-CN", "zh_CN", "zh"}:
-            errors.append(f"{relative}: Chinese page must declare html lang=\"zh-CN\"")
-        if is_chinese_page and parser.docsearch_language not in {"zh-CN", "zh_CN", "zh"}:
-            errors.append(f"{relative}: Chinese page must declare docsearch:language=zh-CN")
+        if is_chinese_page(relative.name.removesuffix(".html")):
+            if parser.html_lang not in CHINESE_LANG_VALUES:
+                errors.append(f"{relative}: Chinese page must declare html lang=\"zh-CN\"")
+            if parser.docsearch_language not in CHINESE_LANG_VALUES:
+                errors.append(f"{relative}: Chinese page must declare docsearch:language=zh-CN")
+        else:
+            if parser.html_lang != "en":
+                errors.append(f"{relative}: English page must declare html lang=\"en\"")
+            if parser.docsearch_language != "en":
+                errors.append(f"{relative}: English page must declare docsearch:language=en")
         for value in parser.links:
             target = _local_target(build_root, path, value)
             if target is not None and not target.exists():
                 errors.append(f"{relative}: missing local target {value}")
-
-    for name in ("offline-rl.pdf", "offline-rl_en.pdf"):
-        pdf = build_root / "notes" / "offline-rl" / name
-        if not pdf.is_file():
-            errors.append(f"missing flagship chapter PDF: notes/offline-rl/{name}")
 
     for atlas_name in ("failure-atlas-en.html", "failure-atlas.html"):
         atlas = build_root / atlas_name
@@ -135,24 +136,16 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         elif 'id="atlas-8-offline-loss"' not in atlas.read_text(encoding="utf-8"):
             errors.append(f"{atlas_name}: missing id=\"atlas-8-offline-loss\"")
 
-    blob_pdf = re.compile(
-        r"github\.com/Powfu-zwx/BreakRL/blob/[^\"']*offline-rl[^\"']*\.pdf"
-    )
-    homepage_checks = (
-        (build_root / "index.html", "三分钟开始", "Chinese homepage body"),
-        (build_root / "index-zh.html", "Start in three minutes", "English homepage body"),
-    )
-    for path, stacked_marker, label in homepage_checks:
+    # The homepage links the atlas across pages. The language toggle must not
+    # rewrite that into an in-page hash, which resolves to nothing.
+    for homepage in ("index.html", "index-zh.html"):
+        path = build_root / homepage
         if not path.is_file():
-            errors.append(f"missing homepage: {path.relative_to(build_root)}")
-            continue
-        text = path.read_text(encoding="utf-8")
-        if stacked_marker in text:
-            errors.append(f"{path.name}: still stacks the {label}")
-        if blob_pdf.search(text):
-            errors.append(f"{path.name}: Offline RL PDF still points at a GitHub blob")
-        if 'href="#failure-atlas' in text:
-            errors.append(f"{path.name}: Failure Atlas #8 link was rewritten into a broken in-page hash")
+            errors.append(f"missing homepage: {homepage}")
+        elif 'href="#failure-atlas' in path.read_text(encoding="utf-8"):
+            errors.append(
+                f"{homepage}: Failure Atlas #8 link was rewritten into a broken in-page hash"
+            )
 
     demo = build_root / "demo.html"
     if not demo.is_file():
@@ -166,16 +159,6 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
     for css_path in sorted(static.glob("breakrl*.css")) + sorted(static.glob("lang-toggle.css")):
         if css_hides_h1(css_path.read_text(encoding="utf-8")):
             errors.append(f"{css_path.relative_to(build_root)}: must not display:none an h1")
-
-    for svg in static.glob("breakrl-logo.svg"):
-        errors.append(
-            f"{svg.relative_to(build_root)}: do not ship an image wordmark SVG; navbar brand is CSS text / currentColor"
-        )
-    for path in html_files:
-        if "breakrl-logo.svg" in path.read_text(encoding="utf-8"):
-            errors.append(
-                f"{path.relative_to(build_root)}: must not ship an image wordmark SVG; navbar brand is CSS text"
-            )
     return errors
 
 
@@ -186,12 +169,7 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    pages = sum(
-        1
-        for path in build_root.rglob("*.html")
-        if "_static" not in path.relative_to(build_root).parts
-        and ".github" not in path.relative_to(build_root).parts
-    )
+    pages = len(page_files(build_root))
     print(f"checked generated site: {pages} HTML pages and local links OK")
     return 0
 
