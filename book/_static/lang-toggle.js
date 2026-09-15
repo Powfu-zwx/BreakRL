@@ -5,129 +5,27 @@
   var LANG_ZH = 'zh';
   var LANG_EN = 'en';
 
-  // Only book pages have language counterparts. Shared utility pages stay put.
-  var PAGE_MAP = {
-    'index.html': { zh: 'index-zh.html', en: 'index.html' },
-    'index-zh.html': { zh: 'index-zh.html', en: 'index.html' },
-    'search.html': { zh: 'search.html', en: 'search.html' },
-    'genindex.html': { zh: 'genindex.html', en: 'genindex.html' },
-    'failure-atlas.html': { zh: 'failure-atlas.html', en: 'failure-atlas-en.html' },
-    'failure-atlas-en.html': { zh: 'failure-atlas.html', en: 'failure-atlas-en.html' },
-    'offline-rl-text.html': { zh: 'offline-rl-text.html', en: 'offline-rl-text-en.html' },
-    'offline-rl-text-en.html': { zh: 'offline-rl-text.html', en: 'offline-rl-text-en.html' },
-    'notes/multi-armed-bandit/multi-armed-bandit_experiments.html': {
-      zh: 'notes/multi-armed-bandit/multi-armed-bandit_experiments.html',
-      en: 'notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html'
-    },
-    'notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html': {
-      zh: 'notes/multi-armed-bandit/multi-armed-bandit_experiments.html',
-      en: 'notes/multi-armed-bandit/multi-armed-bandit_experiments_en.html'
-    },
-    'notes/mdp/mdp_experiments.html': {
-      zh: 'notes/mdp/mdp_experiments.html',
-      en: 'notes/mdp/mdp_experiments_en.html'
-    },
-    'notes/mdp/mdp_experiments_en.html': {
-      zh: 'notes/mdp/mdp_experiments.html',
-      en: 'notes/mdp/mdp_experiments_en.html'
-    },
-    'notes/temporal-difference-learning/temporal-difference-learning_experiments.html': {
-      zh: 'notes/temporal-difference-learning/temporal-difference-learning_experiments.html',
-      en: 'notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html'
-    },
-    'notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html': {
-      zh: 'notes/temporal-difference-learning/temporal-difference-learning_experiments.html',
-      en: 'notes/temporal-difference-learning/temporal-difference-learning_experiments_en.html'
-    },
-    'notes/dqn/dqn_experiments.html': {
-      zh: 'notes/dqn/dqn_experiments.html',
-      en: 'notes/dqn/dqn_experiments_en.html'
-    },
-    'notes/dqn/dqn_experiments_en.html': {
-      zh: 'notes/dqn/dqn_experiments.html',
-      en: 'notes/dqn/dqn_experiments_en.html'
-    },
-    'notes/policy-gradient/pg_experiments.html': {
-      zh: 'notes/policy-gradient/pg_experiments.html',
-      en: 'notes/policy-gradient/pg_experiments_en.html'
-    },
-    'notes/policy-gradient/pg_experiments_en.html': {
-      zh: 'notes/policy-gradient/pg_experiments.html',
-      en: 'notes/policy-gradient/pg_experiments_en.html'
-    },
-    'notes/actor-critic/ac_experiments.html': {
-      zh: 'notes/actor-critic/ac_experiments.html',
-      en: 'notes/actor-critic/ac_experiments_en.html'
-    },
-    'notes/actor-critic/ac_experiments_en.html': {
-      zh: 'notes/actor-critic/ac_experiments.html',
-      en: 'notes/actor-critic/ac_experiments_en.html'
-    },
-    'notes/ppo/ppo_experiments.html': {
-      zh: 'notes/ppo/ppo_experiments.html',
-      en: 'notes/ppo/ppo_experiments_en.html'
-    },
-    'notes/ppo/ppo_experiments_en.html': {
-      zh: 'notes/ppo/ppo_experiments.html',
-      en: 'notes/ppo/ppo_experiments_en.html'
-    },
-    'notes/sac/sac_experiments.html': {
-      zh: 'notes/sac/sac_experiments.html',
-      en: 'notes/sac/sac_experiments_en.html'
-    },
-    'notes/sac/sac_experiments_en.html': {
-      zh: 'notes/sac/sac_experiments.html',
-      en: 'notes/sac/sac_experiments_en.html'
-    },
-    'notes/offline-rl/offline-rl_experiments.html': {
-      zh: 'notes/offline-rl/offline-rl_experiments.html',
-      en: 'notes/offline-rl/offline-rl_experiments_en.html'
-    },
-    'notes/offline-rl/offline-rl_experiments_en.html': {
-      zh: 'notes/offline-rl/offline-rl_experiments.html',
-      en: 'notes/offline-rl/offline-rl_experiments_en.html'
-    },
-    'notes/model-based-rl/model-based-rl_experiments.html': {
-      zh: 'notes/model-based-rl/model-based-rl_experiments.html',
-      en: 'notes/model-based-rl/model-based-rl_experiments_en.html'
-    },
-    'notes/model-based-rl/model-based-rl_experiments_en.html': {
-      zh: 'notes/model-based-rl/model-based-rl_experiments.html',
-      en: 'notes/model-based-rl/model-based-rl_experiments_en.html'
-    },
-    'notes/decision-transformer/decision-transformer_experiments.html': {
-      zh: 'notes/decision-transformer/decision-transformer_experiments.html',
-      en: 'notes/decision-transformer/decision-transformer_experiments_en.html'
-    },
-    'notes/decision-transformer/decision-transformer_experiments_en.html': {
-      zh: 'notes/decision-transformer/decision-transformer_experiments.html',
-      en: 'notes/decision-transformer/decision-transformer_experiments_en.html'
-    },
-    'notes/rlhf/rlhf_experiments.html': {
-      zh: 'notes/rlhf/rlhf_experiments.html',
-      en: 'notes/rlhf/rlhf_experiments_en.html'
-    },
-    'notes/rlhf/rlhf_experiments_en.html': {
-      zh: 'notes/rlhf/rlhf_experiments.html',
-      en: 'notes/rlhf/rlhf_experiments_en.html'
-    },
-    'notes/dpo/dpo_experiments.html': {
-      zh: 'notes/dpo/dpo_experiments.html',
-      en: 'notes/dpo/dpo_experiments_en.html'
-    },
-    'notes/dpo/dpo_experiments_en.html': {
-      zh: 'notes/dpo/dpo_experiments.html',
-      en: 'notes/dpo/dpo_experiments_en.html'
-    },
-    'notes/grpo/grpo_experiments.html': {
-      zh: 'notes/grpo/grpo_experiments.html',
-      en: 'notes/grpo/grpo_experiments_en.html'
-    },
-    'notes/grpo/grpo_experiments_en.html': {
-      zh: 'notes/grpo/grpo_experiments.html',
-      en: 'notes/grpo/grpo_experiments_en.html'
-    }
-  };
+  // Pages pair by filename. Chapter notebooks follow the convention
+  // `scripts/check_consistency.py` enforces — the English edition of
+  // `notes/<chapter>/<name>_experiments.html` is its `_en` sibling — so a new
+  // chapter's toggle works without an edit here. The site's own text pages are
+  // listed instead, because their names do not say which edition they are.
+  // Sphinx's search and genindex pages, and the single-language demo, pair with
+  // nothing and stay put.
+  var TEXT_PAGES = indexPairs([
+    ['index-zh.html', 'index.html'],
+    ['failure-atlas.html', 'failure-atlas-en.html'],
+    ['offline-rl-text.html', 'offline-rl-text-en.html']
+  ]);
+
+  function indexPairs(pairs) {
+    var index = {};
+    pairs.forEach(function (pair) {
+      index[pair[0]] = { zh: pair[0], en: pair[1] };
+      index[pair[1]] = { zh: pair[0], en: pair[1] };
+    });
+    return index;
+  }
 
   var UI_LABELS = {
     zh: {
@@ -164,46 +62,41 @@
 
   var originalTitle = null;
 
-  function pageKey(pathname) {
+  // A pathname split into the directory that holds the page and the page's own
+  // filename. A URL ending in `/` serves that directory's index page.
+  function pageLocation(pathname) {
     var path = String(pathname || '').split(/[?#]/)[0];
-    var trimmed = path.replace(/\/+$/, '');
-    if (!trimmed || /(?:^|\/)index\.html$/.test(trimmed) || /\/$/.test(path)) {
-      return 'index.html';
+    var cut = path.lastIndexOf('/') + 1;
+    return { directory: path.slice(0, cut), name: path.slice(cut) || 'index.html' };
+  }
+
+  function pagePair(location) {
+    if (TEXT_PAGES[location.name]) {
+      return TEXT_PAGES[location.name];
     }
-    var keys = Object.keys(PAGE_MAP);
-    for (var i = 0; i < keys.length; i += 1) {
-      var key = keys[i];
-      if (trimmed === key || trimmed.slice(-(key.length + 1)) === '/' + key) {
-        return key;
-      }
+    if (!/(^|\/)notes\//.test(location.directory)) {
+      return null;
+    }
+    if (/_experiments_en\.html$/.test(location.name)) {
+      return { zh: location.name.replace(/_en\.html$/, '.html'), en: location.name };
+    }
+    if (/_experiments\.html$/.test(location.name)) {
+      return { zh: location.name, en: location.name.replace(/\.html$/, '_en.html') };
     }
     return null;
   }
 
+  function pageName(pathname) {
+    return pageLocation(pathname).name;
+  }
+
   function parallelPath(pathname, lang) {
-    var key = pageKey(pathname);
-    var page = key ? PAGE_MAP[key] : null;
-    if (!page || !page[lang] || page[lang] === key) {
+    var location = pageLocation(pathname);
+    var pair = pagePair(location);
+    if (!pair || !pair[lang] || location.name === pair[lang]) {
       return null;
     }
-    var path = String(pathname || '').split(/[?#]/)[0];
-    if (path === key) {
-      return page[lang];
-    }
-    if (key === 'index.html') {
-      if (/\/$/.test(path)) {
-        return path + page[lang];
-      }
-      if (/(?:^|\/)index\.html$/.test(path)) {
-        return path.replace(/index\.html$/, page[lang]);
-      }
-    }
-    var marker = '/' + key;
-    var start = path.lastIndexOf(marker);
-    if (start < 0) {
-      return null;
-    }
-    return path.slice(0, start + 1) + page[lang];
+    return location.directory + pair[lang];
   }
 
   function parallelTarget(lang) {
@@ -215,12 +108,12 @@
   }
 
   function pageLanguage(pathname) {
-    var key = pageKey(pathname);
-    var page = key ? PAGE_MAP[key] : null;
-    if (!page || page.zh === page.en) {
+    var location = pageLocation(pathname);
+    var pair = pagePair(location);
+    if (!pair) {
       return null;
     }
-    return page.en === key ? LANG_EN : LANG_ZH;
+    return location.name === pair.en ? LANG_EN : LANG_ZH;
   }
 
   function storedLang() {
@@ -229,10 +122,6 @@
       value = window.localStorage.getItem(STORAGE_KEY);
     } catch (error) {}
     return value === LANG_EN || value === LANG_ZH ? value : null;
-  }
-
-  function currentLang() {
-    return pageLanguage(window.location.pathname) || storedLang() || LANG_EN;
   }
 
   function setDirectText(selector, text) {
@@ -292,13 +181,13 @@
       }
     });
 
-    var key = pageKey(window.location.pathname);
+    var name = pageName(window.location.pathname);
     if (originalTitle === null) {
       originalTitle = document.title;
     }
-    if (lang === LANG_EN && key === 'search.html') {
+    if (lang === LANG_EN && name === 'search.html') {
       document.title = 'Search - BreakRL';
-    } else if (lang === LANG_EN && key === 'genindex.html') {
+    } else if (lang === LANG_EN && name === 'genindex.html') {
       document.title = 'Index - BreakRL';
     } else {
       document.title = originalTitle;
@@ -350,7 +239,6 @@
     });
     setUiLanguage(lang);
     filterToc(lang);
-    filterIndex(lang);
   }
 
   function filterToc(lang) {
@@ -369,34 +257,6 @@
       }
       if (list) {
         list.hidden = hidden;
-      }
-    });
-  }
-
-  function filterIndex(lang) {
-    var cn = document.getElementById('breakrl');
-    var en = document.getElementById('breakrl-english');
-    // Split homepages only have one of these ids. Hiding #breakrl would
-    // conceal the entire English (or Chinese) article body.
-    if (!cn || !en) {
-      return;
-    }
-    cn.hidden = lang === LANG_EN;
-    en.hidden = lang === LANG_ZH;
-
-    document.querySelectorAll('.bd-sidebar-secondary a').forEach(function (link) {
-      var href = link.getAttribute('href');
-      var isEn = href === '#' || href === '#breakrl-english';
-      var isZh = href === '#breakrl';
-      if (!isZh && !isEn) {
-        return;
-      }
-      var entry = link.parentElement;
-      while (entry && entry.tagName !== 'LI') {
-        entry = entry.parentElement;
-      }
-      if (entry) {
-        entry.hidden = (lang === LANG_EN && isZh) || (lang === LANG_ZH && isEn);
       }
     });
   }
@@ -459,11 +319,9 @@
   }
 
   window.BreakRLLanguageToggle = {
-    pageKey: pageKey,
     pageLanguage: pageLanguage,
     parallelPath: parallelPath,
-    parallelTarget: parallelTarget,
-    pageMap: PAGE_MAP
+    parallelTarget: parallelTarget
   };
 
   if (document.readyState === 'loading') {

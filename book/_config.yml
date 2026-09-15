@@ -31,7 +31,6 @@ sphinx:
     language: en
     exclude_patterns:
       - ".github/**"
-      - "PROJECT_AUDIT.md"
     html_css_files:
       - lang-toggle.css
       - breakrl.css

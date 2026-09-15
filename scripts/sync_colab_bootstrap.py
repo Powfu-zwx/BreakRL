@@ -3,6 +3,11 @@
 The cell source is owned by ``colab_setup.bootstrap_source``. Re-run this
 script after changing that template. Idempotent. Edits only the first code
 cell so saved outputs keep their original JSON.
+
+This rewrites the notebook text in place rather than round-tripping through
+``nbformat``: the committed notebooks are not uniformly serialized, so a
+read/write cycle reindents cells this script has no business touching
+(measured: 1178 changed lines across 20 of 28 notebooks).
 """
 from __future__ import annotations
 
@@ -19,7 +24,6 @@ from check_consistency import chapter_dirs
 from colab_setup import bootstrap_source
 from paths import REPO_ROOT
 FIRST_CODE_CELL = '\n  {\n   "cell_type": "code",'
-LEGACY_PIP_MARKERS = ("# !pip install gymnasium", "# If needed, uncomment")
 
 
 def _source_text(source: list[str] | str) -> str:
@@ -37,10 +41,6 @@ def _source_lines(text: str) -> list[str]:
 
 def _is_bootstrap(source: str) -> bool:
     return source.lstrip().startswith("BREAKRL_CHAPTER = ")
-
-
-def _is_legacy_pip_cell(source: str) -> bool:
-    return any(marker in source for marker in LEGACY_PIP_MARKERS)
 
 
 def _matching_brace(text: str, open_index: int) -> int:
@@ -107,11 +107,6 @@ def sync_notebook(path: Path, chapter: str) -> str:
     if _is_bootstrap(current):
         if _source_lines(current) == wanted and has_tag:
             return "unchanged"
-        cell_id = first_code.get("id") or uuid.uuid4().hex[:8]
-        block = _format_cell(_bootstrap_cell(chapter, cell_id=str(cell_id)))
-        text = text[:start] + block + text[close + 1 :]
-        action = "updated"
-    elif _is_legacy_pip_cell(current):
         cell_id = first_code.get("id") or uuid.uuid4().hex[:8]
         block = _format_cell(_bootstrap_cell(chapter, cell_id=str(cell_id)))
         text = text[:start] + block + text[close + 1 :]

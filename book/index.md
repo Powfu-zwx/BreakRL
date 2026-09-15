@@ -4,8 +4,6 @@
 
 BreakRL is a bilingual, failure-first textbook. Each chapter explains a mechanism, then removes it so you can see the failure.
 
-**Current textbook:** v1.2.x. A V2 rewrite is an unstarted internal spec; it will not replace or empty `main`.
-
 ## Start in three minutes
 
 1. Open the [minimum demo](demo) and drag the coverage slider (a teaching plot; it does not train a model);

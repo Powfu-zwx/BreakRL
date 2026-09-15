@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -19,9 +20,11 @@ from colab_setup import (  # noqa: E402
     setup,
     validate_chapter,
 )
-from paths import NOTES, NOTES_PREFIX  # noqa: E402
+from paths import NOTES  # noqa: E402
 
-NOTES_DIR = Path(NOTES_PREFIX)
+# The repository's own layout, used to build the mock clone: the bootstrap must
+# resolve the chapter where the repository actually keeps it.
+NOTES_RELATIVE = NOTES.relative_to(ROOT)
 
 
 def _fail(errors: list[str], message: str) -> None:
@@ -77,13 +80,42 @@ def test_bootstrap_source() -> list[str]:
 
 def test_colab_url() -> list[str]:
     errors = []
-    url = colab_notebook_url(f"{NOTES_PREFIX}/ppo/ppo_experiments_en.ipynb")
+    notebook = f"{NOTES_RELATIVE.as_posix()}/ppo/ppo_experiments_en.ipynb"
+    url = colab_notebook_url(notebook)
     expected = (
         "https://colab.research.google.com/github/Powfu-zwx/BreakRL/"
-        f"blob/main/{NOTES_PREFIX}/ppo/ppo_experiments_en.ipynb"
+        f"blob/main/{notebook}"
     )
     if url != expected:
         _fail(errors, f"colab_notebook_url mismatch: {url}")
+    return errors
+
+
+def test_standalone_delivery(tmp_path: Path) -> list[str]:
+    """The module is fetched alone by raw URL and run before any checkout exists.
+
+    Colab downloads this file to a bare directory and executes it, so every
+    import it makes must resolve without the repository on ``sys.path``. A
+    subprocess with a clean path is the only faithful way to check that; an
+    in-process import would find ``scripts/`` and mask the failure.
+    """
+    errors = []
+    delivered = tmp_path / "_breakrl_colab_setup.py"
+    delivered.write_text(
+        (SCRIPTS / "colab_setup.py").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", f"import runpy; runpy.run_path({str(delivered)!r})"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        _fail(
+            errors,
+            "the delivered Colab bootstrap does not run outside a checkout: "
+            + result.stderr.strip().splitlines()[-1],
+        )
     return errors
 
 
@@ -110,7 +142,7 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
             root = Path(cmd[-1])
             (root / ".git").mkdir(parents=True)
             (root / "scripts").mkdir()
-            (root / NOTES_DIR / "offline-rl").mkdir(parents=True)
+            (root / NOTES_RELATIVE / "offline-rl").mkdir(parents=True)
             (root / "requirements.txt").write_text(
                 (ROOT / "requirements.txt").read_text(encoding="utf-8"),
                 encoding="utf-8",
@@ -124,7 +156,7 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
             dest=dest,
             runner=runner,
         )
-        if chapter_dir != dest / NOTES_DIR / "offline-rl":
+        if chapter_dir != dest / NOTES_RELATIVE / "offline-rl":
             _fail(errors, f"setup returned unexpected chapter dir: {chapter_dir}")
         if Path.cwd() != chapter_dir:
             _fail(errors, "Colab setup did not chdir into the chapter directory")
@@ -162,7 +194,7 @@ def test_incomplete_clone_is_replaced(tmp_path: Path) -> list[str]:
         if len(cmd) > 1 and cmd[1] == "clone":
             root = Path(cmd[-1])
             (root / ".git").mkdir(parents=True)
-            (root / NOTES_DIR / "offline-rl").mkdir(parents=True)
+            (root / NOTES_RELATIVE / "offline-rl").mkdir(parents=True)
             (root / "requirements.txt").write_text("numpy>=2\n", encoding="utf-8")
 
     before = Path.cwd()
@@ -301,6 +333,7 @@ def main(argv: list[str] | None = None) -> int:
         + test_setup_local_noop()
     )
     with tempfile.TemporaryDirectory() as tmp:
+        errors += test_standalone_delivery(Path(tmp))
         errors += test_setup_colab_mock(Path(tmp))
         errors += test_incomplete_clone_is_replaced(Path(tmp) / "incomplete")
     if smoke:

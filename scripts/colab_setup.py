@@ -8,15 +8,21 @@ import subprocess
 import sys
 from pathlib import Path
 
-from paths import NOTES_PREFIX
-
 GITHUB_REPO = "Powfu-zwx/BreakRL"
+# The bootstrap a notebook carries must be the one that shipped with it. Readers
+# open `main`, so the clone below still tracks `main`; only the fetched setup
+# module is pinned, and pinning it to the tag also busts the HTTP cache.
+RELEASE_TAG = "v1.2.2"
 REPO_URL = f"https://github.com/{GITHUB_REPO}.git"
 RAW_SETUP_URL = (
-    f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/scripts/colab_setup.py"
+    f"https://raw.githubusercontent.com/{GITHUB_REPO}/{RELEASE_TAG}/scripts/colab_setup.py"
 )
 COLAB_ROOT = Path("/content/BreakRL")
-NOTES_DIR = Path(NOTES_PREFIX)
+# This module is delivered alone, by raw URL, into a Colab runtime that has no
+# checkout yet, so it must not import repo-internal helpers such as
+# `scripts.paths`. The layout below is therefore restated here on purpose;
+# `_repo_is_ready` fails loudly if it ever drifts from the repository.
+NOTES_DIR = Path("book/notes")
 COLAB_NOTEBOOK_BASE = (
     f"https://colab.research.google.com/github/{GITHUB_REPO}/blob/main"
 )
@@ -87,7 +93,7 @@ def bootstrap_source(chapter: str) -> str:
         "\n"
         "    _setup = Path('/content/_breakrl_colab_setup.py')\n"
         "    _req = urllib.request.Request(\n"
-        f"        {RAW_SETUP_URL!r} + '?v=2',\n"
+        f"        {RAW_SETUP_URL!r} + '?v={RELEASE_TAG}',\n"
         "        headers={'Cache-Control': 'no-cache'},\n"
         "    )\n"
         "    _setup.write_bytes(urllib.request.urlopen(_req).read())\n"

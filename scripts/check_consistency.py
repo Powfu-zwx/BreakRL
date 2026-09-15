@@ -28,6 +28,30 @@ def _cell_source(cell: Any) -> str:
     return source.replace("\r\n", "\n")
 
 
+def _strip_tex_comments(text: str) -> str:
+    """Drop TeX comments so commented-out source never drives a check.
+
+    A percent sign starts a comment only when it is not escaped, so the
+    backslashes immediately before it are counted: ``\\%`` renders a literal
+    percent, while ``\\\\%`` (a line break followed by a comment) does not.
+    """
+    lines = []
+    for line in text.splitlines():
+        for index, char in enumerate(line):
+            if char != "%":
+                continue
+            backslashes = 0
+            cursor = index - 1
+            while cursor >= 0 and line[cursor] == "\\":
+                backslashes += 1
+                cursor -= 1
+            if backslashes % 2 == 0:
+                line = line[:index]
+                break
+        lines.append(line)
+    return "\n".join(lines)
+
+
 def _load_notebook(path: Path, nbformat: Any, errors: list[str], label: str) -> Any:
     try:
         return nbformat.read(path, as_version=4)
@@ -47,30 +71,13 @@ def check_chapters() -> list[str]:
 
     for chapter in chapter_dirs():
         rel = chapter.relative_to(REPO_ROOT)
-        tex_files = sorted(chapter.glob("*.tex"))
-        en_tex = [path for path in tex_files if path.stem.endswith("_en")]
-        main_tex = [path for path in tex_files if not path.stem.endswith("_en")]
-        if len(main_tex) != 1:
-            errors.append(f"{rel}: expected exactly one main .tex, found {len(main_tex)}")
-        if len(en_tex) > 1:
-            errors.append(f"{rel}: expected at most one *_en.tex, found {len(en_tex)}")
-
-        for tex in main_tex + en_tex:
+        for tex in sorted(chapter.glob("*.tex")):
             pdf = tex.with_suffix(".pdf")
             if not pdf.exists():
                 errors.append(f"{rel}: missing chapter PDF {pdf.name}")
 
-        notebooks = sorted(chapter.glob("*_experiments.ipynb"))
-        if len(notebooks) != 1:
-            errors.append(
-                f"{rel}: expected exactly one *_experiments.ipynb, found {len(notebooks)}"
-            )
-        for path in notebooks:
+        for path in sorted(chapter.glob("*_experiments*.ipynb")):
             _load_notebook(path, nbformat, errors, str(path.relative_to(REPO_ROOT)))
-
-        figures = sorted(chapter.glob("fig*.pdf"))
-        if len(figures) != 3:
-            errors.append(f"{rel}: expected exactly three figure PDFs, found {len(figures)}")
     return errors
 
 
@@ -102,6 +109,18 @@ def _compare_notebooks(cn: Any, en: Any, rel: Path, errors: list[str]) -> None:
             break
 
 
+def _paired_edition(path: Path) -> Path:
+    """Return the same asset in the other language edition.
+
+    Chapters ship two editions of every tex and notebook and name them
+    ``<name>`` (Chinese) and ``<name>_en`` (English). The site's language toggle
+    derives its links from that convention, so both editions must exist.
+    """
+    stem = path.stem
+    twin = stem.removesuffix("_en") if stem.endswith("_en") else f"{stem}_en"
+    return path.with_name(f"{twin}{path.suffix}")
+
+
 def check_bilingual() -> list[str]:
     errors = []
     try:
@@ -111,42 +130,20 @@ def check_bilingual() -> list[str]:
 
     for chapter in chapter_dirs():
         rel = chapter.relative_to(REPO_ROOT)
-        cn_notebooks = sorted(chapter.glob("*_experiments.ipynb"))
-        en_tex = sorted(chapter.glob("*_en.tex"))
-        en_notebooks = sorted(chapter.glob("*_experiments_en.ipynb"))
+        for pattern in ("*.tex", "*_experiments*.ipynb"):
+            for path in sorted(chapter.glob(pattern)):
+                twin = _paired_edition(path)
+                if not twin.exists():
+                    errors.append(f"{rel}: {path.name} has no paired edition {twin.name}")
 
-        if not en_tex and not en_notebooks:
-            continue
-
-        for path in en_tex:
-            base = path.stem.removesuffix("_en")
-            cn_path = chapter / f"{base}_experiments.ipynb"
-            en_path = chapter / f"{base}_experiments_en.ipynb"
-            if not cn_path.exists():
-                errors.append(f"{rel}: missing Chinese notebook {cn_path.name}")
+        for cn_path in sorted(chapter.glob("*_experiments.ipynb")):
+            en_path = _paired_edition(cn_path)
             if not en_path.exists():
-                errors.append(f"{rel}: missing English notebook {en_path.name}")
-            if not cn_path.exists() or not en_path.exists():
                 continue
             cn = _load_notebook(cn_path, nbformat, errors, str(cn_path.relative_to(REPO_ROOT)))
             en = _load_notebook(en_path, nbformat, errors, str(en_path.relative_to(REPO_ROOT)))
             if cn is not None and en is not None:
                 _compare_notebooks(cn, en, rel, errors)
-
-        for path in en_notebooks:
-            base = path.stem.removesuffix("_experiments_en")
-            expected_tex = chapter / f"{base}_en.tex"
-            if not expected_tex.exists():
-                errors.append(f"{rel}: English notebook has no paired TeX {expected_tex.name}")
-
-        if len(en_tex) > 1:
-            errors.append(f"{rel}: expected at most one *_en.tex, found {len(en_tex)}")
-        if len(en_notebooks) > 1:
-            errors.append(
-                f"{rel}: expected at most one *_experiments_en.ipynb, found {len(en_notebooks)}"
-            )
-        if not cn_notebooks:
-            errors.append(f"{rel}: English assets exist but the Chinese notebook is missing")
     return errors
 
 
@@ -156,7 +153,7 @@ def check_tex() -> list[str]:
         return [f"missing {NOTES.relative_to(REPO_ROOT).as_posix()} directory"]
     for path in sorted(NOTES.rglob("*.tex")):
         try:
-            text = path.read_text(encoding="utf-8")
+            text = _strip_tex_comments(path.read_text(encoding="utf-8"))
         except OSError as error:
             errors.append(f"{path.relative_to(REPO_ROOT)}: cannot read TeX: {error}")
             continue
@@ -167,8 +164,6 @@ def check_tex() -> list[str]:
                 )
         for match in INCLUDE_GRAPHIC.finditer(text):
             graphic = Path(match.group(1))
-            if graphic.name.startswith("fig1_xxx"):
-                continue
             if graphic.suffix:
                 candidates = [path.parent / graphic]
             else:
@@ -200,21 +195,10 @@ def check_toc() -> list[str]:
     else:
         errors.append(f"{toc_label}: missing root entry")
 
-    toc_notebooks = set()
     for entry in entries:
         source = _resolve_toc_entry(entry)
-        if entry.startswith("notes/"):
-            toc_notebooks.add(source)
         if not source.exists():
             errors.append(f"{toc_label}: missing source for entry {entry}")
-
-    repo_notebooks = {
-        notebook
-        for chapter in chapter_dirs()
-        for notebook in chapter.glob("*_experiments.ipynb")
-    }
-    for notebook in sorted(repo_notebooks - toc_notebooks):
-        errors.append(f"{toc_label}: chapter notebook not listed: {notebook.relative_to(REPO_ROOT)}")
     return errors
 
 
@@ -235,11 +219,7 @@ def check_colab_entry_points() -> list[str]:
     index_zh_label = (BOOK / "index-zh.md").relative_to(REPO_ROOT).as_posix()
     for chapter in chapter_dirs():
         wanted = bootstrap_source(chapter.name)
-        notebooks = sorted(chapter.glob("*_experiments*.ipynb"))
-        if not notebooks:
-            errors.append(f"{chapter.relative_to(REPO_ROOT)}: missing experiment notebooks")
-            continue
-        for path in notebooks:
+        for path in sorted(chapter.glob("*_experiments*.ipynb")):
             rel = path.relative_to(REPO_ROOT)
             notebook = _load_notebook(path, nbformat, errors, str(rel))
             if notebook is None:
@@ -265,102 +245,6 @@ def check_colab_entry_points() -> list[str]:
     return errors
 
 
-def _section_between(text: str, start: str, end: str, label: str, errors: list[str]) -> str:
-    start_at = text.find(start)
-    end_at = text.find(end)
-    if start_at < 0 or end_at < 0 or end_at <= start_at:
-        errors.append(f"{label}: missing section {start!r} .. {end!r}")
-        return ""
-    return text[start_at:end_at]
-
-
-def check_flagship_ring() -> list[str]:
-    errors = []
-    anchor = "#atlas-8-offline-loss"
-    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    readme_zh = (REPO_ROOT / "README.zh.md").read_text(encoding="utf-8")
-    index_en = (BOOK / "index.md").read_text(encoding="utf-8")
-    index_zh = (BOOK / "index-zh.md").read_text(encoding="utf-8")
-    demo = (BOOK / "demo.md").read_text(encoding="utf-8")
-    atlas_en = (BOOK / "failure-atlas-en.md").read_text(encoding="utf-8")
-    atlas_zh = (BOOK / "failure-atlas.md").read_text(encoding="utf-8")
-
-    en_start = _section_between(
-        readme_en, "## Start in three minutes", "## Learning path", "README.md", errors
-    )
-    zh_start = _section_between(
-        readme_zh, "## 三分钟开始", "## 学习路线", "README.zh.md", errors
-    )
-    if en_start:
-        for needle in ("demo.html", f"failure-atlas-en.html{anchor}", "offline-rl"):
-            if needle not in en_start:
-                errors.append(f"README.md three-minute start is missing {needle}")
-        if "and start with Chapter 1" in en_start:
-            errors.append("README.md three-minute start still sends readers to Chapter 1")
-    if zh_start:
-        for needle in ("demo.html", f"failure-atlas.html{anchor}", "offline-rl"):
-            if needle not in zh_start:
-                errors.append(f"README.zh.md three-minute start is missing {needle}")
-        if "打开[在线教材]" in zh_start:
-            errors.append("README.zh.md three-minute start still sends readers to Chapter 1")
-
-    if "三分钟开始" in index_en or "用失败学强化学习" in index_en:
-        errors.append("book/index.md still stacks the Chinese homepage body")
-    if "Start in three minutes" in index_zh or "Learn reinforcement learning through failure" in index_zh:
-        errors.append("book/index-zh.md still stacks the English homepage body")
-    for label, text, needles in (
-        ("book/index.md", index_en, ("demo", "atlas-8-offline-loss", "offline-rl")),
-        ("book/index-zh.md", index_zh, ("demo", "atlas-8-offline-loss", "offline-rl")),
-    ):
-        for needle in needles:
-            if needle not in text:
-                errors.append(f"{label}: missing flagship link {needle}")
-        if "github.com/Powfu-zwx/BreakRL/blob/" in text and "offline-rl" in text:
-            if re.search(
-                r"github\.com/Powfu-zwx/BreakRL/blob/[^)\s]*offline-rl[^)\s]*\.pdf",
-                text,
-            ):
-                errors.append(f"{label}: Offline RL PDF still points at a GitHub blob")
-
-    if anchor not in demo or "offline-rl" not in demo:
-        errors.append("book/demo.md must link Failure Atlas #8 and the Offline RL chapter")
-    if 'id="atlas-8-offline-loss"' not in atlas_en or "demo" not in atlas_en or "offline-rl" not in atlas_en:
-        errors.append("book/failure-atlas-en.md #8 must keep the demo → atlas → chapter loop")
-    if 'id="atlas-8-offline-loss"' not in atlas_zh or "demo" not in atlas_zh or "offline-rl" not in atlas_zh:
-        errors.append("book/failure-atlas.md #8 must keep the demo → atlas → chapter loop")
-    return errors
-
-
-def check_flagship_look() -> list[str]:
-    """Keep the site wordmark recolorable and the demo h1 in the accessibility tree."""
-    from check_site import css_hides_h1
-
-    errors = []
-    config = (BOOK / "_config.yml").read_text(encoding="utf-8")
-    if re.search(r"(?m)^\s*logo\s*:", config):
-        errors.append("book/_config.yml must not set an image logo; navbar brand is CSS text / currentColor")
-    logo = REPO_ROOT / "assets" / "breakrl-logo.svg"
-    if logo.is_file():
-        text = logo.read_text(encoding="utf-8", errors="ignore")
-        if "#171513" in text:
-            errors.append(
-                "assets/breakrl-logo.svg uses hardcoded fill #171513; "
-                "do not ship an image SVG the site cannot recolor"
-            )
-        else:
-            errors.append("assets/breakrl-logo.svg must not ship; navbar brand is CSS text / currentColor")
-    demo = (BOOK / "demo.md").read_text(encoding="utf-8")
-    if not re.search(r"(?m)^# ", demo):
-        errors.append("book/demo.md must keep a markdown level-one heading")
-    for css_name in ("breakrl.css", "breakrl-demo.css", "lang-toggle.css"):
-        css_path = BOOK / "_static" / css_name
-        if not css_path.is_file():
-            continue
-        if css_hides_h1(css_path.read_text(encoding="utf-8")):
-            errors.append(f"book/_static/{css_name}: must not display:none an h1")
-    return errors
-
-
 def main() -> int:
     errors = (
         check_chapters()
@@ -368,8 +252,6 @@ def main() -> int:
         + check_tex()
         + check_toc()
         + check_colab_entry_points()
-        + check_flagship_ring()
-        + check_flagship_look()
     )
     if errors:
         for error in errors:

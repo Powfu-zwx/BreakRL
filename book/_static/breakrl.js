@@ -1,36 +1,7 @@
 (function () {
   'use strict';
 
-  function pagename() {
-    if (window.DOCUMENTATION_OPTIONS && DOCUMENTATION_OPTIONS.pagename) {
-      return String(DOCUMENTATION_OPTIONS.pagename);
-    }
-    var path = String(window.location.pathname || '');
-    var trimmed = path.replace(/\/+$/, '');
-    if (!trimmed || /(?:^|\/)index\.html$/.test(trimmed) || /\/$/.test(path)) {
-      return 'index';
-    }
-    var marker = '/BreakRL/';
-    var start = trimmed.indexOf(marker);
-    var relative = start >= 0 ? trimmed.slice(start + marker.length) : trimmed.replace(/^.*\//, '');
-    return relative.replace(/\.html$/, '');
-  }
-
-  function setSurface() {
-    var page = pagename();
-    var home = page === 'index' || page === 'index-zh';
-    var demo = page === 'demo';
-    var atlas = page === 'failure-atlas' || page === 'failure-atlas-en';
-    var pdf = page === 'offline-rl-text' || page === 'offline-rl-text-en';
-    document.documentElement.classList.toggle('breakrl-home', home);
-    document.documentElement.classList.toggle('breakrl-demo-page', demo);
-    document.documentElement.classList.toggle('breakrl-atlas', atlas);
-    document.documentElement.classList.toggle('breakrl-reader', pdf);
-    document.body.classList.toggle('breakrl-home', home);
-    document.body.classList.toggle('breakrl-demo-page', demo);
-    document.body.classList.toggle('breakrl-atlas', atlas);
-    document.body.classList.toggle('breakrl-reader', pdf);
-  }
+  var CHINESE_FOOTER = 'BreakRL 是一本双语、失败优先的强化学习教材。正文 CC BY 4.0，代码 MIT。';
 
   function brandHref() {
     var brand = document.querySelector('a.navbar-brand');
@@ -77,6 +48,20 @@
     }
   }
 
+  // Give an element its Chinese label while remembering what the page itself
+  // says, so switching back to English restores the text `_toc.yml` or
+  // `_config.yml` holds instead of a copy kept here.
+  function swapToChinese(selector, chinese, lang) {
+    document.querySelectorAll(selector).forEach(function (node) {
+      var original = node.getAttribute('data-breakrl-original');
+      if (original === null) {
+        original = (node.textContent || '').trim();
+        node.setAttribute('data-breakrl-original', original);
+      }
+      node.textContent = lang === 'zh' ? chinese : original;
+    });
+  }
+
   function relabelToc() {
     var lang = document.documentElement.getAttribute('data-breakrl-lang') || 'en';
     document.querySelectorAll('.bd-sidebar p.caption .caption-text').forEach(function (node) {
@@ -84,38 +69,20 @@
       if (!node.getAttribute('data-breakrl-caption')) {
         node.setAttribute('data-breakrl-caption', original);
       }
-      if (original === '从这里开始 / Start here' || original === 'Start here') {
+      if (original === 'Start here') {
         node.textContent = lang === 'zh' ? '从这里开始' : 'Start here';
-      } else if (original === 'English' || original === 'Chapters') {
-        node.textContent = 'Chapters';
-      } else if (original === '中文版' || original === '章节') {
+      } else if (original === '中文版') {
         node.textContent = lang === 'zh' ? '章节' : '中文版';
       }
     });
-    document.querySelectorAll('.bd-sidebar a[href$="demo.html"]').forEach(function (node) {
-      node.textContent = lang === 'zh' ? '最小演示' : 'Minimum demo';
-    });
-    document.querySelectorAll('.breakrl-footer').forEach(function (node) {
-      node.textContent = lang === 'zh'
-        ? 'BreakRL 是一本双语、失败优先的强化学习教材。正文 CC BY 4.0，代码 MIT。'
-        : 'BreakRL is a bilingual, failure-first RL textbook. Text CC BY 4.0. Code MIT.';
-    });
-  }
-
-  function keepHomepageVisible() {
-    var article = document.getElementById('breakrl');
-    var english = document.getElementById('breakrl-english');
-    if (article && !english && article.hidden) {
-      article.hidden = false;
-    }
+    swapToChinese('.bd-sidebar a[href$="demo.html"]', '最小演示', lang);
+    swapToChinese('.breakrl-footer', CHINESE_FOOTER, lang);
   }
 
   function init() {
-    setSurface();
     useTextBrand();
     installHeaderBrand();
     relabelToc();
-    keepHomepageVisible();
   }
 
   if (document.readyState === 'loading') {

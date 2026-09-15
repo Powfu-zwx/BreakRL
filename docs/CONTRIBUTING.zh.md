@@ -18,17 +18,21 @@ python -m ipykernel install --user --name rl_env --display-name rl_env
 python scripts/run_jupyter.py   # Windows 证书库规避；无此问题可直接 python -m jupyter lab
 ```
 
+`requirements.txt` 只写下界，以便 Colab 解析到当前可用版本。已提交的图表与 notebook 输出由 Python 3.10.21、numpy 2.2.6、matplotlib 3.10.9、torch 2.9.0、gymnasium 1.3.0 生成，站点工具链为 jupyter-book 1.0.4.post1 / myst-nb 1.4.0 / Sphinx 7.4.7；换成更新的版本可能让实验的末位数字发生偏移。
+
 ## 章节结构约定
 
-每章一个目录 `book/notes/<chapter>/`，包含且仅包含：
+每章一个目录 `book/notes/<chapter>/`，约定如下：
 
 - 一个 `<chapter>.tex` 与同名编译产物 `<chapter>.pdf`；
 - 一个 `<chapter>_experiments.ipynb`；
 - 三张 `fig*.pdf` 实验图（由 notebook 生成）。
 
+这是写作约定而非结构校验：`scripts/check_consistency.py` 只保证每个 `.tex` 旁边有编译好的同名 PDF、每个实验 notebook 能被解析，章节里放什么由作者决定。
+
 **英文版（双语对齐）**：每章均含中文版（`<chapter>.tex` / `<chapter>.pdf` / `<chapter>_experiments.ipynb`）与英文版（`<chapter>_en.tex` / `<chapter>_en.pdf` / `<chapter>_experiments_en.ipynb`）。英文版只翻译 markdown 单元格，代码与输出和中文版保持一致（`scripts/check_consistency.py` 会强制校验英文版 Notebook 的代码单元与中文版一致），并登记进 `book/_toc.yml` 的 English 与中文版分区、`README.md`、`README.zh.md` 与 `book/index.md` / `book/index-zh.md` 的章节表。**修改中文版内容（正文结论、实验数值、图）时必须同步英文版**——两份不一致视为未完成。
 
-站点的「中文 / EN」语言切换按钮（`book/_static/lang-toggle.js`）依赖文件名约定：`*_experiments` ↔ `*_experiments_en`、`failure-atlas` ↔ `failure-atlas-en`、`index.html` ↔ `index-zh.html`、`offline-rl-text` ↔ `offline-rl-text-en` 互为平行页。首页每种语言单独一页（默认英文）。新增或改名页面需保持该约定，否则切换按钮失效。
+站点的「中文 / EN」语言切换按钮（`book/_static/lang-toggle.js`）按文件名配对。章节 notebook 自动配对（`*_experiments` ↔ `*_experiments_en`，缺一版时 `scripts/check_consistency.py` 报错）；站点自己的文字页需登记在切换按钮的 `TEXT_PAGES` 里，新增时要在那里加一条：`failure-atlas` ↔ `failure-atlas-en`、`index.html` ↔ `index-zh.html`、`offline-rl-text` ↔ `offline-rl-text-en`。首页每种语言单独一页（默认英文）。
 
 正文遵循模板 [`book/notes/rl_note_template.tex`](../book/notes/rl_note_template.tex) 的结构：先讲故事 → 形式化 → 机制（配三图消融）→ 算法流程 → 对比 → 体系位置 → 参考资料。figure 环境统一用 `[!htbp]`。notebook 按三个 Figure 小节 + 小结组织。
 
