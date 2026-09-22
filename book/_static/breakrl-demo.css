@@ -29,37 +29,6 @@
   margin: 0.65rem 0 0;
 }
 
-html:has(.lang-switch) .breakrl-demo__language {
-  display: none;
-}
-
-.breakrl-demo__language {
-  display: inline-flex;
-  gap: 0.55rem;
-  margin: 0.75rem 0 0;
-}
-
-.breakrl-demo__language-button {
-  background: transparent;
-  border: 0;
-  color: var(--breakrl-demo-muted);
-  cursor: pointer;
-  font: inherit;
-  padding: 0.15rem 0;
-}
-
-.breakrl-demo__language-button:hover,
-.breakrl-demo__language-button:focus-visible {
-  color: var(--breakrl-demo-blue);
-}
-
-.breakrl-demo__language-button[aria-pressed="true"] {
-  color: var(--breakrl-demo-blue);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
 .breakrl-demo__controls {
   margin: 1.25rem 0 0.75rem;
 }

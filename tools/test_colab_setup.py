@@ -7,10 +7,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = Path(__file__).resolve().parent
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
+TOOLS = Path(__file__).resolve().parent
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
 
+from chapters import load_chapters  # noqa: E402
 from colab_setup import (  # noqa: E402
     bootstrap_source,
     clone_commands,
@@ -63,13 +64,12 @@ def test_bootstrap_source() -> list[str]:
     exec(source, namespace)
     if namespace.get("BREAKRL_CHAPTER") != "offline-rl":
         _fail(errors, "executing bootstrap_source locally did not set BREAKRL_CHAPTER")
-    from check_consistency import chapter_dirs
 
-    for chapter in chapter_dirs():
+    for chapter in load_chapters():
         try:
-            exec(bootstrap_source(chapter.name), {})
+            exec(bootstrap_source(chapter.slug), {})
         except Exception as error:
-            _fail(errors, f"bootstrap for {chapter.name} failed locally: {error}")
+            _fail(errors, f"bootstrap for {chapter.slug} failed locally: {error}")
     try:
         validate_chapter("../etc")
         _fail(errors, "validate_chapter accepted a path traversal slug")
@@ -80,7 +80,7 @@ def test_bootstrap_source() -> list[str]:
 
 def test_colab_url() -> list[str]:
     errors = []
-    notebook = f"{NOTES_RELATIVE.as_posix()}/ppo/ppo_experiments_en.ipynb"
+    notebook = f"{NOTES_RELATIVE.as_posix()}/ppo/ppo-en.ipynb"
     url = colab_notebook_url(notebook)
     expected = (
         "https://colab.research.google.com/github/Powfu-zwx/BreakRL/"
@@ -97,12 +97,12 @@ def test_standalone_delivery(tmp_path: Path) -> list[str]:
     Colab downloads this file to a bare directory and executes it, so every
     import it makes must resolve without the repository on ``sys.path``. A
     subprocess with a clean path is the only faithful way to check that; an
-    in-process import would find ``scripts/`` and mask the failure.
+    in-process import would find ``tools/`` and mask the failure.
     """
     errors = []
     delivered = tmp_path / "_breakrl_colab_setup.py"
     delivered.write_text(
-        (SCRIPTS / "colab_setup.py").read_text(encoding="utf-8"), encoding="utf-8"
+        (TOOLS / "colab_setup.py").read_text(encoding="utf-8"), encoding="utf-8"
     )
     result = subprocess.run(
         [sys.executable, "-c", f"import runpy; runpy.run_path({str(delivered)!r})"],
@@ -141,7 +141,6 @@ def test_setup_colab_mock(tmp_path: Path) -> list[str]:
         if len(cmd) > 1 and cmd[1] == "clone":
             root = Path(cmd[-1])
             (root / ".git").mkdir(parents=True)
-            (root / "scripts").mkdir()
             (root / NOTES_RELATIVE / "offline-rl").mkdir(parents=True)
             (root / "requirements.txt").write_text(
                 (ROOT / "requirements.txt").read_text(encoding="utf-8"),
@@ -252,13 +251,12 @@ def test_smoke_second_cells() -> list[str]:
     try:
         import matplotlib
         import nbformat
-        from check_consistency import chapter_dirs
     except ImportError as error:
         return [f"import-cell smoke missing import: {error}"]
 
     matplotlib.use("Agg")
-    for chapter in chapter_dirs():
-        path = next(iter(sorted(chapter.glob("*_experiments.ipynb"))))
+    for chapter in load_chapters():
+        path = chapter.notebook("zh")
         notebook = nbformat.read(path, as_version=4)
         codes = [cell for cell in notebook.cells if cell.cell_type == "code"]
         if len(codes) < 2:
@@ -272,15 +270,15 @@ def test_smoke_second_cells() -> list[str]:
         )
         previous = Path.cwd()
         try:
-            os.chdir(chapter)
+            os.chdir(path.parent)
             exec(compile(source, path.name, "exec"), {"__name__": "__main__"})
         except OSError as error:
             if "fbgemm" in str(error).lower() or "torch" in str(error).lower():
-                print(f"skip {chapter.name}: local torch failed to load ({error})")
+                print(f"skip {chapter.slug}: local torch failed to load ({error})")
             else:
-                _fail(errors, f"{chapter.name} setup cell failed: {error}")
+                _fail(errors, f"{chapter.slug} setup cell failed: {error}")
         except Exception as error:
-            _fail(errors, f"{chapter.name} setup cell failed: {error}")
+            _fail(errors, f"{chapter.slug} setup cell failed: {error}")
         finally:
             os.chdir(previous)
     return errors
@@ -295,7 +293,7 @@ def test_smoke_bandit() -> list[str]:
         return [f"bandit smoke missing import: {error}"]
 
     matplotlib.use("Agg")
-    path = NOTES / "multi-armed-bandit" / "multi-armed-bandit_experiments.ipynb"
+    path = NOTES / "multi-armed-bandit" / "multi-armed-bandit.ipynb"
     notebook = nbformat.read(path, as_version=4)
     namespace: dict[str, object] = {"__name__": "__main__"}
     import tempfile

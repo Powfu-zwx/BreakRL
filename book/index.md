@@ -1,44 +1,46 @@
 # BreakRL
 
-**Learn reinforcement learning through failure.**
+**从失败中学强化学习。**
 
-BreakRL is a bilingual, failure-first textbook. Each chapter explains a mechanism, then removes it so you can see the failure.
+BreakRL 是一份双语、失败优先的强化学习讲义。每章先讲清一个机制，再把它去掉，让你看见失败。
 
-## Start in three minutes
+## 三分钟上手
 
-1. Open the [minimum demo](demo) and drag the coverage slider (a teaching plot; it does not train a model);
-2. Open <a href="failure-atlas-en.html#atlas-8-offline-loss">Failure Atlas #8</a> (healthy offline loss, collapsing returns);
-3. Read the Offline RL chapter: [text PDF](offline-rl-text-en) and the [saved experiment](notes/offline-rl/offline-rl_experiments_en.ipynb).
+1. 打开[最小演示](demo)，拖动覆盖率滑块（教学示意图，不训练模型）；
+2. 打开 <a href="failure-atlas.html#atlas-8-offline-loss">失败图鉴第 8 条</a>（离线损失正常，回报塌缩）；
+3. 读离线强化学习章：[正文 PDF](offline-rl-text) 与[已保存的实验](notes/offline-rl/offline-rl.ipynb)。
 
-Reading the site needs no install. Pages render saved outputs and do not train. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
+阅读不需要装任何东西。页面渲染已保存的输出，不会训练。下表是其余各章；从上面这三步开始，不必从第 1 章读起。
 
-## How to read
+## 怎么读
 
-1. Read the chapter text for the problem, formulas, and mechanism;
-2. Open the experiment notebook and watch the algorithm on a small task;
-3. Compare the ablations: a finished run is not the same as a method that works.
+1. 读正文，看问题、公式和机制；
+2. 打开实验 notebook，在小任务上看算法怎么跑；
+3. 对比消融：跑完了不等于方法可用。
 
-When training does not converge, look up the symptom in the [RL Failure Atlas](failure-atlas-en.md) (“symptom → mechanism → reproduction → fix”).
+训练不收敛时，按症状查 [RL 失败模式图鉴](failure-atlas.md)（「症状 → 机制 → 复现 → 修复」）。
 
-## All chapters
+## 全部章节
 
-| Chapter | Text | Experiments | Run |
-| --- | --- | --- | --- |
-| 1. Multi-armed bandits | [PDF](notes/multi-armed-bandit/multi-armed-bandit_en.pdf) | [Read online](notes/multi-armed-bandit/multi-armed-bandit_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/multi-armed-bandit/multi-armed-bandit_experiments_en.ipynb) |
-| 2. Markov decision processes | [PDF](notes/mdp/mdp_en.pdf) | [Read online](notes/mdp/mdp_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/mdp/mdp_experiments_en.ipynb) |
-| 3. Temporal-difference learning | [PDF](notes/temporal-difference-learning/temporal-difference-learning_en.pdf) | [Read online](notes/temporal-difference-learning/temporal-difference-learning_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/temporal-difference-learning/temporal-difference-learning_experiments_en.ipynb) |
-| 4. DQN: neural value learning | [PDF](notes/dqn/dqn_en.pdf) | [Read online](notes/dqn/dqn_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dqn/dqn_experiments_en.ipynb) |
-| 5. Policy gradient / REINFORCE | [PDF](notes/policy-gradient/pg_en.pdf) | [Read online](notes/policy-gradient/pg_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/policy-gradient/pg_experiments_en.ipynb) |
-| 6. Actor-Critic / A2C | [PDF](notes/actor-critic/ac_en.pdf) | [Read online](notes/actor-critic/ac_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/actor-critic/ac_experiments_en.ipynb) |
-| 7. PPO: constrained policy updates | [PDF](notes/ppo/ppo_en.pdf) | [Read online](notes/ppo/ppo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/ppo/ppo_experiments_en.ipynb) |
-| 8. SAC: maximum-entropy continuous control | [PDF](notes/sac/sac_en.pdf) | [Read online](notes/sac/sac_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/sac/sac_experiments_en.ipynb) |
-| 9. Offline RL: CQL and IQL | [PDF](offline-rl-text-en) | [Read online](notes/offline-rl/offline-rl_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl_experiments_en.ipynb) |
-| 10. Model-based RL: Dyna-Q | [PDF](notes/model-based-rl/model-based-rl_en.pdf) | [Read online](notes/model-based-rl/model-based-rl_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/model-based-rl/model-based-rl_experiments_en.ipynb) |
-| 11. Decision Transformer | [PDF](notes/decision-transformer/decision-transformer_en.pdf) | [Read online](notes/decision-transformer/decision-transformer_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/decision-transformer/decision-transformer_experiments_en.ipynb) |
-| 12. RLHF: from preferences to rewards | [PDF](notes/rlhf/rlhf_en.pdf) | [Read online](notes/rlhf/rlhf_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf_experiments_en.ipynb) |
-| 13. DPO: preference optimization without a reward model | [PDF](notes/dpo/dpo_en.pdf) | [Read online](notes/dpo/dpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo_experiments_en.ipynb) |
-| 14. GRPO and RLVR: verifiable rewards | [PDF](notes/grpo/grpo_en.pdf) | [Read online](notes/grpo/grpo_experiments_en.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo_experiments_en.ipynb) |
+<!-- chapters:begin -->
+| # | 章节 | 正文 | 实验 | 运行 |
+| --- | --- | --- | --- | --- |
+| 1 | 多臂老虎机：探索与利用 | [PDF](notes/multi-armed-bandit/multi-armed-bandit.pdf) | [Notebook](notes/multi-armed-bandit/multi-armed-bandit.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/multi-armed-bandit/multi-armed-bandit.ipynb) |
+| 2 | 马尔可夫决策过程：序列决策形式化 | [PDF](notes/mdp/mdp.pdf) | [Notebook](notes/mdp/mdp.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/mdp/mdp.ipynb) |
+| 3 | 时序差分学习：长期价值估计 | [PDF](notes/temporal-difference-learning/temporal-difference-learning.pdf) | [Notebook](notes/temporal-difference-learning/temporal-difference-learning.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/temporal-difference-learning/temporal-difference-learning.ipynb) |
+| 4 | DQN：神经网络价值学习 | [PDF](notes/dqn/dqn.pdf) | [Notebook](notes/dqn/dqn.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dqn/dqn.ipynb) |
+| 5 | Policy Gradient / REINFORCE：直接优化策略 | [PDF](notes/policy-gradient/policy-gradient.pdf) | [Notebook](notes/policy-gradient/policy-gradient.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/policy-gradient/policy-gradient.ipynb) |
+| 6 | Actor-Critic / A2C：价值辅助策略更新 | [PDF](notes/actor-critic/actor-critic.pdf) | [Notebook](notes/actor-critic/actor-critic.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/actor-critic/actor-critic.ipynb) |
+| 7 | PPO：约束策略更新 | [PDF](notes/ppo/ppo.pdf) | [Notebook](notes/ppo/ppo.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/ppo/ppo.ipynb) |
+| 8 | SAC：最大熵连续控制 | [PDF](notes/sac/sac.pdf) | [Notebook](notes/sac/sac.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/sac/sac.ipynb) |
+| 9 | 离线强化学习：CQL 与 IQL | [PDF](notes/offline-rl/offline-rl.pdf) | [Notebook](notes/offline-rl/offline-rl.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/offline-rl/offline-rl.ipynb) |
+| 10 | 模型式强化学习：从环境模型到 Dyna-Q | [PDF](notes/model-based-rl/model-based-rl.pdf) | [Notebook](notes/model-based-rl/model-based-rl.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/model-based-rl/model-based-rl.ipynb) |
+| 11 | Decision Transformer：序列建模的强化学习 | [PDF](notes/decision-transformer/decision-transformer.pdf) | [Notebook](notes/decision-transformer/decision-transformer.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/decision-transformer/decision-transformer.ipynb) |
+| 12 | RLHF：从偏好到奖励 | [PDF](notes/rlhf/rlhf.pdf) | [Notebook](notes/rlhf/rlhf.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/rlhf/rlhf.ipynb) |
+| 13 | DPO：不训奖励模型的偏好优化 | [PDF](notes/dpo/dpo.pdf) | [Notebook](notes/dpo/dpo.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/dpo/dpo.ipynb) |
+| 14 | GRPO 与 RLVR：可验证奖励 | [PDF](notes/grpo/grpo.pdf) | [Notebook](notes/grpo/grpo.ipynb) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo.ipynb) |
+<!-- chapters:end -->
 
-Chapters 12–14 use toy sequence tasks and two-digit addition. They show the mechanisms; they are not a substitute for production RLHF, DPO, or GRPO training.
+第 12–14 章用玩具序列任务和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
 
-The site displays saved notebook outputs and does not train models while you read. To run the experiments, use Colab in the table above or the local install in the [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.md#run-the-experiments).
+站点展示已保存的 notebook 输出，阅读时不会训练模型。要运行实验，用上表的 Colab，或按 [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.md#运行实验) 装本地环境。

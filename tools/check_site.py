@@ -5,11 +5,11 @@ import re
 import sys
 from urllib.parse import unquote, urlsplit
 
-_SCRIPTS = Path(__file__).resolve().parent
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+_TOOLS = Path(__file__).resolve().parent
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
 
-from breakrl_locale import is_chinese_page  # noqa: E402
+from breakrl_locale import is_english_page  # noqa: E402
 from paths import BOOK_BUILD  # noqa: E402
 
 DEFAULT_BUILD = BOOK_BUILD
@@ -17,6 +17,7 @@ DEFAULT_BUILD = BOOK_BUILD
 # verbatim, so these are BCP 47 tags. `zh_CN` is a Python locale name, not a
 # tag, and belongs here only as a failure.
 CHINESE_LANG_VALUES = {"zh-CN", "zh"}
+ENGLISH_LANG_VALUES = {"en"}
 _H1_IN_SELECTOR = re.compile(r"(^|[\s,>+~])h1($|[\s,:+.\[#>~])", re.I)
 _DISPLAY_NONE = re.compile(r"display\s*:\s*none", re.I)
 
@@ -114,31 +115,31 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
         except (OSError, UnicodeError) as error:
             errors.append(f"cannot read {relative}: {error}")
             continue
-        if is_chinese_page(relative.name.removesuffix(".html")):
+        if is_english_page(relative.as_posix().removesuffix(".html")):
+            if parser.html_lang not in ENGLISH_LANG_VALUES:
+                errors.append(f'{relative}: English page must declare html lang="en"')
+            if parser.docsearch_language not in ENGLISH_LANG_VALUES:
+                errors.append(f"{relative}: English page must declare docsearch:language=en")
+        else:
             if parser.html_lang not in CHINESE_LANG_VALUES:
-                errors.append(f"{relative}: Chinese page must declare html lang=\"zh-CN\"")
+                errors.append(f'{relative}: Chinese page must declare html lang="zh-CN"')
             if parser.docsearch_language not in CHINESE_LANG_VALUES:
                 errors.append(f"{relative}: Chinese page must declare docsearch:language=zh-CN")
-        else:
-            if parser.html_lang != "en":
-                errors.append(f"{relative}: English page must declare html lang=\"en\"")
-            if parser.docsearch_language != "en":
-                errors.append(f"{relative}: English page must declare docsearch:language=en")
         for value in parser.links:
             target = _local_target(build_root, path, value)
             if target is not None and not target.exists():
                 errors.append(f"{relative}: missing local target {value}")
 
-    for atlas_name in ("failure-atlas-en.html", "failure-atlas.html"):
+    for atlas_name in ("failure-atlas.html", "failure-atlas-en.html"):
         atlas = build_root / atlas_name
         if not atlas.is_file():
             errors.append(f"missing {atlas_name}")
         elif 'id="atlas-8-offline-loss"' not in atlas.read_text(encoding="utf-8"):
-            errors.append(f"{atlas_name}: missing id=\"atlas-8-offline-loss\"")
+            errors.append(f'{atlas_name}: missing id="atlas-8-offline-loss"')
 
     # The homepage links the atlas across pages. The language toggle must not
     # rewrite that into an in-page hash, which resolves to nothing.
-    for homepage in ("index.html", "index-zh.html"):
+    for homepage in ("index.html", "index-en.html"):
         path = build_root / homepage
         if not path.is_file():
             errors.append(f"missing homepage: {homepage}")
@@ -147,13 +148,12 @@ def check_site(build_root: Path = DEFAULT_BUILD) -> list[str]:
                 f"{homepage}: Failure Atlas #8 link was rewritten into a broken in-page hash"
             )
 
-    demo = build_root / "demo.html"
-    if not demo.is_file():
-        errors.append("missing demo.html")
-    else:
-        demo_html = demo.read_text(encoding="utf-8")
-        if "<h1" not in demo_html.lower():
-            errors.append("demo.html: missing <h1>; keep a level-one heading in the accessibility tree")
+    for demo_name in ("demo.html", "demo-en.html"):
+        demo = build_root / demo_name
+        if not demo.is_file():
+            errors.append(f"missing {demo_name}")
+        elif "<h1" not in demo.read_text(encoding="utf-8").lower():
+            errors.append(f"{demo_name}: missing <h1>; keep a level-one heading in the accessibility tree")
 
     static = build_root / "_static"
     for css_path in sorted(static.glob("breakrl*.css")) + sorted(static.glob("lang-toggle.css")):

@@ -4,6 +4,17 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
+- Delete the unused issue templates and `CODEOWNERS`.
+- Give every chapter file one name: `book/notes/<chapter>/<chapter>.tex|.pdf|.ipynb` for the Chinese source and the same name with `-en` for the English translation. This retires three older spellings at once (`_experiments`, a bare English name, and the `pg` / `ac` abbreviations).
+- Make Chinese the default README, home page, and site language. English moves to `README-en.md`, `index-en.md`, and the `-en` pages.
+- Move `scripts/` to `tools/`, `check_consistency.py` to `check_repo.py`, and `book/requirements-site.txt` to the repository root.
+- Add `book/chapters.yml` as the single chapter list and generate the four catalog tables and `book/_toc.yml` from it with `tools/sync_pages.py`.
+- Split the demo into `demo.md` and `demo-en.md` and drop the page's private `data-zh` / `data-en` layer and its own language buttons.
+- Reduce the language switch to one rule — add or strip `-en` — and derive each sidebar part's language from its links instead of a caption dictionary.
+- Drop the figure-placement assertion and the per-URL catalog assertions, both of which guarded prose the generator now owns.
+- Move the chapter writing template to `docs/rl-note-template.tex`, so `book/notes/` holds chapters only.
+- Describe the project as lecture notes rather than a textbook.
+
 - Restyle the flagship site (homepage, demo, Failure Atlas, Offline RL PDF/chapter pages) as light, sparse, Spinning Up-like docs rather than paper/ink cards or default Jupyter Book chrome.
 - Restyle code: light Source Code Pro blocks, no pink inline literals, no green notebook cell bar.
 - Use a CSS text wordmark (`currentColor`) instead of a fixed-fill SVG that disappears on a dark sidebar.

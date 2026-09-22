@@ -11,7 +11,9 @@ from pathlib import Path
 GITHUB_REPO = "Powfu-zwx/BreakRL"
 # The bootstrap a notebook carries must be the one that shipped with it. Readers
 # open `main`, so the clone below still tracks `main`; only the fetched setup
-# module is pinned, and pinning it to the tag also busts the HTTP cache.
+# module is pinned, and pinning it to the tag also busts the HTTP cache. The raw
+# path is that tag's tree layout, which predates `scripts/` becoming `tools/` —
+# bumping the tag means pointing at wherever the tag keeps this file.
 RELEASE_TAG = "v1.2.2"
 REPO_URL = f"https://github.com/{GITHUB_REPO}.git"
 RAW_SETUP_URL = (
@@ -20,7 +22,7 @@ RAW_SETUP_URL = (
 COLAB_ROOT = Path("/content/BreakRL")
 # This module is delivered alone, by raw URL, into a Colab runtime that has no
 # checkout yet, so it must not import repo-internal helpers such as
-# `scripts.paths`. The layout below is therefore restated here on purpose;
+# `tools.paths`. The layout below is therefore restated here on purpose;
 # `_repo_is_ready` fails loudly if it ever drifts from the repository.
 NOTES_DIR = Path("book/notes")
 COLAB_NOTEBOOK_BASE = (

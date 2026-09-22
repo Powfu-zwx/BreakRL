@@ -17,18 +17,21 @@ html:
   use_download_button: false
   use_fullscreen_button: false
   home_page_in_navbar: false
+  # 每种语言各写一份页脚文案，由 `html[lang]` 选一份（见 breakrl.css）。
   extra_footer: |
-    <p class="breakrl-footer">BreakRL is a bilingual, failure-first RL textbook. Text CC BY 4.0. Code MIT.</p>
+    <p class="breakrl-footer breakrl-footer--zh">BreakRL 是一份双语、失败优先的强化学习讲义。正文 CC BY 4.0，代码 MIT。</p>
+    <p class="breakrl-footer breakrl-footer--en">BreakRL is a bilingual, failure-first set of RL lecture notes. Text CC BY 4.0. Code MIT.</p>
 
 sphinx:
   local_extensions:
-    breakrl_locale: ../scripts
-    prepare_site_assets: ../scripts
+    breakrl_locale: ../tools
+    prepare_site_assets: ../tools
   extra_extensions:
     - breakrl_locale
     - prepare_site_assets
   config:
-    language: en
+    # 中文是源件，故为站点默认语言；`-en` 页面由 breakrl_locale 改写为英文。
+    language: zh-CN
     exclude_patterns:
       - ".github/**"
     html_css_files:
