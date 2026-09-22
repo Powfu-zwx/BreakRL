@@ -13,9 +13,9 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
-_SCRIPTS = Path(__file__).resolve().parent
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+_TOOLS = Path(__file__).resolve().parent
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
 
 from paths import BOOK, NOTES
 
@@ -50,7 +50,7 @@ def prepare_assets(output_folder: Path = OUTPUT_FOLDER) -> int:
     """
     output_folder.mkdir(parents=True, exist_ok=True)
     written = 0
-    for notebook in sorted(NOTES.rglob("*_experiments*.ipynb")):
+    for notebook in sorted(NOTES.rglob("*.ipynb")):
         document = json.loads(notebook.read_text(encoding="utf-8"))
         for cell in document.get("cells", []):
             for output in cell.get("outputs", []):

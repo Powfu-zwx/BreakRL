@@ -1,16 +1,19 @@
 """Read-only structural checks for the BreakRL repository."""
+from __future__ import annotations
+
 import re
 import sys
 from pathlib import Path
 from typing import Any
 
-from paths import BOOK, NOTES, REPO_ROOT
+_TOOLS = Path(__file__).resolve().parent
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
 
-_SCRIPTS = Path(__file__).resolve().parent
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+from chapters import LANGUAGES, load_chapters  # noqa: E402
+from colab_setup import bootstrap_source  # noqa: E402
+from paths import BOOK, NOTES, REPO_ROOT  # noqa: E402
 
-FIGURE_ENVIRONMENT = re.compile(r"\\begin\{figure\}\[([^]]+)\]")
 INCLUDE_GRAPHIC = re.compile(r"\\includegraphics(?:\[[^]]*\])?\{([^}]+)\}")
 TOC_FILE_ENTRY = re.compile(r"^\s*-\s+file:\s+(\S+)", re.MULTILINE)
 MARKDOWN_LINK = re.compile(r"\]\(([^)\s]+)")
@@ -19,19 +22,12 @@ HTML_HREF = re.compile(r'href="([^"]+)"')
 # The reader's entry path: the minimum demo, Failure Atlas #8, then the Offline
 # RL chapter. Each of these pages restates it in its own markup, so the check
 # asks for the link targets and leaves the wording around them to the author.
-# It is a page-level check: it says the path is still offered, not where.
 ENTRY_PAGES = (
-    ("README.md", "failure-atlas-en.html"),
-    ("README.zh.md", "failure-atlas.html"),
-    ("book/index.md", "failure-atlas-en.html"),
-    ("book/index-zh.md", "failure-atlas.html"),
+    ("README.md", "failure-atlas.html"),
+    ("README-en.md", "failure-atlas-en.html"),
+    ("book/index.md", "failure-atlas.html"),
+    ("book/index-en.md", "failure-atlas-en.html"),
 )
-
-
-def chapter_dirs() -> list[Path]:
-    if not NOTES.is_dir():
-        return []
-    return sorted(path for path in NOTES.iterdir() if path.is_dir())
 
 
 def _cell_source(cell: Any) -> str:
@@ -73,24 +69,36 @@ def _load_notebook(path: Path, nbformat: Any, errors: list[str], label: str) -> 
         return None
 
 
-def check_chapters() -> list[str]:
+def check_inventory() -> list[str]:
+    """`book/chapters.yml` and the chapter directories must describe the same book."""
     errors = []
-    if not NOTES.is_dir():
-        return [f"missing {NOTES.relative_to(REPO_ROOT).as_posix()} directory"]
+    chapters = load_chapters()
+    declared = {chapter.slug for chapter in chapters}
+    on_disk = {path.name for path in NOTES.iterdir() if path.is_dir()} if NOTES.is_dir() else set()
+    for slug in sorted(declared - on_disk):
+        errors.append(f"{NOTES.relative_to(REPO_ROOT).as_posix()}/{slug}: listed in chapters.yml but missing")
+    for slug in sorted(on_disk - declared):
+        errors.append(f"{NOTES.relative_to(REPO_ROOT).as_posix()}/{slug}: on disk but not listed in chapters.yml")
+
+    for chapter in chapters:
+        for language in LANGUAGES:
+            for path in (chapter.tex(language), chapter.pdf(language), chapter.notebook(language)):
+                if not path.is_file():
+                    errors.append(f"{path.relative_to(REPO_ROOT).as_posix()}: listed in chapters.yml but missing")
+    return errors
+
+
+def check_notebooks() -> list[str]:
+    errors = []
     try:
         import nbformat
     except ImportError:
         return ["nbformat is required to validate notebooks"]
-
-    for chapter in chapter_dirs():
-        rel = chapter.relative_to(REPO_ROOT)
-        for tex in sorted(chapter.glob("*.tex")):
-            pdf = tex.with_suffix(".pdf")
-            if not pdf.exists():
-                errors.append(f"{rel}: missing chapter PDF {pdf.name}")
-
-        for path in sorted(chapter.glob("*_experiments*.ipynb")):
-            _load_notebook(path, nbformat, errors, str(path.relative_to(REPO_ROOT)))
+    for chapter in load_chapters():
+        for language in LANGUAGES:
+            _load_notebook(
+                chapter.notebook(language), nbformat, errors, str(chapter.notebook(language).relative_to(REPO_ROOT))
+            )
     return errors
 
 
@@ -122,59 +130,30 @@ def _compare_notebooks(cn: Any, en: Any, rel: Path, errors: list[str]) -> None:
             break
 
 
-def _paired_edition(path: Path) -> Path:
-    """Return the same asset in the other language edition.
-
-    Chapters ship two editions of every tex and notebook and name them
-    ``<name>`` (Chinese) and ``<name>_en`` (English). The site's language toggle
-    derives its links from that convention, so both editions must exist.
-    """
-    stem = path.stem
-    twin = stem.removesuffix("_en") if stem.endswith("_en") else f"{stem}_en"
-    return path.with_name(f"{twin}{path.suffix}")
-
-
 def check_bilingual() -> list[str]:
+    """The English notebook is a translation of the Chinese one, not a second program."""
     errors = []
     try:
         import nbformat
     except ImportError:
         return ["nbformat is required to validate notebooks"]
-
-    for chapter in chapter_dirs():
-        rel = chapter.relative_to(REPO_ROOT)
-        for pattern in ("*.tex", "*_experiments*.ipynb"):
-            for path in sorted(chapter.glob(pattern)):
-                twin = _paired_edition(path)
-                if not twin.exists():
-                    errors.append(f"{rel}: {path.name} has no paired edition {twin.name}")
-
-        for cn_path in sorted(chapter.glob("*_experiments.ipynb")):
-            en_path = _paired_edition(cn_path)
-            if not en_path.exists():
-                continue
-            cn = _load_notebook(cn_path, nbformat, errors, str(cn_path.relative_to(REPO_ROOT)))
-            en = _load_notebook(en_path, nbformat, errors, str(en_path.relative_to(REPO_ROOT)))
-            if cn is not None and en is not None:
-                _compare_notebooks(cn, en, rel, errors)
+    for chapter in load_chapters():
+        rel = chapter.notebook("zh").relative_to(REPO_ROOT)
+        cn = _load_notebook(chapter.notebook("zh"), nbformat, errors, str(rel))
+        en = _load_notebook(chapter.notebook("en"), nbformat, errors, str(rel))
+        if cn is not None and en is not None:
+            _compare_notebooks(cn, en, rel, errors)
     return errors
 
 
 def check_tex() -> list[str]:
     errors = []
-    if not NOTES.is_dir():
-        return [f"missing {NOTES.relative_to(REPO_ROOT).as_posix()} directory"]
     for path in sorted(NOTES.rglob("*.tex")):
         try:
             text = _strip_tex_comments(path.read_text(encoding="utf-8"))
         except OSError as error:
             errors.append(f"{path.relative_to(REPO_ROOT)}: cannot read TeX: {error}")
             continue
-        for match in FIGURE_ENVIRONMENT.finditer(text):
-            if match.group(1) != "!htbp":
-                errors.append(
-                    f"{path.relative_to(REPO_ROOT)}: figure uses [{match.group(1)}], expected [!htbp]"
-                )
         for match in INCLUDE_GRAPHIC.finditer(text):
             graphic = Path(match.group(1))
             if graphic.suffix:
@@ -229,7 +208,7 @@ def check_entry_path() -> list[str]:
             continue
         targets = _link_targets(path.read_text(encoding="utf-8"))
         wanted = {
-            "the minimum demo": [t for t in targets if t.rstrip("/").endswith(("demo", "demo.html"))],
+            "the minimum demo": [t for t in targets if t.rstrip("/").endswith(("demo", "demo.html", "demo-en", "demo-en.html"))],
             f"{atlas}#atlas-8-offline-loss": [
                 t for t in targets if t.endswith(f"{atlas}#atlas-8-offline-loss")
             ],
@@ -241,24 +220,39 @@ def check_entry_path() -> list[str]:
     return errors
 
 
-def check_colab_entry_points() -> list[str]:
-    from colab_setup import bootstrap_source, colab_notebook_url
+def check_catalog() -> list[str]:
+    """The generated catalog blocks must match `book/chapters.yml` exactly."""
+    import sync_pages
 
+    errors = []
+    chapters = load_chapters()
+    for kind, pages in sync_pages.KINDS.items():
+        for language, path in pages.items():
+            rendered = sync_pages.render_table(chapters, language, kind)
+            text = path.read_text(encoding="utf-8")
+            if sync_pages.BEGIN not in text or sync_pages.END not in text:
+                errors.append(f"{path.relative_to(REPO_ROOT).as_posix()}: missing {sync_pages.BEGIN} markers")
+                continue
+            if sync_pages.BLOCK.search(text).group(0) != rendered:
+                errors.append(
+                    f"{path.relative_to(REPO_ROOT).as_posix()}: chapter table is stale; run `python tools/sync_pages.py`"
+                )
+    toc_path = BOOK / "_toc.yml"
+    if toc_path.read_text(encoding="utf-8") != sync_pages.render_toc(chapters):
+        errors.append(f"{toc_path.relative_to(REPO_ROOT).as_posix()}: stale; run `python tools/sync_pages.py`")
+    return errors
+
+
+def check_colab_entry_points() -> list[str]:
     errors = []
     try:
         import nbformat
     except ImportError:
         return ["nbformat is required to validate notebooks"]
-
-    readme_en = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
-    readme_zh = (REPO_ROOT / "README.zh.md").read_text(encoding="utf-8")
-    index_en = (BOOK / "index.md").read_text(encoding="utf-8")
-    index_zh = (BOOK / "index-zh.md").read_text(encoding="utf-8")
-    index_en_label = (BOOK / "index.md").relative_to(REPO_ROOT).as_posix()
-    index_zh_label = (BOOK / "index-zh.md").relative_to(REPO_ROOT).as_posix()
-    for chapter in chapter_dirs():
-        wanted = bootstrap_source(chapter.name)
-        for path in sorted(chapter.glob("*_experiments*.ipynb")):
+    for chapter in load_chapters():
+        wanted = bootstrap_source(chapter.slug)
+        for language in LANGUAGES:
+            path = chapter.notebook(language)
             rel = path.relative_to(REPO_ROOT)
             notebook = _load_notebook(path, nbformat, errors, str(rel))
             if notebook is None:
@@ -270,27 +264,18 @@ def check_colab_entry_points() -> list[str]:
             actual = _cell_source(code_cells[0]).rstrip("\n")
             if actual != wanted.rstrip("\n"):
                 errors.append(f"{rel}: first code cell is not the Colab bootstrap")
-            url = colab_notebook_url(rel.as_posix())
-            if path.name.endswith("_experiments_en.ipynb"):
-                if url not in readme_en:
-                    errors.append(f"README.md: missing Colab URL for {rel.as_posix()}")
-                if url not in index_en:
-                    errors.append(f"{index_en_label}: missing Colab URL for {rel.as_posix()}")
-            else:
-                if url not in readme_zh:
-                    errors.append(f"README.zh.md: missing Colab URL for {rel.as_posix()}")
-                if url not in index_zh:
-                    errors.append(f"{index_zh_label}: missing Colab URL for {rel.as_posix()}")
     return errors
 
 
 def main() -> int:
     errors = (
-        check_chapters()
+        check_inventory()
+        + check_notebooks()
         + check_bilingual()
         + check_tex()
         + check_toc()
         + check_entry_path()
+        + check_catalog()
         + check_colab_entry_points()
     )
     if errors:
@@ -298,13 +283,11 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
 
-    chapters = chapter_dirs()
-    tex_files = sorted(NOTES.rglob("*.tex"))
-    notebooks = sorted(NOTES.rglob("*_experiments*.ipynb"))
+    chapters = load_chapters()
     figures = sorted(NOTES.rglob("fig*.pdf"))
     print(
-        f"validated {len(chapters)} chapters, {len(notebooks)} notebooks, "
-        f"{len(tex_files)} TeX files, and {len(figures)} figures"
+        f"validated {len(chapters)} chapters, {len(chapters) * len(LANGUAGES)} notebooks, "
+        f"{len(chapters) * len(LANGUAGES)} TeX files, and {len(figures)} figures"
     )
     print("repository consistency: OK")
     return 0

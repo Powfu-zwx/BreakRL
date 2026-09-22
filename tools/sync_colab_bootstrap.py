@@ -11,13 +11,13 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-_SCRIPTS = Path(__file__).resolve().parent
-if str(_SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS))
+_TOOLS = Path(__file__).resolve().parent
+if str(_TOOLS) not in sys.path:
+    sys.path.insert(0, str(_TOOLS))
 
 import nbformat
 
-from check_consistency import chapter_dirs
+from chapters import LANGUAGES, load_chapters
 from colab_setup import bootstrap_source
 from paths import REPO_ROOT
 
@@ -70,9 +70,10 @@ def sync_notebook(path: Path, chapter: str) -> str:
 
 
 def main() -> int:
-    for chapter in chapter_dirs():
-        for path in sorted(chapter.glob("*_experiments*.ipynb")):
-            action = sync_notebook(path, chapter.name)
+    for chapter in load_chapters():
+        for language in LANGUAGES:
+            path = chapter.notebook(language)
+            action = sync_notebook(path, chapter.slug)
             print(f"{action}: {path.relative_to(REPO_ROOT).as_posix()}")
     return 0
 

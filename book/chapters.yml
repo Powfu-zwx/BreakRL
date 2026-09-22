@@ -1,0 +1,47 @@
+# 章节唯一清单。README、book/index*.md 的章节表和 book/_toc.yml 都从这里生成，
+# 改章节只改这一处，然后运行 `python tools/sync_pages.py`。
+# 标题在正文件、实验表和目录里共用一份，避免各处措辞漂移。
+repo: Powfu-zwx/BreakRL
+chapters:
+  - slug: multi-armed-bandit
+    zh: 多臂老虎机：探索与利用
+    en: "Multi-Armed Bandits: Exploration vs Exploitation"
+  - slug: mdp
+    zh: 马尔可夫决策过程：序列决策形式化
+    en: "Markov Decision Processes"
+  - slug: temporal-difference-learning
+    zh: 时序差分学习：长期价值估计
+    en: "Temporal-Difference Learning"
+  - slug: dqn
+    zh: DQN：神经网络价值学习
+    en: "DQN: Neural Value Learning"
+  - slug: policy-gradient
+    zh: Policy Gradient / REINFORCE：直接优化策略
+    en: "Policy Gradient / REINFORCE"
+  - slug: actor-critic
+    zh: Actor-Critic / A2C：价值辅助策略更新
+    en: "Actor-Critic / A2C"
+  - slug: ppo
+    zh: PPO：约束策略更新
+    en: "PPO: Constrained Policy Updates"
+  - slug: sac
+    zh: SAC：最大熵连续控制
+    en: "SAC: Maximum-Entropy Continuous Control"
+  - slug: offline-rl
+    zh: 离线强化学习：CQL 与 IQL
+    en: "Offline RL: CQL and IQL"
+  - slug: model-based-rl
+    zh: 模型式强化学习：从环境模型到 Dyna-Q
+    en: "Model-Based RL: Dyna-Q"
+  - slug: decision-transformer
+    zh: Decision Transformer：序列建模的强化学习
+    en: "Decision Transformer: RL as Sequence Modeling"
+  - slug: rlhf
+    zh: RLHF：从偏好到奖励
+    en: "RLHF: From Preferences to Rewards"
+  - slug: dpo
+    zh: DPO：不训奖励模型的偏好优化
+    en: "DPO: Preference Optimization without a Reward Model"
+  - slug: grpo
+    zh: GRPO 与 RLVR：可验证奖励
+    en: "GRPO and RLVR: Verifiable Rewards"

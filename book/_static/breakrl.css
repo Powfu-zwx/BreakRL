@@ -219,6 +219,13 @@ article.bd-article,
   color: var(--breakrl-muted);
 }
 
+/* One footer string per language, both owned by `_config.yml`; the page's own
+   locale decides which one the reader sees. */
+html[lang="zh-CN"] .breakrl-footer--en,
+html[lang="en"] .breakrl-footer--zh {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .breakrl-chapter-pdf {
     height: 70vh;

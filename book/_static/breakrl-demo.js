@@ -1,5 +1,46 @@
+/* The offline-RL failure demo. Static prose lives in book/demo.md and
+   book/demo-en.md; only the strings this file draws itself are here. */
 (function () {
   'use strict';
+
+  var TEXT = {
+    zh: {
+      metric: '最终回报',
+      returnSeries: '实际回报',
+      xAxis: '训练进度',
+      yAxis: '归一化数值',
+      low: {
+        hint: '低覆盖率：未见动作更容易被 Q 值高估。',
+        status: '失败模式：损失下降，但实际回报在训练后段塌缩。'
+      },
+      mid: {
+        hint: '覆盖率接近临界区：先看行为克隆基线，再决定是否相信 Q 值。',
+        status: '临界状态：损失和回报开始重新一致，但仍有分布外风险。'
+      },
+      high: {
+        hint: '覆盖率较高：贪心目标更少依赖数据外动作。',
+        status: '覆盖率较高：损失下降与回报提升重新一致。'
+      }
+    },
+    en: {
+      metric: 'Final return',
+      returnSeries: 'Return',
+      xAxis: 'Training progress',
+      yAxis: 'Normalized value',
+      low: {
+        hint: 'Low coverage: unseen actions are easier for Q values to overestimate.',
+        status: 'Failure mode: the loss falls while actual return collapses late in training.'
+      },
+      mid: {
+        hint: 'Near the boundary: check the behavior-cloning baseline before trusting Q values.',
+        status: 'Boundary case: loss and return start to agree, but out-of-distribution risk remains.'
+      },
+      high: {
+        hint: 'Higher coverage: the greedy target relies less on out-of-distribution actions.',
+        status: 'Higher coverage: falling loss and improving return become aligned again.'
+      }
+    }
+  };
 
   function boot() {
   var root = document.getElementById('breakrl-demo');
@@ -8,6 +49,7 @@
   }
   root.setAttribute('data-breakrl-ready', '1');
 
+  var text = TEXT[/^zh\b/i.test(document.documentElement.lang || '') ? 'zh' : 'en'];
   var SVG_NS = 'http://www.w3.org/2000/svg';
   var svg = document.getElementById('breakrl-demo-chart');
   var coverageInput = document.getElementById('breakrl-demo-coverage');
@@ -15,7 +57,11 @@
   var coverageHint = document.getElementById('breakrl-demo-coverage-hint');
   var status = document.getElementById('breakrl-demo-status');
   var metric = document.getElementById('breakrl-demo-metric');
-  var language = 'en';
+  // The chart's title and description are the page's own prose. `draw` rebuilds
+  // the SVG's children, so it carries the authored text over rather than
+  // keeping a second copy of it here.
+  var chartTitle = document.getElementById('breakrl-demo-chart-title').textContent;
+  var chartDescription = document.getElementById('breakrl-demo-chart-description').textContent;
   var width = 760;
   var height = 390;
   var margin = { top: 28, right: 72, bottom: 54, left: 70 };
@@ -78,71 +124,24 @@
     };
   }
 
-  function translated(node) {
-    return node.getAttribute('data-' + language) || '';
-  }
-
-  function setLanguage(nextLanguage) {
-    language = nextLanguage === 'en' ? 'en' : 'zh';
-    root.setAttribute('data-lang', language);
-    root.querySelectorAll('[data-zh][data-en]').forEach(function (node) {
-      node.textContent = translated(node);
-    });
-    root.querySelectorAll('[data-zh-href][data-en-href]').forEach(function (node) {
-      node.setAttribute('href', node.getAttribute(language === 'en' ? 'data-en-href' : 'data-zh-href'));
-    });
-    root.querySelectorAll('[data-demo-language]').forEach(function (button) {
-      var active = button.getAttribute('data-demo-language') === language;
-      button.setAttribute('aria-pressed', String(active));
-    });
-    draw();
-  }
-
   function draw() {
     var coverage = Number(coverageInput.value) / 100;
-    var coveragePercent = Math.round(coverage * 100);
     var data = seriesFor(coverage);
     var finalReturn = data.actualReturn[data.actualReturn.length - 1].value;
     var finalLoss = data.loss[data.loss.length - 1].value;
-    var lowCoverage = coverage < 0.55;
+    var band = coverage < 0.55 ? text.low : coverage < 0.75 ? text.mid : text.high;
 
-    coverageValue.textContent = coveragePercent + '%';
-    if (lowCoverage) {
-      coverageHint.textContent = language === 'zh'
-        ? '低覆盖率：未见动作更容易被 Q 值高估。'
-        : 'Low coverage: unseen actions are easier for Q values to overestimate.';
-      status.textContent = language === 'zh'
-        ? '失败模式：损失下降，但实际回报在训练后段塌缩。'
-        : 'Failure mode: the loss falls while actual return collapses late in training.';
-    } else if (coverage < 0.75) {
-      coverageHint.textContent = language === 'zh'
-        ? '覆盖率接近临界区：先看行为克隆基线，再决定是否相信 Q 值。'
-        : 'Near the boundary: check the behavior-cloning baseline before trusting Q values.';
-      status.textContent = language === 'zh'
-        ? '临界状态：损失和回报开始重新一致，但仍有分布外风险。'
-        : 'Boundary case: loss and return start to agree, but out-of-distribution risk remains.';
-    } else {
-      coverageHint.textContent = language === 'zh'
-        ? '覆盖率较高：贪心目标更少依赖数据外动作。'
-        : 'Higher coverage: the greedy target relies less on out-of-distribution actions.';
-      status.textContent = language === 'zh'
-        ? '覆盖率较高：损失下降与回报提升重新一致。'
-        : 'Higher coverage: falling loss and improving return become aligned again.';
-    }
-    metric.textContent = language === 'zh'
-      ? '最终回报 ' + finalReturn.toFixed(2) + ' · TD loss ' + finalLoss.toFixed(2)
-      : 'Final return ' + finalReturn.toFixed(2) + ' · TD loss ' + finalLoss.toFixed(2);
+    coverageValue.textContent = Math.round(coverage * 100) + '%';
+    coverageHint.textContent = band.hint;
+    status.textContent = band.status;
+    metric.textContent = text.metric + ' ' + finalReturn.toFixed(2) + ' · TD loss ' + finalLoss.toFixed(2);
 
     while (svg.firstChild) {
       svg.removeChild(svg.firstChild);
     }
 
-    var title = createSvgElement('title', { id: 'breakrl-demo-chart-title' }, svg);
-    title.textContent = language === 'zh' ? '损失下降与实际回报' : 'Falling loss and actual return';
-    var description = createSvgElement('desc', { id: 'breakrl-demo-chart-description' }, svg);
-    description.textContent = language === 'zh'
-      ? '低数据覆盖率下，损失曲线继续下降，实际回报曲线在训练后段塌缩。'
-      : 'With low data coverage, the loss keeps falling while actual return collapses late in training.';
+    createSvgElement('title', { id: 'breakrl-demo-chart-title' }, svg).textContent = chartTitle;
+    createSvgElement('desc', { id: 'breakrl-demo-chart-description' }, svg).textContent = chartDescription;
 
     var grid = createSvgElement('g', { 'aria-hidden': 'true' }, svg);
     [0, 0.25, 0.5, 0.75, 1].forEach(function (tick) {
@@ -202,14 +201,14 @@
       y: height - 10,
       'text-anchor': 'middle'
     }, axes);
-    xLabel.textContent = language === 'zh' ? '训练进度' : 'Training progress';
+    xLabel.textContent = text.xAxis;
 
     var yLabel = createSvgElement('text', {
       class: 'breakrl-demo__axis-label',
       'text-anchor': 'middle',
       transform: 'translate(16 ' + (margin.top + plotHeight / 2) + ') rotate(-90)'
     }, axes);
-    yLabel.textContent = language === 'zh' ? '归一化数值' : 'Normalized value';
+    yLabel.textContent = text.yAxis;
 
     var curves = createSvgElement('g', { 'aria-hidden': 'true' }, svg);
     createSvgElement('path', {
@@ -261,34 +260,11 @@
       x: finalX + 9,
       y: returnY
     }, curves);
-    returnLabel.textContent = language === 'zh' ? '实际回报' : 'Return';
+    returnLabel.textContent = text.returnSeries;
   }
 
   coverageInput.addEventListener('input', draw);
-  root.querySelectorAll('[data-demo-language]').forEach(function (button) {
-    button.addEventListener('click', function () {
-      setLanguage(button.getAttribute('data-demo-language'));
-    });
-  });
-
-  function siteLanguage() {
-    var stored = document.documentElement.getAttribute('data-breakrl-lang');
-    if (stored === 'en' || stored === 'zh') {
-      return stored;
-    }
-    return document.documentElement.lang === 'en' ? 'en' : 'zh';
-  }
-
-  setLanguage(siteLanguage());
-  new MutationObserver(function () {
-    var next = siteLanguage();
-    if (next !== language) {
-      setLanguage(next);
-    }
-  }).observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['data-breakrl-lang', 'lang']
-  });
+  draw();
   }
 
   if (document.readyState === 'loading') {

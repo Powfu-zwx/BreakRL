@@ -5,26 +5,24 @@
   var LANG_ZH = 'zh';
   var LANG_EN = 'en';
 
-  // Pages pair by filename. Chapter notebooks follow the convention
-  // `scripts/check_consistency.py` enforces — the English edition of
-  // `notes/<chapter>/<name>_experiments.html` is its `_en` sibling — so a new
-  // chapter's toggle works without an edit here. The site's own text pages are
-  // listed instead, because their names do not say which edition they are.
-  // Sphinx's search and genindex pages, and the single-language demo, pair with
-  // nothing and stay put.
-  var TEXT_PAGES = indexPairs([
-    ['index-zh.html', 'index.html'],
-    ['failure-atlas.html', 'failure-atlas-en.html'],
-    ['offline-rl-text.html', 'offline-rl-text-en.html']
-  ]);
+  // Sphinx's own utility pages have no counterpart in the other language.
+  var UNPAIRED = /^(search|genindex|404)\.html$/;
 
-  function indexPairs(pairs) {
-    var index = {};
-    pairs.forEach(function (pair) {
-      index[pair[0]] = { zh: pair[0], en: pair[1] };
-      index[pair[1]] = { zh: pair[0], en: pair[1] };
-    });
-    return index;
+  // Pages pair by filename: an unsuffixed page is the Chinese source and its
+  // `-en` sibling is the English translation. `tools/chapters.py` owns that rule
+  // for chapter files, and the site's own pages follow it, so a new page pairs
+  // automatically. `tools/check_site.py` fails the build if a pair is missing.
+  function pagePair(location) {
+    if (UNPAIRED.test(location.name)) {
+      return null;
+    }
+    if (/-en\.html$/.test(location.name)) {
+      return { zh: location.name.replace(/-en\.html$/, '.html'), en: location.name };
+    }
+    if (/\.html$/.test(location.name)) {
+      return { zh: location.name, en: location.name.replace(/\.html$/, '-en.html') };
+    }
+    return null;
   }
 
   var UI_LABELS = {
@@ -70,22 +68,6 @@
     return { directory: path.slice(0, cut), name: path.slice(cut) || 'index.html' };
   }
 
-  function pagePair(location) {
-    if (TEXT_PAGES[location.name]) {
-      return TEXT_PAGES[location.name];
-    }
-    if (!/(^|\/)notes\//.test(location.directory)) {
-      return null;
-    }
-    if (/_experiments_en\.html$/.test(location.name)) {
-      return { zh: location.name.replace(/_en\.html$/, '.html'), en: location.name };
-    }
-    if (/_experiments\.html$/.test(location.name)) {
-      return { zh: location.name, en: location.name.replace(/\.html$/, '_en.html') };
-    }
-    return null;
-  }
-
   function pageName(pathname) {
     return pageLocation(pathname).name;
   }
@@ -108,7 +90,7 @@
   }
 
   // The build states each page's own language in the HTML it generates
-  // (`scripts/breakrl_locale.py` owns that rule), so the toggle reads it rather
+  // (`tools/breakrl_locale.py` owns that rule), so the toggle reads it rather
   // than deriving the same answer a second time.
   function pageLanguage() {
     var lang = document.documentElement.getAttribute('lang') || '';
@@ -197,7 +179,7 @@
     var group = document.createElement('div');
     group.className = 'lang-switch';
     group.setAttribute('role', 'group');
-    group.setAttribute('aria-label', '语言');
+    group.setAttribute('aria-label', UI_LABELS[LANG_ZH].language);
 
     [LANG_EN, LANG_ZH].forEach(function (lang) {
       var option = document.createElement('button');
@@ -240,23 +222,25 @@
     filterToc(lang);
   }
 
+  // Each sidebar part is one language edition, so its first link says which:
+  // every entry in an English part carries `-en`, and no entry in a Chinese one
+  // does. The caption text itself is left alone.
   function filterToc(lang) {
     document.querySelectorAll('.bd-sidebar p.caption').forEach(function (caption) {
-      var text = (caption.textContent || '').trim();
-      var isZh = text === '中文版' || text === '章节';
-      var isEn = text === 'English' || text === 'Chapters';
-      if (!isZh && !isEn) {
-        return;
-      }
-      var hidden = (lang === LANG_EN && isZh) || (lang === LANG_ZH && isEn);
-      caption.hidden = hidden;
       var list = caption.nextElementSibling;
       while (list && !(list.classList && list.classList.contains('bd-sidenav'))) {
         list = list.nextElementSibling;
       }
-      if (list) {
-        list.hidden = hidden;
+      if (!list) {
+        return;
       }
+      var link = list.querySelector('a[href]');
+      if (!link) {
+        return;
+      }
+      var isEnglish = /-en(\.html)?([?#]|$)/.test(link.getAttribute('href') || '');
+      caption.hidden = lang !== (isEnglish ? LANG_EN : LANG_ZH);
+      list.hidden = caption.hidden;
     });
   }
 
@@ -318,7 +302,6 @@
   }
 
   window.BreakRLLanguageToggle = {
-    textPages: TEXT_PAGES,
     parallelPath: parallelPath,
     parallelTarget: parallelTarget
   };
