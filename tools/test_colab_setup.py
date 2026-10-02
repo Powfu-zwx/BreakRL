@@ -1,4 +1,8 @@
-"""Tests for the Colab bootstrap helper. No network, no apt, no pip."""
+"""Tests for the Colab bootstrap helper; no apt or pip.
+
+Default checks are offline. ``--remote`` also checks the actual pinned helper
+that a fresh Colab runtime downloads, rather than only the local working copy.
+"""
 from __future__ import annotations
 
 import os
@@ -13,6 +17,7 @@ if str(TOOLS) not in sys.path:
 
 from chapters import load_chapters  # noqa: E402
 from colab_setup import (  # noqa: E402
+    RAW_SETUP_URL,
     bootstrap_source,
     clone_commands,
     colab_notebook_url,
@@ -91,7 +96,7 @@ def test_colab_url() -> list[str]:
     return errors
 
 
-def test_standalone_delivery(tmp_path: Path) -> list[str]:
+def test_standalone_delivery(tmp_path: Path, source: str | None = None) -> list[str]:
     """The module is fetched alone by raw URL and run before any checkout exists.
 
     Colab downloads this file to a bare directory and executes it, so every
@@ -101,11 +106,19 @@ def test_standalone_delivery(tmp_path: Path) -> list[str]:
     """
     errors = []
     delivered = tmp_path / "_breakrl_colab_setup.py"
-    delivered.write_text(
-        (TOOLS / "colab_setup.py").read_text(encoding="utf-8"), encoding="utf-8"
-    )
+    if source is None:
+        source = (TOOLS / "colab_setup.py").read_text(encoding="utf-8")
+    delivered.write_text(source, encoding="utf-8")
     result = subprocess.run(
-        [sys.executable, "-c", f"import runpy; runpy.run_path({str(delivered)!r})"],
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            "import runpy, sys; "
+            "module = runpy.run_path(sys.argv[1]); "
+            "module['setup']('offline-rl', on_colab=False)",
+            str(delivered),
+        ],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -117,6 +130,22 @@ def test_standalone_delivery(tmp_path: Path) -> list[str]:
             + result.stderr.strip().splitlines()[-1],
         )
     return errors
+
+
+def test_remote_standalone_delivery(tmp_path: Path) -> list[str]:
+    """Check the shipped URL in an isolated interpreter with no checkout."""
+    from urllib.request import Request, urlopen
+
+    try:
+        request = Request(RAW_SETUP_URL, headers={"User-Agent": "BreakRL-Colab-check"})
+        with urlopen(request, timeout=30) as response:
+            source = response.read().decode("utf-8")
+    except Exception as error:
+        return [f"cannot fetch the pinned Colab helper {RAW_SETUP_URL}: {error}"]
+    return [
+        f"pinned helper {RAW_SETUP_URL}: {error}"
+        for error in test_standalone_delivery(tmp_path, source)
+    ]
 
 
 def test_setup_local_noop() -> list[str]:
@@ -324,6 +353,7 @@ def main(argv: list[str] | None = None) -> int:
 
     argv = list(sys.argv[1:] if argv is None else argv)
     smoke = "--smoke" in argv
+    remote = "--remote" in argv
     errors = (
         test_requirements_skip_jupyterlab()
         + test_bootstrap_source()
@@ -332,6 +362,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     with tempfile.TemporaryDirectory() as tmp:
         errors += test_standalone_delivery(Path(tmp))
+        if remote:
+            errors += test_remote_standalone_delivery(Path(tmp))
         errors += test_setup_colab_mock(Path(tmp))
         errors += test_incomplete_clone_is_replaced(Path(tmp) / "incomplete")
     if smoke:
@@ -347,6 +379,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR: {error}")
         return 1
     print("colab setup tests: OK")
+    if remote:
+        print("pinned Colab helper delivery: OK")
     if smoke:
         print("colab runtime smoke: OK")
     return 0

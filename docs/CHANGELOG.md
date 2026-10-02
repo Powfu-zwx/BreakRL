@@ -4,6 +4,8 @@ Release notes for BreakRL. The project was named TESAURO through v0.7.0.
 
 ## Unreleased
 
+- Fix fresh Colab startup: replace the v1.2.2 helper, which imports a repository-only `paths` module, with a working standalone helper pinned to an immutable commit. Check the actual downloaded helper in an isolated interpreter in CI.
+
 - Delete the unused issue templates and `CODEOWNERS`.
 - Give every chapter file one name: `book/notes/<chapter>/<chapter>.tex|.pdf|.ipynb` for the Chinese source and the same name with `-en` for the English translation. This retires three older spellings at once (`_experiments`, a bare English name, and the `pg` / `ac` abbreviations).
 - Make Chinese the default README, home page, and site language. English moves to `README-en.md`, `index-en.md`, and the `-en` pages.

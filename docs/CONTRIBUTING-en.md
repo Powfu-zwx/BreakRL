@@ -43,6 +43,7 @@ python tools/run_jupyter.py   # Windows certificate-store workaround; otherwise 
 ```bash
 python tools/check_repo.py                               # structural checks (same as CI)
 python tools/test_colab_setup.py                         # Colab bootstrap unit tests
+python tools/test_colab_setup.py --remote                # verify the pinned download in isolation (network required)
 node tools/test_lang_toggle.js                           # language toggle regressions
 conda run -n tex_env tectonic book/notes/<chapter>/<chapter>.tex   # rebuild the PDF after editing text
 jupyter-book build book && python tools/check_site.py book/_build/html

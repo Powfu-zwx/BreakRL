@@ -43,6 +43,7 @@ python tools/run_jupyter.py   # Windows 证书库规避；无此问题可直接 
 ```bash
 python tools/check_repo.py                               # 结构检查（CI 同款）
 python tools/test_colab_setup.py                         # Colab 引导单元测试
+python tools/test_colab_setup.py --remote                # 检查 Colab 实际下载的固定版本脚本（需联网）
 node tools/test_lang_toggle.js                           # 语言切换回归
 conda run -n tex_env tectonic book/notes/<chapter>/<chapter>.tex   # 改了正文必须重编译 PDF
 jupyter-book build book && python tools/check_site.py book/_build/html

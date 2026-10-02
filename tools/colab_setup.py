@@ -9,15 +9,14 @@ import sys
 from pathlib import Path
 
 GITHUB_REPO = "Powfu-zwx/BreakRL"
-# The bootstrap a notebook carries must be the one that shipped with it. Readers
-# open `main`, so the clone below still tracks `main`; only the fetched setup
-# module is pinned, and pinning it to the tag also busts the HTTP cache. The raw
-# path is that tag's tree layout, which predates `scripts/` becoming `tools/` —
-# bumping the tag means pointing at wherever the tag keeps this file.
-RELEASE_TAG = "v1.2.2"
+# Pin a known working standalone helper. The v1.2.2 release helper imports
+# `paths` before a checkout exists and cannot bootstrap a fresh Colab runtime.
+# Keep the path in the pinned commit's layout, and verify the fetched module
+# with `test_colab_setup.py --remote` whenever this reference changes.
+BOOTSTRAP_REF = "3620e0f65563604c3d8facdcecedc8681a1bfe72"
 REPO_URL = f"https://github.com/{GITHUB_REPO}.git"
 RAW_SETUP_URL = (
-    f"https://raw.githubusercontent.com/{GITHUB_REPO}/{RELEASE_TAG}/scripts/colab_setup.py"
+    f"https://raw.githubusercontent.com/{GITHUB_REPO}/{BOOTSTRAP_REF}/tools/colab_setup.py"
 )
 COLAB_ROOT = Path("/content/BreakRL")
 # This module is delivered alone, by raw URL, into a Colab runtime that has no
@@ -95,7 +94,7 @@ def bootstrap_source(chapter: str) -> str:
         "\n"
         "    _setup = Path('/content/_breakrl_colab_setup.py')\n"
         "    _req = urllib.request.Request(\n"
-        f"        {RAW_SETUP_URL!r} + '?v={RELEASE_TAG}',\n"
+        f"        {RAW_SETUP_URL!r},\n"
         "        headers={'Cache-Control': 'no-cache'},\n"
         "    )\n"
         "    _setup.write_bytes(urllib.request.urlopen(_req).read())\n"

@@ -25,7 +25,7 @@ jobs:
         run: python -m pip install "nbformat==5.11.1" "pyyaml==6.0.2"
       - name: Validate repository consistency
         run: python tools/check_repo.py
-      - name: Test Colab bootstrap
-        run: python tools/test_colab_setup.py
+      - name: Test Colab bootstrap and its pinned download
+        run: python tools/test_colab_setup.py --remote
       - name: Check language toggle regressions
         run: node tools/test_lang_toggle.js
