@@ -85,12 +85,15 @@ def page_files(build_root: Path) -> list[Path]:
     Jupyter Book ships a few HTML macro templates in ``_static``; they contain
     unresolved Sphinx expressions by design and are not public pages. Anything
     under ``.github`` is repository metadata that leaked into the build.
+    Independent standalone blogs under ``blog`` have their own lifecycle and
+    metadata conventions.
     """
     return sorted(
         path
         for path in build_root.rglob("*.html")
         if "_static" not in path.relative_to(build_root).parts
         and ".github" not in path.relative_to(build_root).parts
+        and "blog" not in path.relative_to(build_root).parts
     )
 
 
