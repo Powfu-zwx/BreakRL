@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="多臂老虎机核心讲义：在无知与不确定性下，评估性反馈、置信上界、后验抽样与信息价值如何塑造序列决策。">
+  <title>多臂老虎机：在行动中学习 — BreakRL</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '已复制!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">跳转到正文</a>
+  
+  <nav class="site-nav" aria-label="页面控制">
+    <div class="lang-switch" role="group" aria-label="语言选择">
+      <a href="javascript:void(0)" onclick="switchLang('index.html')">EN</a>
+      <a href="javascript:void(0)" class="is-active" aria-current="page">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="切换浅色/暗色主题">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">第 01 章 · 核心讲义</p>
+        <h1>多臂老虎机：探索与利用</h1>
+        <p class="lead">每一次选择都会换来两种完全不同的货币：一份当下的数值回报，以及一段修正信念的观测证据。当收集信息本身就是优化的核心手段时，我们究竟应当如何决策？</p>
+      </header>
+
+      <details class="contents">
+        <summary>本页目录</summary>
+        <nav aria-label="章节目录">
+          <ol>
+            <li><a href="#feedback">确定性到来之前的抉择</a></li>
+            <li><a href="#greedy">早期误判如何冻结为不可撼动的教条</a></li>
+            <li><a href="#exploration">为「犯错」保留余地</a></li>
+            <li><a href="#uncertainty">让不确定性引导选择</a></li>
+            <li><a href="#regret">信息的代价：为什么对数遗憾是不可逾越的物理极限</a></li>
+            <li><a href="#information">信息的真正价值：探测带来的期权空间</a></li>
+            <li><a href="#boundaries">当环境规则发生改变</a></li>
+            <li><a href="#reading">扩展阅读与经典文献</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="feedback" aria-labelledby="feedback-heading">
+        <h2 id="feedback-heading">确定性到来之前的抉择</h2>
+        <p>假设面对一个简洁的临床治疗选择：你在一个小样本试验中测试了两种方案。方案 A 在 10 次尝试中成功了 6 次；方案 B 在 2 次尝试中成功了 1 次。面对下一位患者，你该选哪一个？</p>
+
+        <aside class="sidenote">
+          <strong>历史渊源：</strong> William R. Thompson 在 1933 年构想这一问题时，出发点并非抽象的渐近假设检验，而是在药物疗效仍不确定的现实条件下，如何以最符合医学伦理的方式动态分配病患。
+        </aside>
+
+        <p>方案 A 拥有 $0.60$ 的样本胜率，且有 10 份观测数据作后盾；方案 B 目前只有 $0.50$ 的胜率，但样本量极度匮乏。近视的贪心者会毫不犹豫地选择 A。然而，选择 B 可能会揭示其真实的治愈率高达 $0.80$——今天承担 1 次试验的微小风险，换来的可能是未来成百上千名患者的确定性获益。</p>
+
+        <p>现在只改变一个条件：这是医院的最后一位患者。学习的能力依然存在，但将该认知红利在时间长河中摊薄变现的窗口已荡然无存。此时的最优解立即翻转为 A。<span class="key-point">什么是理性的选择，不仅取决于你已经观测到了什么，更取决于你还有多少未来可以去兑现它。</span></p>
+
+        <h3>评估性反馈的形式化模型</h3>
+        <p>随机多臂老虎机（Stochastic Multi-Armed Bandit）将上述根本矛盾形式化：智能体面对 $K$ 个离散动作（习惯上称为<strong>摇臂</strong>）：$\mathcal{A} = \{1, 2, \dots, K\}$。在每一个离散轮次 $t = 1, 2, \dots, T$ 中：</p>
+
+        <ol>
+          <li>智能体选择一个动作 $A_t \in \mathcal{A}$；</li>
+          <li>环境从被选动作未知的平稳分布中独立采样，返回标量回报 $R_t \sim D_{A_t}$；</li>
+          <li>至关重要的是：未被选中的摇臂的回报保持完全隐蔽（反事实数据不可见）。</li>
+        </ol>
+
+        <p>在最纯粹的伯努利设定中，每个动作 $a$ 拥有一个确定但未知的真实成功率 $\mu_a = \mathbb{E}[R \mid a] \in [0, 1]$，单次收益为二元值 $R_t \in \{0, 1\}$，摇臂之间彼此独立、无共享参数。</p>
+
+        <p>这一极简世界凝练出了强化学习的灵魂特征：<strong>评估性反馈（Evaluative Feedback）</strong>。监督学习提供指示性标签（直接告知正确答案应是什么）；而评估性反馈仅仅告诉你刚刚选择的行动得了多少分，它绝不主动透露那些你未曾涉足的道路是否更加明亮。<span class="key-point">评估性反馈只通报所选动作的得分，从不告知未选分支是否更优。</span></p>
+
+        <div class="feedback-grid" role="region" aria-label="反馈范式对比卡片">
+          <div class="feedback-card">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">指示性反馈 (Instructive)</span>
+              <span class="feedback-card__badge">监督学习</span>
+            </div>
+            <p class="feedback-card__desc">全知神谕直接提供全动作空间的误差梯度，无论模型当初实际输出了什么，所有维度的正确方向皆清晰可见。</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">动作 1（模型输出）</span>
+                <span class="feedback-card__signal signal--full">✓ 误差梯度 $\nabla L_1$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">动作 2（未选动作）</span>
+                <span class="feedback-card__signal signal--full">✓ 误差梯度 $\nabla L_2$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">动作 K（未选动作）</span>
+                <span class="feedback-card__signal signal--full">✓ 误差梯度 $\nabla L_K$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-card feedback-card--highlight">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">评估性反馈 (Evaluative)</span>
+              <span class="feedback-card__badge feedback-card__badge--accent">多臂老虎机 / RL</span>
+            </div>
+            <p class="feedback-card__desc">环境仅对被选摇臂返回一个标量得分。未被尝试的候选动作其反事实回报完全被黑幕遮蔽。</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">摇臂 1（当前选中）</span>
+                <span class="feedback-card__signal signal--revealed">★ 观测回报 $R_t \in \{0, 1\}$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">摇臂 2（未选摇臂）</span>
+                <span class="feedback-card__signal signal--obscured">∅ 隐藏的反事实盲区</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">摇臂 K（未选摇臂）</span>
+                <span class="feedback-card__signal signal--obscured">∅ 隐藏的反事实盲区</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="greedy" aria-labelledby="greedy-heading">
+        <h2 id="greedy-heading">早期误判如何冻结为不可撼动的教条</h2>
+        <p>最顺理成章的学习策略，是维护每个动作的经验样本均值，并在每一步坚定地选择当前的领跑者：</p>
+
+        <div class="equation">
+          $$A_t^{\text{greedy}} = \arg\max_{a \in \mathcal{A}} Q_t(a)$$
+        </div>
+
+        <p>其中 $Q_t(a)$ 是动作 $a$ 在第 $t$ 步之前累积的样本均值。只要估计值的相对大小与真实排序相符，贪心选择就是无可挑剔的。然而，这一策略最致命的系统性崩溃，恰恰发生在这套经验排名是如何被构建出来的机制之中。</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">失败图鉴第 9 条 · 提前确信的自锁陷阱（Premature Certainty）</div>
+          <p>假设动作 1 的真实均值为 $\mu_1 = 0.8$，动作 2 为 $\mu_2 = 0.4$。在第 1 轮，动作 1 遭遇偶发性失败（$R=0$）；在第 2 轮，动作 2 恰巧成功（$R=1$）。</p>
+          <p>贪心策略随之更新估计：$Q(1) = 0.0$，$Q(2) = 1.0$。从第 3 轮开始，策略将永远锁定在动作 2 上。因为动作 1 再也没有机会被执行，其经验均值将永久被钉死在 $0.0$。<span class="key-point">这一错误信念自我闭环：智能体剥夺了自身证伪偏见所必需的观测输入。</span>在不同的随机种子下，纯贪心策略有大约 30% 的概率被永久困在次优臂中。</p>
+        </div>
+
+        <div class="regret-sim" role="region" aria-label="在线累积遗憾模拟器">
+          <div class="regret-sim__header">
+            <span class="regret-sim__title">在线实证 · 40 组随机种子遗憾赛跑（$T=400$）</span>
+            <span class="regret-sim__env-badge">3 臂环境：$\boldsymbol{\mu} = [0.8, 0.5, 0.3]$</span>
+          </div>
+          <div class="regret-sim__canvas-wrap">
+            <canvas id="regret-canvas" class="regret-sim__canvas"></canvas>
+          </div>
+          <div class="regret-sim__controls">
+            <div class="regret-sim__algos">
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="greedy" checked onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#b04632;"></span>
+                <span>纯贪心 (Greedy)</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="egreedy" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#b8732a;"></span>
+                <span>$\varepsilon$-贪心 ($\varepsilon=0.1$)</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="ucb" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#237440;"></span>
+                <span>UCB1</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="ts" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#2d5f96;"></span>
+                <span>汤普森抽样 (TS)</span>
+              </label>
+            </div>
+            <button type="button" class="regret-sim__btn" onclick="runRegretSimulation()">重跑模拟</button>
+          </div>
+          <p class="regret-sim__caption">
+            <strong>观察轨迹形态：</strong> 切换至 <em>纯贪心 (Greedy)</em>，可清晰观测到约三成轨迹呈笔直上扬的倾斜直线（算法永久被锁死在次优臂，累积遗憾 $\Omega(T)$）；而切换至 <em>UCB1</em> 或 <em>汤普森抽样</em>，所有轨迹迅速向下方紧密聚集并弯曲放缓（呈亚线性对数增长 $O(\ln T)$）。
+          </p>
+        </div>
+
+        <h3>增量式更新：经典的误差修正范式</h3>
+        <p>记录所有历史样本既消耗内存也缺乏效率。当某摇臂迎来第 $n+1$ 个回报 $r_{n+1}$ 时，其新均值满足一个精妙的递归恒等式：</p>
+
+        <div class="equation">
+          $$Q_{n+1} = Q_n + \frac{1}{n+1} \left( r_{n+1} - Q_n \right)$$
+        </div>
+
+        <p>请留意该算式的通用结构：<strong>新估计 $\leftarrow$ 旧估计 $+$ 步长 $\times$ 预测误差</strong>。这一误差修正模板贯穿了时序差分学习、Q 学习、策略梯度与 Actor-Critic 架构。<span class="key-point">优秀的估计器本身并不能自动产生明智的策略：一旦你停止拉动某个臂，该臂的样本均值就将在时间中永久停滞。</span></p>
+      </section>
+
+      <section id="exploration" aria-labelledby="exploration-heading">
+        <h2 id="exploration-heading">为「犯错」保留余地</h2>
+        <p><span class="key-point">探索为「当前的最优可能全盘皆错」保留了证据窗口；探索的收益在长远，但它的代价却必须在当下全额支付。</span>这是对抗算法早熟停滞不可避免的保险费。</p>
+
+        <h3>$\varepsilon$-贪心：均摊的随机抽查税</h3>
+        <p>最简单的探索机制是注入均匀噪声：以 $1 - \varepsilon$ 的概率选择贪心动作，以 $\varepsilon$ 的概率在全部 $K$ 个摇臂中均匀随机挑选（包括当前领跑者）：</p>
+
+        <aside class="sidenote">
+          <strong>线性遗憾陷阱：</strong> 在固定 $\varepsilon > 0$ 下，即便算法已通过海量样本以无穷大置信度确立了谁是最优臂，它依然在每一轮平白浪费 $\varepsilon \frac{K-1}{K}$ 的预算在已知低劣的分支上。
+        </aside>
+
+        <p>虽然 $\varepsilon$-贪心确保了当 $T \to \infty$ 时每个臂都能被无限次采样，但它的探索缺乏鉴别力——它花在已被证实极端恶劣的动作上的精力和成本，与花在和领跑者难分伯仲的动作上一模一样。</p>
+
+        <p>由于次优选择以恒定速率持续发生，固定 $\varepsilon$ 的累积遗憾在时间维度上呈刚性线性上升：$R_T = \Omega(T)$。采用如 $\varepsilon_t = \min(1, c/t)$ 的退火衰减虽然理论上可将遗憾压制为次线性，但这带来了脆弱的超参调试：如果衰减速度快于真实环境的奖励间隙 $\Delta$，策略便会过早关闭探索窗口，重蹈贪心自锁的覆辙。</p>
+
+        <h3>先探索后承诺（Explore-Then-Commit）</h3>
+        <p>另一种经典范式将时间划分为绝对脱节的两个阶段：先对每个动作均匀采样 $m$ 次（探索阶段），随后在剩余的 $T - mK$ 轮中彻底锁定在均值最高的动作上（承诺阶段）。</p>
+
+        <p>ETC 直观展现了探索的两难分割：若 $m$ 太小，过早承诺给次优臂的风险居高不下，将在剩余大半赛程中带来昂贵的线性损失；若 $m$ 太大，即便最终找对了最优臂，探索阶段本身付出的代价也已无可挽回。最优的 $m$ 严重依赖未知的奖励间隙 $\Delta = \mu^* - \max_{a \ne a^*} \mu_a$——而这恰恰是智能体事先无法知晓的信息。</p>
+      </section>
+
+      <section id="uncertainty" aria-labelledby="uncertainty-heading">
+        <h2 id="uncertainty-heading">让不确定性引导选择</h2>
+        <p>两个动作可能同样拥有 $0.60$ 的样本均值，但动作 1 已经被拉动过 1,000 次，而动作 2 仅仅尝试了 3 次。标量点估计会将它们视作完全对等。一个理性的决策体系，必须赋予<strong>认知不确定性的离散度</strong>以平等的权重。</p>
+
+        <h3>UCB1：面对不确定性保持乐观</h3>
+        <p>上置信界（Upper Confidence Bound）算法落实了一条犀利的操作原则：<strong>把每一个备选项，都预先设想为其在统计意义上可能达到的最高上限</strong>。</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">算法规范 · UCB1（Auer, Cesa-Bianchi, Fischer, 2002）</span>
+            <span class="algo-box__meta">频率学派置信索引</span>
+          </div>
+          <ol>
+            <li><strong>初始化：</strong> 将每个摇臂 $a \in \{1, \dots, K\}$ 各拉动 1 次，初始计数设为 $N_a = 1$；</li>
+            <li><strong>主循环：</strong> 对于轮次 $t = K + 1, K + 2, \dots, T$：</li>
+            <li>选择使置信上界最大化的摇臂：
+              $$A_t = \arg\max_{a \in \mathcal{A}} \left[ \hat{\mu}_a + \sqrt{\frac{2 \ln t}{N_a}} \right]$$
+            </li>
+            <li>观测标量回报 $R_t$，递增被选臂计数 $N_{A_t} \leftarrow N_{A_t} + 1$，并更新样本均值 $\hat{\mu}_{A_t}$。</li>
+          </ol>
+        </div>
+
+        <aside class="sidenote">
+          <strong>霍夫丁不等式推导：</strong> 设独立变量落在 $[0, 1]$ 之间，霍夫丁不等式保证：
+          $$\mathbb{P}(\mu_a - \hat{\mu}_a \ge \epsilon) \le e^{-2 N_a \epsilon^2}$$
+          将单步失效概率绑定为 $t^{-4}$，立即可解出置信半径 $\epsilon = \sqrt{\frac{2 \ln t}{N_a}}$。通过对全动作与全时间步应用联合界（Union Bound），能够确保真实均值在绝大多数时间步内都不会突破该上界。
+        </aside>
+
+        <p>UCB 的索引值在利用（经验平均 $\hat{\mu}_a$）与探索激励（与样本数开方呈反比的惩罚项）之间取得了精巧的动态平衡。注意分子上的 $\ln t$：随着总轮次推移，被长期冷落的动作其置信区间会极其缓慢地自我膨胀，直到逼迫算法不得不重新审视它一次。一个动作只有在其实际表现足够低劣、以至于连其最大乐观上界都无法超越其他臂的下限时，才会被彻底打入冷宫。</p>
+
+        <h3>汤普森抽样：后验概率匹配</h3>
+        <p>如果说 UCB 采用的是保守的极值上界分位数，汤普森抽样（Thompson Sampling / 后验采样）则换用了纯粹的贝叶斯视角：<strong>按照一个动作成为最优臂的后验概率来进行选择分配</strong>。</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">算法规范 · 伯努利汤普森抽样（Thompson Sampling）</span>
+            <span class="algo-box__meta">贝叶斯后验概率采样</span>
+          </div>
+          <ol>
+            <li><strong>先验设定：</strong> 为每个动作赋予无信息的共轭先验 $\mathrm{Beta}(\alpha_a, \beta_a)$，初始值 $\alpha_a = 1, \beta_a = 1$；</li>
+            <li><strong>主循环：</strong> 对于轮次 $t = 1, 2, \dots, T$：</li>
+            <li>对每个动作独立从后验中抽取一个候选成功率：$\theta_a \sim \mathrm{Beta}(\alpha_a, \beta_a)$；</li>
+            <li>在生成的虚拟可能世界中做贪心决断：$A_t = \arg\max_{a} \theta_a$；</li>
+            <li>观测环境返回的二元回报 $R_t \in \{0, 1\}$；</li>
+            <li>利用贝叶斯共轭性质更新后验参数：
+              $$\alpha_{A_t} \leftarrow \alpha_{A_t} + R_t, \quad \beta_{A_t} \leftarrow \beta_{A_t} + (1 - R_t)$$
+            </li>
+          </ol>
+        </div>
+
+        <p>这里必须建立清晰的概念界限：<span class="key-point">后验采样值 $\theta_a$ 绝不是模拟出来的环境回报</span>。它是从关于真实均值 $\mu_a$ 的认知分布中抽出的一种可能世界。数据匮乏的动作拥有宽阔扁平的 Beta 分布，因此偶尔会抽出接近 $1.0$ 的极高样本从而赢得执行权；一旦执行，实际结果便会迅速约束其分布方差。</p>
+
+        <div class="ts-lens" role="region" aria-label="汤普森抽样后验动态透镜">
+          <div class="ts-lens__header">
+            <span class="ts-lens__title">后验透镜 · 认知概率密度 $p(\mu_a \mid \mathcal{H}_t)$</span>
+            <span class="ts-lens__round" id="ts-lens-round-num">轮次 t = 0</span>
+          </div>
+          <div class="ts-lens__canvas-wrap">
+            <canvas id="ts-lens-canvas" class="ts-lens__canvas"></canvas>
+          </div>
+          <div class="ts-lens__status" id="ts-lens-status-text">
+            先验初始化为平坦无偏 $\mathrm{Beta}(1, 1)$。点击「单步抽样 (Step)」观察信念分布如何自适应收窄。
+          </div>
+          <div class="ts-lens__controls">
+            <div class="ts-lens__legend">
+              <span class="ts-lens__arm-label"><span class="regret-sim__dot" style="background:#237440;"></span><span>摇臂 1（真实 $\mu=0.65$）</span></span>
+              <span class="ts-lens__arm-label"><span class="regret-sim__dot" style="background:#b04632;"></span><span>摇臂 2（真实 $\mu=0.45$）</span></span>
+            </div>
+            <div class="ts-lens__btns">
+              <button type="button" class="ts-lens__btn ts-lens__btn--primary" id="ts-lens-auto-btn" onclick="toggleAutoTsLens()">自动演练</button>
+              <button type="button" class="ts-lens__btn" onclick="stepTsLens()">单步</button>
+              <button type="button" class="ts-lens__btn" onclick="resetTsLens()">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <p>汤普森抽样天然实现了探索的自适应衰减：一个动作被选中的数学概率，严格等同于在当前历史观测下它是真实最优动作的后验概率：$\mathbb{P}(A_t = a \mid \mathcal{H}_{t-1}) = \mathbb{P}(\mu_a = \max_{j} \mu_j \mid \mathcal{H}_{t-1})$。</p>
+      </section>
+
+      <section id="regret" aria-labelledby="regret-heading">
+        <h2 id="regret-heading">信息的代价：为什么对数遗憾是不可逾越的物理极限</h2>
+        <p>要严格评估一个老虎机算法的优劣，我们以全知神谕（始终选择全局最优臂 $\mu^* = \max_{a} \mu_a$）作为理论基准。定义动作 $a$ 的次优间隙为 $\Delta_a = \mu^* - \mu_a$。在 $T$ 步中的累积期望遗憾可精确分解为：</p>
+
+        <div class="equation">
+          $$R_T = \mu^* T - \sum_{t=1}^T \mathbb{E}[\mu_{A_t}] = \sum_{a: \Delta_a > 0} \Delta_a \, \mathbb{E}[N_a(T)]$$
+        </div>
+
+        <p>该分解恒等式确立了问题的实质：<strong>最小化累积遗憾，数学上等价于严格约束分配给次优摇臂的期望拉动次数</strong>。</p>
+
+        <aside class="sidenote">
+          <strong>假说可区分性下界（Lai &amp; Robbins, 1985）：</strong> 对于任何在所有参数实例上都能实现次线性遗憾的「一致性策略」，其渐近累积遗憾必定满足：
+          $$\liminf_{T \to \infty} \frac{R_T}{\ln T} \ge \sum_{a: \Delta_a > 0} \frac{\Delta_a}{\mathrm{D}_{\mathrm{KL}}(\mu_a \parallel \mu^*)}$$
+        </aside>
+
+        <p>为什么针对固定奖励差距，遗憾增长速度绝不可能慢于 $O(\ln T)$？答案深植于信息论与假说检验的根基之中。想象两个平行宇宙，它们唯一的区别在于动作 $k$：在宇宙 1 中，动作 $k$ 略微次优；在宇宙 2 中，其真实均值被微幅抬升、超越了 $\mu^*$ 成为最优。</p>
+
+        <p>如果一个算法拉动动作 $k$ 的次数少于 $O(\ln T / \mathrm{D}_{\mathrm{KL}})$ 次，两套环境所产生的观测序列在统计 Kullback–Leibler 散度上将根本不足以被可靠地区分。任何在宇宙 1 中能够取得极低遗憾的算法，在宇宙 2 中必然会灾难性地陷入线性遗憾。<span class="key-point">对数遗憾是区分假说必须支付的不可缩减的信息热力学税。</span></p>
+      </section>
+
+      <section id="information" aria-labelledby="information-heading">
+        <h2 id="information-heading">信息的真正价值：探测带来的期权空间</h2>
+        <p>信息之所以具有真金白银的价值，是因为它赋予了我们下游决策的自适应灵活性。无需依赖任何随机模拟，一个纯粹的两步贝叶斯决策问题就能精确揭示这一机制。</p>
+
+        <p>假设在两轮决策窗口内（$T = 2$）面临两个互不相干的方案：</p>
+        <ul>
+          <li><strong>方案 A：</strong> 拥有完全已知的确定成功率 $\mu_A = 0.55$；</li>
+          <li><strong>方案 B：</strong> 真实成功率未知，先验服从 $\mu_B \sim \mathrm{Beta}(1, 1)$，其当前先验均值为 $\mathbb{E}[\mu_B] = 0.50$。</li>
+        </ul>
+
+        <p>静态的保守策略在两轮中全部选用已知方案 A：其总期望收益为 $0.55 + 0.55 = \mathbf{1.1000}$。</p>
+
+        <p>现在我们评估勇于在第 1 轮主动探索未知方案 B 的自适应策略：</p>
+        <ol>
+          <li><strong>第 1 轮：</strong> 拉动 B。即时期望收益为 $\mathbb{E}[R_1] = 0.50$（表面上比直接选 A 亏损了 $-0.05$）；</li>
+          <li><strong>第 2 轮的分支决策：</strong>
+            <ul>
+              <li>以 $1/2$ 的概率，B 迎来成功（$R_1 = 1$）。其后验更新为 $\mathrm{Beta}(2, 1)$，均值跃升至 $2/3 \approx 0.67$。由于 $0.67 > 0.55$，第 2 轮我们乘胜追击继续拉动 B，获得期望收益 $2/3$；</li>
+              <li>以 $1/2$ 的概率，B 遭遇失败（$R_1 = 0$）。其后验更新为 $\mathrm{Beta}(1, 2)$，均值跌落至 $1/3 \approx 0.33$。由于 $0.33 < 0.55$，第 2 轮我们果断止损切回 A，锁定已知收益 $0.55$。</li>
+            </ul>
+          </li>
+        </ol>
+
+        <p>优先探测 B 的总期望收益分解式如下：</p>
+        <div class="equation">
+          $$V(\text{先试 B}) = \underbrace{0.50}_{\text{第 1 轮 (B)}} + \underbrace{\frac{1}{2} \left( \frac{2}{3} \right)}_{\text{成功} \to \text{续投 B}} + \underbrace{\frac{1}{2} \left( 0.55 \right)}_{\text{失败} \to \text{撤回 A}} = \frac{133}{120} \approx \mathbf{1.1083}$$
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">信息带来的期权价值（Option Value）</div>
+          <p>先试 B 带来了 $1.1083$ 的期望总收益，清晰地超越了静态策略的 $1.1000$（高出 $+1/120 \approx +0.0083$）。</p>
+          <p>请留意：从先验期望来看，B 的后验均值在数学上并没有增加：$\frac{1}{2}(2/3) + \frac{1}{2}(1/3) = 0.50$。发生根本改变的，是我们<strong>在未来因地制宜非对称行事的权利</strong>：当 B 证明了自身强势时我们顺势放大收益，当 B 暴露出弱点时我们利用兜底资产截断下行风险。<span class="key-point">信息之所以具备价值，正是因为未来的决策能够针对它做出自适应调整。</span></p>
+        </div>
+
+        <aside class="sidenote">
+          <strong>吉廷斯指数定理（Gittins, 1979）：</strong> 对于带几何折扣、摇臂独立且未选摇臂保持休眠（Rested）的无穷时域环境，Gittins 证明了多维贝尔曼方程能够精确解耦为 $K$ 个一维标量动态分配索引。每个摇臂可以完全独立地与一个标准退隐选项进行对比评估。
+        </aside>
+      </section>
+
+      <section id="boundaries" aria-labelledby="boundaries-heading">
+        <h2 id="boundaries-heading">当环境规则发生改变</h2>
+        <p>经典多臂老虎机模型的优雅，建立在三个苛刻的前提假设之上：环境完全平稳、摇臂完全独立、动作不改变物理状态。打破其中任何一条，经典算法的适应边界就会暴露无遗。</p>
+
+        <h3>非平稳环境：追踪移动的靶标</h3>
+        <p>若摇臂的真实胜率随着时间推移发生漂移，算术平均值便彻底失效，因为它把远古的历史数据赋予了与眼前最新证据完全一致的权重。使用常数步长指数移动平均（$Q_{t+1} = Q_t + \alpha(R_t - Q_t)$，其中 $\alpha \in (0, 1]$）能够赋予模型追踪变化的能力。</p>
+        <p>但这只解决了一半问题：若某个臂的置信区间已被压缩得很窄且长期未被拉动，它即便随后胜率飙升也将永远隐藏在暗处。非平稳环境要求智能体必须保留主动、持久的强制再探索机制。</p>
+
+        <h3>结构化与情境老虎机（Contextual Bandits）</h3>
+        <p>在推荐系统与精准医疗中，摇臂往往共享潜在特征参数。拉动动作 1 能够直接推断动作 4 的分布。在结构化世界中，一个即时期望收益确信为零的动作，如果能最大程度消除全局参数空间的熵，它可能是唯一具有最高全局价值的选择。</p>
+        <p>情境老虎机在每次决策前赋予了一份状态观测 $x_t \in \mathcal{X}$。最优策略演变为映射 $\pi: \mathcal{X} \to \mathcal{A}$。如 LinUCB 算法使用正则化岭回归与置信椭球替代了标量计数。</p>
+        <p><span class="key-point">多臂老虎机带给我们的核心顿悟在于：行动塑造了未来的观测与信念。</span>每当决策者置身于未知之中，评估性反馈就必然要求我们显式设计收集信息的策略——这构成了交互式智能与序列决策坚不可摧的底层基石。</p>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>附录 · 极简 NumPy 算法参考实现</span>
+          <span class="code-accordion__tag">35 行 Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">复制代码</button>
+          <pre id="code-py"><code>import numpy as np
+
+class UCB1:
+    """基于霍夫丁置信上界的频率学派索引策略"""
+    def __init__(self, K):
+        self.K = K
+        self.counts = np.zeros(K, dtype=int)
+        self.values = np.zeros(K, dtype=float)
+
+    def select_arm(self, t):
+        if t &lt; self.K:
+            return t  # 初始化：各臂先试探 1 次
+        bonus = np.sqrt((2.0 * np.log(t)) / self.counts)
+        return int(np.argmax(self.values + bonus))
+
+    def update(self, arm, reward):
+        self.counts[arm] += 1
+        n = self.counts[arm]
+        self.values[arm] += (reward - self.values[arm]) / n
+
+class ThompsonSampling:
+    """针对伯努利回报的贝叶斯后验抽样策略"""
+    def __init__(self, K):
+        self.K = K
+        self.alphas = np.ones(K, dtype=float)  # Beta(1, 1) 先验
+        self.betas = np.ones(K, dtype=float)
+
+    def select_arm(self):
+        samples = np.random.beta(self.alphas, self.betas)
+        return int(np.argmax(samples))
+
+    def update(self, arm, reward):
+        self.alphas[arm] += reward
+        self.betas[arm] += (1 - reward)</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">扩展阅读与经典文献</h2>
+        <p>以下文献构成了多臂老虎机算法与理论大厦的基石：</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>第 2 章：多臂老虎机。评估性反馈、动作价值估计与增量更新的标准入门经典。</li>
+          <li><a href="https://gwern.net/doc/statistics/decision/1933-thompson.pdf">Thompson (1933) · On the likelihood that one unknown probability exceeds another in view of the evidence of two samples</a><br>Biometrika. 贝叶斯后验采样的历史开创性论文，源自临床试验自适应分配。</li>
+          <li><a href="https://tor-lattimore.com/downloads/book/book.pdf">Lattimore &amp; Szepesvári (2020) · Bandit Algorithms</a><br>Cambridge University Press. 现代多臂老虎机数学专著，详尽涵盖浓度不等式、极小化极大遗憾与信息论下界。</li>
+          <li><a href="https://aima.eecs.berkeley.edu/~russell/classes/cs294/s11/readings/Auer%2Bal%3A2002.pdf">Auer, Cesa-Bianchi &amp; Fischer (2002) · Finite-time Analysis of the Multiarmed Bandit Problem</a><br>Machine Learning. 提出经典的 UCB1 算法并首次完成有限时间对数遗憾证明。</li>
+          <li><a href="https://papers.neurips.cc/paper/4321-an-empirical-evaluation-of-thompson-sampling.pdf">Chapelle &amp; Li (2011) · An Empirical Evaluation of Thompson Sampling</a><br>NeurIPS. 证明了汤普森抽样在工业互联网场景中的实证性能，开启了 TS 的现代复兴。</li>
+          <li><a href="https://arxiv.org/abs/1111.1797">Agrawal &amp; Goyal (2012) · Analysis of Thompson Sampling for the Multi-armed Bandit Problem</a><br>COLT. 首次严格完成了汤普森抽样在有限时间内的对数遗憾界理论证明。</li>
+          <li><a href="https://web.stanford.edu/~bvr/pubs/TS_Tutorial_FnT.pdf">Russo et al. (2018) · A Tutorial on Thompson Sampling</a><br>Foundations and Trends in Machine Learning. 贝叶斯决策论与信息导向抽样（IDS）的现代权威教程。</li>
+          <li><a href="https://people.eecs.berkeley.edu/~russell/classes/cs294/s11/readings/Gittins%3A1979.pdf">Gittins (1979) · Bandit Processes and Dynamic Allocation Indices</a><br>Journal of the Royal Statistical Society. 确立了带折扣多臂老虎机在休眠假设下动态索引分配的最优性定理。</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

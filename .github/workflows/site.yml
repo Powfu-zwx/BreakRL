@@ -39,6 +39,8 @@ jobs:
         run: jupyter-book clean book --all
       - name: Build site
         run: jupyter-book build book
+      - name: Copy blog assets to site
+        run: python -c "import shutil, os; os.makedirs('book/_build/html/blog', exist_ok=True); shutil.copytree('blog', 'book/_build/html/blog', dirs_exist_ok=True)"
       - name: Check generated site links
         run: python tools/check_site.py book/_build/html
       - name: Upload site artifact

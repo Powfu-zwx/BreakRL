@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A foundational treatise on multi-armed bandits: how evaluative feedback, uncertainty quantification, and the value of information shape sequential decisions under ignorance.">
+  <title>Multi-Armed Bandits — Learning While Acting</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">Skip to chapter</a>
+  
+  <nav class="site-nav" aria-label="Page controls">
+    <div class="lang-switch" role="group" aria-label="Language selection">
+      <a href="javascript:void(0)" class="is-active" aria-current="page">EN</a>
+      <a href="javascript:void(0)" onclick="switchLang('index-zh.html')">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">Chapter 01 · Lecture Notes</p>
+        <h1>Multi-Armed Bandits</h1>
+        <p class="lead">Every action yields two distinct currencies: an immediate numerical payoff, and an observation that sharpens your belief. How should we act when gathering evidence is itself the primary lever of optimization?</p>
+      </header>
+
+      <details class="contents">
+        <summary>On this page</summary>
+        <nav aria-label="Chapter contents">
+          <ol>
+            <li><a href="#feedback">Decisions Before Certainty</a></li>
+            <li><a href="#greedy">How an Early Mistake Freezes into Dogma</a></li>
+            <li><a href="#exploration">Leaving Room to Be Wrong</a></li>
+            <li><a href="#uncertainty">Letting Uncertainty Guide the Choice</a></li>
+            <li><a href="#regret">The Information Tax: Why Logarithmic Regret is Fundamental</a></li>
+            <li><a href="#information">What Information is Worth: The Option Value of Probing</a></li>
+            <li><a href="#boundaries">When the Problem Changes</a></li>
+            <li><a href="#reading">Further Reading</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="feedback" aria-labelledby="feedback-heading">
+        <h2 id="feedback-heading">Decisions Before Certainty</h2>
+        <p>Consider a simple clinical choice. You have tested two treatments on a small cohort. Treatment A succeeded in 6 out of 10 patients. Treatment B succeeded in 1 out of 2. Which should you administer to the next patient?</p>
+
+        <aside class="sidenote">
+          <strong>Historical note:</strong> William R. Thompson formulated this in 1933 while analyzing clinical trials. His question was not how to test a scientific hypothesis asymptotically, but how to allocate real human subjects ethically while effectiveness remains uncertain.
+        </aside>
+
+        <p>Treatment A presents an observed success rate of $0.60$ backed by 10 independent trials. Treatment B shows $0.50$, but its sample size is negligible. A myopic optimizer selects A. Yet selecting B might reveal an underlying efficacy of $0.80$, permanently improving clinical outcomes for hundreds of patients tomorrow at the modest risk of one trial today.</p>
+
+        <p>Now alter a single variable: this is the hospital's final patient. The capacity to learn persists, but the horizon over which that learning can be amortized has vanished. The optimal action flips immediately to A. <span class="key-point">What is rational depends not merely on what has been observed, but on how much future remains to exploit it.</span></p>
+
+        <h3>A Formal Model of Evaluative Feedback</h3>
+        <p>A stochastic multi-armed bandit formalizes this fundamental dilemma. An agent faces a set of $K$ discrete actions, traditionally called <em>arms</em>: $\mathcal{A} = \{1, 2, \dots, K\}$. At each discrete round $t = 1, 2, \dots, T$:</p>
+
+        <ol>
+          <li>The agent selects an arm $A_t \in \mathcal{A}$.</li>
+          <li>The environment reveals a scalar reward $R_t \sim D_{A_t}$ drawn independently from the chosen arm’s unknown stationary distribution.</li>
+          <li>Crucially, the rewards of the unselected arms remain completely hidden (unobserved counterfactuals).</li>
+        </ol>
+
+        <p>In the canonical Bernoulli setting, each arm $a$ possesses a true, static success probability $\mu_a = \mathbb{E}[R \mid a] \in [0, 1]$. The reward is binary: $R_t \in \{0, 1\}$. There is no shared parameterization across arms.</p>
+
+        <p>This setting isolates the defining signature of reinforcement learning: <strong>evaluative feedback</strong>. Supervised learning provides instructive labels—it tells the model what the optimal response ought to have been. <span class="key-point">Evaluative feedback merely reports how well the chosen action scored; it never volunteers whether an unchosen alternative would have been superior.</span></p>
+
+        <div class="feedback-grid" role="region" aria-label="Feedback Paradigm Comparison">
+          <div class="feedback-card">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">Instructive Feedback</span>
+              <span class="feedback-card__badge">Supervised Learning</span>
+            </div>
+            <p class="feedback-card__desc">The oracle provides ground-truth loss gradients across the entire action spectrum, regardless of the model's chosen output.</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Action 1 (Selected)</span>
+                <span class="feedback-card__signal signal--full">✓ Error gradient $\nabla L_1$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Action 2 (Unselected)</span>
+                <span class="feedback-card__signal signal--full">✓ Error gradient $\nabla L_2$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Action K (Unselected)</span>
+                <span class="feedback-card__signal signal--full">✓ Error gradient $\nabla L_K$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-card feedback-card--highlight">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">Evaluative Feedback</span>
+              <span class="feedback-card__badge feedback-card__badge--accent">Bandits / RL</span>
+            </div>
+            <p class="feedback-card__desc">The environment only reveals a scalar score for the selected arm. All counterfactual payoffs remain completely dark.</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Arm 1 (Chosen)</span>
+                <span class="feedback-card__signal signal--revealed">★ Observed $R_t \in \{0, 1\}$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Arm 2 (Unchosen)</span>
+                <span class="feedback-card__signal signal--obscured">∅ Hidden counterfactual</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Arm K (Unchosen)</span>
+                <span class="feedback-card__signal signal--obscured">∅ Hidden counterfactual</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="greedy" aria-labelledby="greedy-heading">
+        <h2 id="greedy-heading">How an Early Mistake Freezes into Dogma</h2>
+        <p>The most intuitive learning policy maintains an empirical mean for each arm and continually commits to the current leader:</p>
+
+        <div class="equation">
+          $$A_t^{\text{greedy}} = \arg\max_{a \in \mathcal{A}} Q_t(a)$$
+        </div>
+
+        <p>where $Q_t(a)$ is the sample average of rewards obtained from arm $a$ prior to round $t$. When the empirical rankings reflect the true ranking, greedy selection is unimprovable. The fatal failure mode lies in how that empirical ranking is constructed.</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">Failure Atlas #9 · The Trap of Premature Certainty</div>
+          <p>Suppose Arm 1 has true mean $\mu_1 = 0.8$ and Arm 2 has $\mu_2 = 0.4$. On round 1, Arm 1 suffers an unfortunate initial failure ($R=0$). On round 2, Arm 2 happens to succeed ($R=1$).</p>
+          <p>The greedy policy updates its beliefs: $Q(1) = 0.0$, $Q(2) = 1.0$. From round 3 onward, the policy exclusively pulls Arm 2. Because Arm 1 is never revisited, its empirical mean remains frozen at $0.0$. <span class="key-point">The mistaken belief is self-reinforcing: the agent denies itself the exact observations required to falsify its own delusion.</span> Across random seeds, pure greedy selection strands roughly 30% of runs indefinitely on suboptimal arms.</p>
+        </div>
+
+        <div class="regret-sim" role="region" aria-label="Interactive Regret Simulator">
+          <div class="regret-sim__header">
+            <span class="regret-sim__title">Live Empirical Probe · 40 Seed Regret Race ($T=400$)</span>
+            <span class="regret-sim__env-badge">3-Arm Setup: $\boldsymbol{\mu} = [0.8, 0.5, 0.3]$</span>
+          </div>
+          <div class="regret-sim__canvas-wrap">
+            <canvas id="regret-canvas" class="regret-sim__canvas"></canvas>
+          </div>
+          <div class="regret-sim__controls">
+            <div class="regret-sim__algos">
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="greedy" checked onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#b04632;"></span>
+                <span>Pure Greedy</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="egreedy" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#b8732a;"></span>
+                <span>$\varepsilon$-Greedy ($\varepsilon=0.1$)</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="ucb" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#237440;"></span>
+                <span>UCB1</span>
+              </label>
+              <label class="regret-sim__radio">
+                <input type="radio" name="sim-algo" value="ts" onchange="runRegretSimulation()">
+                <span class="regret-sim__dot" style="background:#2d5f96;"></span>
+                <span>Thompson Sampling</span>
+              </label>
+            </div>
+            <button type="button" class="regret-sim__btn" onclick="runRegretSimulation()">Rerun</button>
+          </div>
+          <p class="regret-sim__caption">
+            <strong>Examine trajectory shapes:</strong> Under <em>Pure Greedy</em>, notice the bifurcation: ~30% of seeds escape upward as straight diagonal lines (permanent lock-in, $\Omega(T)$ linear regret). Switching to <em>UCB1</em> or <em>Thompson Sampling</em> binds all trajectories into a tight, flattening band ($O(\ln T)$ sublinear regret).
+          </p>
+        </div>
+
+        <h3>Incremental Updates: The Canonical Error-Correction Template</h3>
+        <p>Storing the complete history of pulls is computationally wasteful. After observing the $(n+1)$-th reward $r_{n+1}$ on a specific arm, the new sample mean satisfies an elegant recursive identity:</p>
+
+        <div class="equation">
+          $$Q_{n+1} = Q_n + \frac{1}{n+1} \left( r_{n+1} - Q_n \right)$$
+        </div>
+
+        <p>Notice the universal structure of this formula: <strong>New Estimate $\leftarrow$ Old Estimate $+$ Step Size $\times$ Prediction Error</strong>. <span class="key-point">A good estimator does not, by itself, produce a good policy: the sample mean of an arm you cease to sample remains frozen indefinitely.</span></p>
+      </section>
+
+      <section id="exploration" aria-labelledby="exploration-heading">
+        <h2 id="exploration-heading">Leaving Room to Be Wrong</h2>
+        <p><span class="key-point">Exploration makes room for evidence that the current favorite might be wrong; its benefit comes later, but its cost is paid immediately.</span> It is the price of insurance against premature convergence.</p>
+
+        <h3>$\varepsilon$-Greedy: Exploration as a Fixed Tax</h3>
+        <p>The simplest remedy injects uniform randomness: with probability $1 - \varepsilon$, select the greedy arm; with probability $\varepsilon$, choose uniformly at random among all $K$ arms (including the greedy arm):</p>
+
+        <aside class="sidenote">
+          <strong>The linear regret trap:</strong> Under a fixed $\varepsilon > 0$, even after the true optimal arm is identified with infinite confidence, the policy continues to waste a fraction $\varepsilon \frac{K-1}{K}$ of its rounds on known inferior arms.
+        </aside>
+
+        <p>While $\varepsilon$-greedy ensures every arm is pulled infinitely often as $T \to \infty$, it is fundamentally indiscriminate. It expends identical effort probing an arm that is provably catastrophic as it does an arm that is competitive with the leader.</p>
+
+        <p>Because suboptimal pulls persist at a constant rate, cumulative regret under fixed $\varepsilon$ scales linearly: $R_T = \Omega(T)$. Decaying schedules such as $\varepsilon_t = \min(1, c/t)$ can theoretically restore sublinear regret, but they introduce brittle tuning: if the schedule decays too fast relative to the true underlying reward gap $\Delta$, the agent freezes into an inferior arm anyway.</p>
+
+        <h3>Explore-Then-Commit (ETC)</h3>
+        <p>Another classic archetype separates the problem into distinct chronological phases: sample every arm uniformly for $m$ rounds each (the exploration phase), and subsequently lock onto the highest sample mean for the remaining $T - mK$ rounds.</p>
+
+        <p>ETC illustrates the dual tension cleanly: if $m$ is too small, the probability of committing to a suboptimal arm remains high, incurring linear regret over the remaining horizon; if $m$ is too large, the fixed exploration budget itself bleeds substantial reward. Optimal tuning of $m$ requires knowing the reward gap $\Delta = \mu^* - \max_{a \ne a^*} \mu_a$ in advance—information the agent does not possess.</p>
+      </section>
+
+      <section id="uncertainty" aria-labelledby="uncertainty-heading">
+        <h2 id="uncertainty-heading">Letting Uncertainty Guide the Choice</h2>
+        <p>Two arms may share an identical sample mean of $0.60$, yet Arm 1 has been pulled 1,000 times while Arm 2 has been pulled 3 times. Point estimates treat them as identical. A principled decision rule must account for the dispersion of epistemic uncertainty.</p>
+
+        <h3>UCB1: Optimism in the Face of Uncertainty</h3>
+        <p>The Upper Confidence Bound (UCB) family implements a sharp operational heuristic: <strong>treat each option as if it were as good as plausibly possible</strong>.</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">Algorithm · UCB1 (Auer, Cesa-Bianchi, Fischer, 2002)</span>
+            <span class="algo-box__meta">Frequentist Index</span>
+          </div>
+          <ol>
+            <li><strong>Initialization:</strong> Pull each arm $a \in \{1, \dots, K\}$ once to set initial counts $N_a = 1$.</li>
+            <li><strong>Loop:</strong> For round $t = K + 1, K + 2, \dots, T$:</li>
+            <li>Select arm maximizing the upper bound:
+              $$A_t = \arg\max_{a \in \mathcal{A}} \left[ \hat{\mu}_a + \sqrt{\frac{2 \ln t}{N_a}} \right]$$
+            </li>
+            <li>Observe reward $R_t$, increment pull count $N_{A_t} \leftarrow N_{A_t} + 1$, and update empirical mean $\hat{\mu}_{A_t}$.</li>
+          </ol>
+        </div>
+
+        <aside class="sidenote">
+          <strong>Derivation from Hoeffding's Inequality:</strong> For independent rewards bounded in $[0, 1]$, Hoeffding ensures:
+          $$\mathbb{P}(\mu_a - \hat{\mu}_a \ge \epsilon) \le e^{-2 N_a \epsilon^2}$$
+          Setting the failure probability to $t^{-4}$ yields an uncertainty radius of $\epsilon = \sqrt{\frac{2 \ln t}{N_a}}$. The union bound over all arms and time steps guarantees that the true mean lies below the upper bound with high probability.
+        </aside>
+
+        <p>The UCB index balances exploitation (the empirical average $\hat{\mu}_a$) against an exploration bonus that scales inversely with sample count $N_a$. Notice the logarithmic inflation term $\ln t$: as the total horizon advances, neglected arms see their confidence intervals slowly inflate until they demand re-examination. An arm is discarded only if its empirical performance is so poor that even its upper optimism bound falls below the leader's lower estimates.</p>
+
+        <h3>Thompson Sampling: Posterior Matching</h3>
+        <p>Where UCB takes a conservative upper quantile, Thompson Sampling (Posterior Sampling) adopts a Bayesian lens: it acts according to the probability that an arm is optimal under the current posterior belief.</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">Algorithm · Beta-Bernoulli Thompson Sampling</span>
+            <span class="algo-box__meta">Bayesian Posterior Sampling</span>
+          </div>
+          <ol>
+            <li><strong>Priors:</strong> Assign each arm an uninformative conjugate prior $\mathrm{Beta}(\alpha_a, \beta_a)$ with $\alpha_a = 1, \beta_a = 1$.</li>
+            <li><strong>Loop:</strong> For round $t = 1, 2, \dots, T$:</li>
+            <li>Sample a candidate success probability $\theta_a \sim \mathrm{Beta}(\alpha_a, \beta_a)$ independently for each arm $a \in \mathcal{A}$.</li>
+            <li>Select the greedy arm with respect to the sampled world: $A_t = \arg\max_{a} \theta_a$.</li>
+            <li>Observe binary reward $R_t \in \{0, 1\}$.</li>
+            <li>Update posterior parameters via conjugate addition:
+              $$\alpha_{A_t} \leftarrow \alpha_{A_t} + R_t, \quad \beta_{A_t} \leftarrow \beta_{A_t} + (1 - R_t)$$
+            </li>
+          </ol>
+        </div>
+
+        <p>A crucial conceptual clarity is required: <span class="key-point">a posterior sample $\theta_a$ is not a simulated reward</span>. It is a draw from the epistemic distribution of the true mean $\mu_a$. An arm with little data has a wide, flat Beta distribution, occasionally producing an optimistic sample near $1.0$ that triggers selection. Once sampled, the reward updates the posterior, narrowing its variance.</p>
+
+        <div class="ts-lens" role="region" aria-label="Interactive Thompson Sampling Lens">
+          <div class="ts-lens__header">
+            <span class="ts-lens__title">Interactive Lens · Posterior Densities $p(\mu_a \mid \mathcal{H}_t)$</span>
+            <span class="ts-lens__round" id="ts-lens-round-num">Round t = 0</span>
+          </div>
+          <div class="ts-lens__canvas-wrap">
+            <canvas id="ts-lens-canvas" class="ts-lens__canvas"></canvas>
+          </div>
+          <div class="ts-lens__status" id="ts-lens-status-text">
+            Priors initialized to uninformative flat $\mathrm{Beta}(1, 1)$. Click "Step" to draw candidate worlds $\theta \sim \mathrm{Beta}$ and watch beliefs concentrate.
+          </div>
+          <div class="ts-lens__controls">
+            <div class="ts-lens__legend">
+              <span class="ts-lens__arm-label"><span class="regret-sim__dot" style="background:#237440;"></span><span>Arm 1 (True $\mu=0.65$)</span></span>
+              <span class="ts-lens__arm-label"><span class="regret-sim__dot" style="background:#b04632;"></span><span>Arm 2 (True $\mu=0.45$)</span></span>
+            </div>
+            <div class="ts-lens__btns">
+              <button type="button" class="ts-lens__btn ts-lens__btn--primary" id="ts-lens-auto-btn" onclick="toggleAutoTsLens()">Auto Play</button>
+              <button type="button" class="ts-lens__btn" onclick="stepTsLens()">Step</button>
+              <button type="button" class="ts-lens__btn" onclick="resetTsLens()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <p>Thompson sampling naturally scales its exploration: the probability of selecting an arm equals the posterior probability that it is the optimal arm: $\mathbb{P}(A_t = a \mid \mathcal{H}_{t-1}) = \mathbb{P}(\mu_a = \max_{j} \mu_j \mid \mathcal{H}_{t-1})$.</p>
+      </section>
+
+      <section id="regret" aria-labelledby="regret-heading">
+        <h2 id="regret-heading">The Information Tax: Why Logarithmic Regret is Fundamental</h2>
+        <p>To evaluate a bandit policy rigorously, we measure regret against the omniscient oracle that consistently pulls the optimal arm $\mu^* = \max_{a} \mu_a$. Let $\Delta_a = \mu^* - \mu_a$ denote the suboptimality gap of arm $a$. The cumulative expected regret over $T$ steps factors as:</p>
+
+        <div class="equation">
+          $$R_T = \mu^* T - \sum_{t=1}^T \mathbb{E}[\mu_{A_t}] = \sum_{a: \Delta_a > 0} \Delta_a \, \mathbb{E}[N_a(T)]$$
+        </div>
+
+        <p>This identity demonstrates that <strong>minimizing regret is mathematically equivalent to bounding the expected number of pulls allocated to suboptimal arms</strong>.</p>
+
+        <aside class="sidenote">
+          <strong>The distinguishability lower bound:</strong> Lai &amp; Robbins (1985) proved that for any consistent policy (a policy achieving sublinear regret on all problem instances), the asymptotic regret must satisfy:
+          $$\liminf_{T \to \infty} \frac{R_T}{\ln T} \ge \sum_{a: \Delta_a > 0} \frac{\Delta_a}{\mathrm{D}_{\mathrm{KL}}(\mu_a \parallel \mu^*)}$$
+        </aside>
+
+        <p>Why can regret never grow slower than $O(\ln T)$ for fixed reward gaps? The answer stems from information theory and hypothesis testing. Imagine two parallel universes that differ only in Arm $k$: in Universe 1, Arm $k$ is slightly suboptimal; in Universe 2, its mean is infinitesimally nudged above $\mu^*$.</p>
+
+        <p>If an algorithm were to pull Arm $k$ fewer than $O(\ln T / \mathrm{D}_{\mathrm{KL}})$ times, the empirical Kullback–Leibler divergence between the observations generated across the two universes would remain statistically insufficient to distinguish them. Any policy that achieves low regret in Universe 1 would inevitably commit catastrophic linear regret in Universe 2. <span class="key-point">Logarithmic regret is the irreducible thermodynamic tax imposed by the necessity of distinguishing hypotheses.</span></p>
+      </section>
+
+      <section id="information" aria-labelledby="information-heading">
+        <h2 id="information-heading">What Information is Worth: The Option Value of Probing</h2>
+        <p>Information possesses concrete monetary value because it preserves downstream option value. We can demonstrate this without simulation through an exact two-period Bayesian allocation problem.</p>
+
+        <p>Suppose you face two independent options over a two-round horizon ($T = 2$):</p>
+        <ul>
+          <li><strong>Arm A:</strong> Perfectly known success probability $\mu_A = 0.55$.</li>
+          <li><strong>Arm B:</strong> Unknown success probability with prior $\mu_B \sim \mathrm{Beta}(1, 1)$, having mean $\mathbb{E}[\mu_B] = 0.50$.</li>
+        </ul>
+
+        <p>Consider the static policy that commits to the known leader Arm A on both rounds: its total expected return is $0.55 + 0.55 = \mathbf{1.1000}$.</p>
+
+        <p>Now evaluate the adaptive policy that dares to probe the uncertain Arm B on round 1:</p>
+        <ol>
+          <li><strong>Round 1:</strong> Pull B. Immediate expected reward is $\mathbb{E}[R_1] = 0.50$ (incurring an apparent deficit of $-0.05$ relative to A).</li>
+          <li><strong>Round 2 branching:</strong>
+            <ul>
+              <li>With probability $1/2$, B succeeds ($R_1 = 1$). The posterior updates to $\mathrm{Beta}(2, 1)$ with mean $2/3 \approx 0.67$. Since $0.67 > 0.55$, we pull B again, yielding expected reward $2/3$.</li>
+              <li>With probability $1/2$, B fails ($R_1 = 0$). The posterior updates to $\mathrm{Beta}(1, 2)$ with mean $1/3 \approx 0.33$. Since $0.33 < 0.55$, we retreat immediately to Arm A, yielding expected reward $0.55$.</li>
+            </ul>
+          </li>
+        </ol>
+
+        <p>The total expected value of probing B first is:</p>
+        <div class="equation">
+          $$V(\text{Probe B First}) = \underbrace{0.50}_{\text{Round 1 (B)}} + \underbrace{\frac{1}{2} \left( \frac{2}{3} \right)}_{\text{Success} \to \text{B}} + \underbrace{\frac{1}{2} \left( 0.55 \right)}_{\text{Failure} \to \text{A}} = \frac{133}{120} \approx \mathbf{1.1083}$$
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">The Option Value of Information</div>
+          <p>Probing B yields $1.1083$, outperforming the static greedy choice by $+1/120$ ($+0.0083$).</p>
+          <p>Notice that the expectation of B’s posterior mean has not moved: $\frac{1}{2}(2/3) + \frac{1}{2}(1/3) = 0.50$. What changed is our <strong>conditional freedom to act asymmetrically</strong>: we exploit the upside when B proves strong, and truncate the downside by retreating to A when B proves weak. <span class="key-point">Information is valuable precisely because future decisions can adapt to it.</span></p>
+        </div>
+
+        <aside class="sidenote">
+          <strong>Gittins Index Theorem (1979):</strong> For infinite-horizon discounted bandits with independent, rested arms, Gittins proved that the intractable multi-dimensional Bellman equation decouples into $K$ scalar allocation indices. Each arm can be evaluated completely in isolation against a standard retirement option.
+        </aside>
+      </section>
+
+      <section id="boundaries" aria-labelledby="boundaries-heading">
+        <h2 id="boundaries-heading">When the Problem Changes</h2>
+        <p>The elegance of the classic bandit model rests on three strict assumptions: stationarity, independent arms, and state-free transitions. Relaxing any of these reveals the boundaries of the algorithms we have explored.</p>
+
+        <h3>Non-Stationary Environments: Tracking Moving Targets</h3>
+        <p>If true arm means drift over time, the sample mean is obsolete because it weights ancient observations identically to fresh evidence. Replacing sample means with an exponential moving average ($Q_{t+1} = Q_t + \alpha (R_t - Q_t)$ with constant step size $\alpha \in (0, 1]$) allows estimates to track change.</p>
+        <p>Yet adjusting the estimator is only half the battle: if an arm's confidence interval shrinks to zero and it is never pulled, a subsequent surge in its reward distribution will remain entirely invisible. Non-stationary bandits require active, persistent re-exploration.</p>
+
+        <h3>Structured &amp; Contextual Bandits</h3>
+        <p>In recommendation and clinical dosing, arms share common latent parameters. Pulling arm 1 reveals information about arm 4. In structured settings, an action that is guaranteed to yield zero immediate reward may nonetheless be uniquely optimal to pull if it maximally reduces entropy over the entire parameter space.</p>
+        <p>Contextual bandits introduce a state observation $x_t \in \mathcal{X}$ prior to each decision. The optimal policy becomes a mapping $\pi: \mathcal{X} \to \mathcal{A}$. Algorithms like LinUCB replace scalar sample averages with regularized ridge regression and ellipsoidal confidence sets.</p>
+        <p><span class="key-point">The foundational insight of the multi-armed bandit is that actions shape future evidence.</span> Whenever an agent acts under uncertainty, evaluative feedback demands an explicit policy for gathering information—a principle that remains the bedrock of interactive decision making.</p>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>Appendix · Minimal NumPy Reference Implementation</span>
+          <span class="code-accordion__tag">35 Lines Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">Copy</button>
+          <pre id="code-py"><code>import numpy as np
+
+class UCB1:
+    """Frequentist index policy with Hoeffding upper confidence bound."""
+    def __init__(self, K):
+        self.K = K
+        self.counts = np.zeros(K, dtype=int)
+        self.values = np.zeros(K, dtype=float)
+
+    def select_arm(self, t):
+        if t &lt; self.K:
+            return t  # Probe each arm once initially
+        bonus = np.sqrt((2.0 * np.log(t)) / self.counts)
+        return int(np.argmax(self.values + bonus))
+
+    def update(self, arm, reward):
+        self.counts[arm] += 1
+        n = self.counts[arm]
+        self.values[arm] += (reward - self.values[arm]) / n
+
+class ThompsonSampling:
+    """Bayesian posterior sampling for Bernoulli rewards."""
+    def __init__(self, K):
+        self.K = K
+        self.alphas = np.ones(K, dtype=float)  # Beta(1, 1) prior
+        self.betas = np.ones(K, dtype=float)
+
+    def select_arm(self):
+        samples = np.random.beta(self.alphas, self.betas)
+        return int(np.argmax(samples))
+
+    def update(self, arm, reward):
+        self.alphas[arm] += reward
+        self.betas[arm] += (1 - reward)</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">Further Reading</h2>
+        <p>These classical sources form the theoretical and historical bedrock of bandit algorithms:</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>Chapter 2: Multi-armed Bandits. The standard pedagogical introduction to evaluative feedback, incremental updates, and action-value methods.</li>
+          <li><a href="https://gwern.net/doc/statistics/decision/1933-thompson.pdf">Thompson (1933) · On the likelihood that one unknown probability exceeds another in view of the evidence of two samples</a><br>Biometrika. The original formulation of posterior sampling for adaptive clinical trial allocation.</li>
+          <li><a href="https://tor-lattimore.com/downloads/book/book.pdf">Lattimore &amp; Szepesvári (2020) · Bandit Algorithms</a><br>Cambridge University Press. The definitive modern mathematical monograph on concentration inequalities, minimax regret, and information-theoretic lower bounds.</li>
+          <li><a href="https://aima.eecs.berkeley.edu/~russell/classes/cs294/s11/readings/Auer%2Bal%3A2002.pdf">Auer, Cesa-Bianchi &amp; Fischer (2002) · Finite-time Analysis of the Multiarmed Bandit Problem</a><br>Machine Learning. Introduced UCB1 and established its finite-time logarithmic regret bound.</li>
+          <li><a href="https://papers.neurips.cc/paper/4321-an-empirical-evaluation-of-thompson-sampling.pdf">Chapelle &amp; Li (2011) · An Empirical Evaluation of Thompson Sampling</a><br>NeurIPS. Sparked the modern renaissance of Thompson Sampling by demonstrating its superior empirical performance in web applications.</li>
+          <li><a href="https://arxiv.org/abs/1111.1797">Agrawal &amp; Goyal (2012) · Analysis of Thompson Sampling for the Multi-armed Bandit Problem</a><br>COLT. Provided the first rigorous finite-time logarithmic regret analysis for Thompson Sampling.</li>
+          <li><a href="https://web.stanford.edu/~bvr/pubs/TS_Tutorial_FnT.pdf">Russo et al. (2018) · A Tutorial on Thompson Sampling</a><br>Foundations and Trends in Machine Learning. Comprehensive tutorial on information-directed sampling and Bayesian decision theory.</li>
+          <li><a href="https://people.eecs.berkeley.edu/~russell/classes/cs294/s11/readings/Gittins%3A1979.pdf">Gittins (1979) · Bandit Processes and Dynamic Allocation Indices</a><br>Journal of the Royal Statistical Society. Proved the exact optimality of index policies for discounted bandits.</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
