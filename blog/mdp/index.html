@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A foundational treatise on Markov Decision Processes: formalizing sequential decisions, Bellman optimality, contraction mappings, and the dynamics of state transitions.">
+  <title>Markov Decision Processes — When Actions Alter the World</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim-mdp.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">Skip to chapter</a>
+  
+  <nav class="site-nav" aria-label="Page controls">
+    <div class="lang-switch" role="group" aria-label="Language selection">
+      <a href="javascript:void(0)" class="is-active" aria-current="page">EN</a>
+      <a href="javascript:void(0)" onclick="switchLang('index-zh.html')">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">Chapter 02 · Lecture Notes</p>
+        <h1>Markov Decision Processes</h1>
+        <p class="lead">In multi-armed bandits, choices alter your subjective belief while the environment resets each dawn. Reinforcement learning begins the instant an action changes the physical state of the world tomorrow.</p>
+      </header>
+
+      <details class="contents">
+        <summary>On this page</summary>
+        <nav aria-label="Chapter contents">
+          <ol>
+            <li><a href="#horizon">Beyond Myopic Horizons</a></li>
+            <li><a href="#formalism">The Mathematical Five-Tuple</a></li>
+            <li><a href="#markov">The Markov Property: A Compression of History</a></li>
+            <li><a href="#bellman">Value Functions &amp; The Bellman Recursion</a></li>
+            <li><a href="#optimality">Bellman Optimality &amp; The Contraction Wave</a></li>
+            <li><a href="#dp">Exact Solutions via Dynamic Programming</a></li>
+            <li><a href="#failures">Failure Modes: Horizon Collapse &amp; Hidden States</a></li>
+            <li><a href="#reading">Further Reading</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="horizon" aria-labelledby="horizon-heading">
+        <h2 id="horizon-heading">Beyond Myopic Horizons</h2>
+        <p>In the multi-armed bandit, the agent faces a stateless dilemma. Pulling an arm yields a reward, reveals evidence about that specific arm, and the machine returns to its identical rest state. The environment has no memory, and actions have no spatial or temporal momentum.</p>
+
+        <aside class="sidenote">
+          <strong>The Great Divide:</strong> Supervised learning maps inputs to outputs under i.i.d. distributions. Bandits introduce evaluative feedback under a fixed state. MDPs introduce delayed consequences: an action taken now determines the distribution over entire futures.
+        </aside>
+
+        <p>Real sequential decisions break this isolation. Pressing the accelerator does not merely burn fuel; it alters your velocity, placing you at a different highway intersection seconds later. Sacrificing a queen in chess yields an immediate numerical deficit of $-9$, yet it sets up an inescapable checkmate three turns ahead.</p>
+
+        <p><span class="key-point">Reinforcement learning is the study of delayed consequences: actions must be judged not by their immediate payoff, but by the distribution of subsequent states they unlock.</span> To formalize this delayed accountability, we turn to the framework of Markov Decision Processes (MDPs).</p>
+      </section>
+
+      <section id="formalism" aria-labelledby="formalism-heading">
+        <h2 id="formalism-heading">The Mathematical Five-Tuple</h2>
+        <p>A discrete-time Markov Decision Process is fully specified by five mathematical primitives:</p>
+
+        <div class="equation">
+          $$\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle$$
+        </div>
+
+        <ol>
+          <li>$\mathcal{S}$ is the <strong>state space</strong>, capturing all feasible configurations of the agent and environment.</li>
+          <li>$\mathcal{A}$ is the <strong>action space</strong>, the set of decisions available to the agent.</li>
+          <li>$\mathcal{P}$ is the <strong>transition probability kernel</strong>:
+            $$\mathcal{P}(s' \mid s, a) = \mathbb{P}(S_{t+1} = s' \mid S_t = s, A_t = a)$$
+            specifying the probability distribution over successor states when taking action $a$ in state $s$.
+          </li>
+          <li>$\mathcal{R}$ is the <strong>reward function</strong>: $\mathcal{R}(s, a) = \mathbb{E}[R_{t+1} \mid S_t = s, A_t = a]$, mapping state-action pairs to immediate scalar expectations.</li>
+          <li>$\gamma \in [0, 1)$ is the <strong>discount factor</strong>, quantifying the present value of future payoffs.</li>
+        </ol>
+
+        <aside class="sidenote">
+          <strong>The Effective Horizon:</strong> The geometric sum $\sum_{k=0}^{\infty} \gamma^k = \frac{1}{1 - \gamma}$ bounds the maximum return. More profoundly, $\frac{1}{1 - \gamma}$ defines the <em>effective horizon</em> $H_{\text{eff}}$ over which the agent plans: setting $\gamma = 0.9$ means looking roughly 10 steps ahead; setting $\gamma = 0.99$ extends vision to 100 steps.
+        </aside>
+
+        <p>The interaction unfolds across discrete ticks $t = 0, 1, 2, \dots$, generating an ongoing trajectory:</p>
+
+        <div class="equation">
+          $$\tau = (S_0, A_0, R_1, S_1, A_1, R_2, S_2, \dots)$$
+        </div>
+
+        <p>The agent navigates this trajectory through a <strong>policy</strong> $\pi(a \mid s) = \mathbb{P}(A_t = a \mid S_t = s)$, which maps states to probability distributions over actions. The goal is to discover a policy that maximizes the expected discounted cumulative return:</p>
+
+        <div class="equation">
+          $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$
+        </div>
+      </section>
+
+      <section id="markov" aria-labelledby="markov-heading">
+        <h2 id="markov-heading">The Markov Property: A Compression of History</h2>
+        <p>The foundational assumption underwriting this entire framework is the <strong>Markov Property</strong>:</p>
+
+        <div class="equation">
+          $$\mathbb{P}(S_{t+1} = s', R_{t+1} = r \mid S_t, A_t, S_{t-1}, A_{t-1}, \dots, S_0, A_0) = \mathbb{P}(S_{t+1} = s', R_{t+1} = r \mid S_t, A_t)$$
+        </div>
+
+        <p>In plain language: <span class="key-point">the future is conditionally independent of the past given the present.</span> The current state $S_t$ must serve as an information-sufficient statistic for the entire preceding history of interactions.</p>
+
+        <p>This is rarely a natural law of physics; it is a standard of representation. If an autonomous vehicle observes only its current coordinates $(x, y)$, its future trajectory depends critically on its unobserved momentum—violating the Markov property. But augment the state with velocity and acceleration $(x, y, \dot{x}, \dot{y})$, and the Markov property is restored.</p>
+      </section>
+
+      <section id="bellman" aria-labelledby="bellman-heading">
+        <h2 id="bellman-heading">Value Functions &amp; The Bellman Recursion</h2>
+        <p>How do we evaluate whether a state is promising? We cannot judge it by its immediate reward alone, which may be zero. We evaluate it by the expected discounted sum of rewards that follow.</p>
+
+        <p>We define two complementary value functions under policy $\pi$:</p>
+        <ul>
+          <li><strong>State-Value Function:</strong> $V^\pi(s) = \mathbb{E}_\pi [G_t \mid S_t = s]$</li>
+          <li><strong>Action-Value Function:</strong> $Q^\pi(s, a) = \mathbb{E}_\pi [G_t \mid S_t = s, A_t = a]$</li>
+        </ul>
+
+        <h3>The Bellman Expectation Equation</h3>
+        <p>Richard Bellman’s profound insight was that value functions can be defined recursively without rolling out trajectories to infinity. Because $G_t = R_{t+1} + \gamma G_{t+1}$, we can decouple return into immediate reward plus discounted downstream value:</p>
+
+        <div class="equation">
+          $$V^\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) \left[ \mathcal{R}(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) V^\pi(s') \right]$$
+        </div>
+
+        <aside class="sidenote">
+          <strong>Linear System:</strong> In matrix-vector form, the Bellman expectation equation is linear:
+          $$\mathbf{v}^\pi = \mathbf{r}^\pi + \gamma \mathbf{P}^\pi \mathbf{v}^\pi$$
+          Its exact analytical solution is $\mathbf{v}^\pi = (\mathbf{I} - \gamma \mathbf{P}^\pi)^{-1} \mathbf{r}^\pi$. For small state spaces, this can be solved directly by matrix inversion in $O(|\mathcal{S}|^3)$ time.
+        </aside>
+
+        <p>This recursion embodies the core mechanism of dynamic programming: <span class="key-point">the value of where you stand equals the immediate payoff you harvest, plus the discounted value of where you land.</span></p>
+      </section>
+
+      <section id="optimality" aria-labelledby="optimality-heading">
+        <h2 id="optimality-heading">Bellman Optimality &amp; The Contraction Wave</h2>
+        <p>Among all admissible policies, there exists at least one optimal policy $\pi^*$ that achieves the maximum possible value across all states simultaneously: $V^*(s) = \max_\pi V^\pi(s)$ for all $s \in \mathcal{S}$.</p>
+
+        <p>The optimal value function satisfies the <strong>Bellman Optimality Equation</strong>:</p>
+
+        <div class="equation">
+          $$V^*(s) = \max_{a \in \mathcal{A}} \left[ \mathcal{R}(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) V^*(s') \right]$$
+        </div>
+
+        <p>Unlike the expectation equation, the optimality equation is nonlinear due to the $\max$ operator. It cannot be solved by direct matrix inversion. How do we know an iterative solution will ever converge?</p>
+
+        <aside class="sidenote">
+          <strong>Banach Fixed-Point Theorem:</strong> Define the Bellman optimality operator $T^*: \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$. Under the supremum norm $\|V\|_\infty = \max_s |V(s)|$, $T^*$ is a $\gamma$-contraction mapping:
+          $$\|T^* U - T^* V\|_\infty \le \gamma \|U - V\|_\infty$$
+          Since $\gamma < 1$, Banach guarantees a unique fixed point $V^*$, and repeated application $V_{k+1} = T^* V_k$ converges exponentially at rate $\gamma^k$.
+        </aside>
+
+        <p>This contraction property guarantees that updating values iteratively will propagate information backward across the graph like a fluid wave. Below, you can watch this contraction wave ripple across a GridWorld in real time.</p>
+
+        <div class="mdp-sim" role="region" aria-label="Interactive Bellman Optimality Grid Simulator">
+          <div class="mdp-sim__header">
+            <span class="mdp-sim__title">Interactive Bellman Wave · Value Iteration on GridWorld</span>
+            <span class="mdp-sim__iter" id="mdp-iter-num">Iteration k = 0</span>
+          </div>
+          <div class="mdp-sim__canvas-wrap">
+            <canvas id="mdp-canvas" class="mdp-sim__canvas"></canvas>
+          </div>
+          <div class="mdp-sim__status" id="mdp-status-text">
+            Values initialized to zero. Click "Auto Play" to watch the Bellman optimality wave ripple outward from the goal.
+          </div>
+          <div class="mdp-sim__controls">
+            <div class="mdp-sim__slider-wrap">
+              <label for="gamma-range">Discount Factor $\gamma$ = <strong id="mdp-gamma-val">0.90</strong></label>
+              <input type="range" id="gamma-range" class="mdp-sim__slider" min="0.10" max="0.99" step="0.05" value="0.90" oninput="setMdpGamma(this.value)">
+            </div>
+            <div class="mdp-sim__btns">
+              <button type="button" class="mdp-sim__btn mdp-sim__btn--primary" id="mdp-auto-btn" onclick="toggleAutoMdp()">Auto Play</button>
+              <button type="button" class="mdp-sim__btn" onclick="stepMdp()">Step</button>
+              <button type="button" class="mdp-sim__btn" onclick="resetMdp()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <p>Notice the physical mechanics of the simulation: the Goal cell $(+1.0)$ acts as a value fountain, while the Trap $(-1.0)$ acts as a repulsive sink. In round 1, only immediate neighbors register nonzero values. With each sweep, the Bellman backup operator expands the horizon by one hop, and greedy policy arrows emerge as the local gradient of the converging value surface.</p>
+      </section>
+
+      <section id="dp" aria-labelledby="dp-heading">
+        <h2 id="dp-heading">Exact Solutions via Dynamic Programming</h2>
+        <p>When the model $(\mathcal{P}, \mathcal{R})$ is fully known, dynamic programming offers two classic algorithms to compute the optimal policy:</p>
+
+        <h3>1. Policy Iteration: Alternating Evaluation and Improvement</h3>
+        <p>Policy iteration decouples evaluation from decision making:</p>
+        <ol>
+          <li><strong>Policy Evaluation:</strong> Given current policy $\pi_k$, solve for $V^{\pi_k}$ by iterating the linear Bellman expectation operator until convergence.</li>
+          <li><strong>Policy Improvement:</strong> Form a strictly superior policy by acting greedily with respect to the freshly computed values:
+            $$\pi_{k+1}(s) = \arg\max_{a \in \mathcal{A}} \left[ \mathcal{R}(s, a) + \gamma \sum_{s'} \mathcal{P}(s' \mid s, a) V^{\pi_k}(s') \right]$$
+          </li>
+        </ol>
+        <p>The <em>Policy Improvement Theorem</em> guarantees that $V^{\pi_{k+1}}(s) \ge V^{\pi_k}(s)$ for all states. Because finite MDPs possess a finite number of deterministic policies ($|\mathcal{A}|^{|\mathcal{S}|}$), policy iteration is guaranteed to terminate in a finite number of iterations.</p>
+
+        <h3>2. Value Iteration: Direct Contraction</h3>
+        <p>Value iteration skips waiting for evaluation to converge. It collapses evaluation and improvement into a single step by repeatedly applying the nonlinear Bellman optimality operator: $V_{k+1} = T^* V_k$. Once $\|V_{k+1} - V_k\|_\infty < \epsilon \frac{1-\gamma}{2\gamma}$, the greedy policy extracted from $V_{k+1}$ is guaranteed to be $\epsilon$-optimal.</p>
+      </section>
+
+      <section id="failures" aria-labelledby="failures-heading">
+        <h2 id="failures-heading">Failure Modes: Horizon Collapse &amp; Hidden States</h2>
+        <p>The mathematical perfection of MDPs often conceals two severe failure modes when applied to realistic problems.</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">Failure Mode 1 · The Myopic Trap of Horizon Collapse</div>
+          <p>The discount factor $\gamma$ is often misconstrued merely as a numerical stabilizer. However, decreasing $\gamma$ from $0.99$ to $0.50$ shortens the effective planning horizon from $100$ steps to just $2$ steps.</p>
+          <p>In sparse-reward environments (such as navigating a maze or driving across a frozen lake), setting $\gamma$ too small creates a catastrophic failure: the value signal from a distant goal exponentially decays below machine precision before reaching the starting state. <span class="key-point">When the effective horizon is shorter than the minimum path length to reward, the value surface flattens completely, and the agent wanders in perpetual blindness.</span></p>
+        </div>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">Failure Mode 2 · Partial Observability &amp; The Phantom State Trap</div>
+          <p>In practice, environments rarely expose the true state $S_t$; agents instead receive an observation $O_t \in \Omega$ through an emission probability $\mathbb{P}(O_t \mid S_t)$ (a Partially Observable MDP, or POMDP).</p>
+          <p>If two functionally distinct states yield identical observations (aliasing), treating observations as states shatters the Markov property. The Bellman operator assumes that arriving at observation $o$ always unlocks the same future. In reality, the true transition depends on unobserved history. Bellman backups become inconsistent, values oscillate wildly, and bootstrapping compounds the error.</p>
+        </div>
+
+        <p><span class="key-point">The foundational lesson of MDPs is that state representation and time horizon dictate solvability.</span> If states fail to compress history, Bellman recursion breaks down; if the discount horizon is misaligned with the task latency, optimal policies vanish into noise.</p>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>Appendix · Minimal NumPy Value Iteration Solver</span>
+          <span class="code-accordion__tag">30 Lines Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">Copy</button>
+          <pre id="code-py"><code>import numpy as np
+
+def value_iteration(P, R, gamma=0.95, theta=1e-6):
+    """
+    Exact Value Iteration via Bellman Optimality Operator.
+    P: transition kernel of shape (S, A, S)
+    R: reward matrix of shape (S, A)
+    """
+    num_states, num_actions = R.shape
+    V = np.zeros(num_states)
+
+    while True:
+        # Vectorized Bellman backup: Q(s, a) = R(s, a) + gamma * sum(P(s'|s, a) * V(s'))
+        Q = R + gamma * np.einsum('sat,t->sa', P, V)
+        next_V = np.max(Q, axis=1)
+
+        # Check supremum norm convergence (Banach contraction)
+        if np.max(np.abs(next_V - V)) < theta:
+            break
+        V = next_V
+
+    # Extract deterministic greedy policy: pi(s) = argmax_a Q(s, a)
+    Q = R + gamma * np.einsum('sat,t->sa', P, V)
+    policy = np.argmax(Q, axis=1)
+    return V, policy</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">Further Reading</h2>
+        <p>These classical monographs form the foundational canon of dynamic programming and Markov decision processes:</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>Chapter 3: Finite Markov Decision Processes. The authoritative pedagogical text on the five-tuple, Bellman equations, and gridworld dynamics.</li>
+          <li><a href="https://press.princeton.edu/books/hardcover/9780691146683/dynamic-programming">Bellman (1957) · Dynamic Programming</a><br>Princeton University Press. The seminal monograph that introduced the principle of optimality and foundational recursive equations.</li>
+          <li><a href="https://mitpress.mit.edu/9780262022255/dynamic-programming-and-optimal-control/">Bertsekas (2012) · Dynamic Programming and Optimal Control</a><br>Athena Scientific. Rigorous mathematical analysis of contraction mappings, value iteration convergence rates, and infinite-horizon discounted problems.</li>
+          <li><a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316887">Puterman (1994) · Markov Decision Processes: Discrete Stochastic Dynamic Programming</a><br>John Wiley &amp; Sons. The definitive reference on theoretical measure-theoretic properties, policy iteration complexity bounds, and linear programming formulations of MDPs.</li>
+          <li><a href="https://www.cs.cmu.edu/~ggordon/780-fall07/lectures/POMDP_tutorial.pdf">Kaelbling, Littman &amp; Cassandra (1998) · Planning and acting in partially observable stochastic domains</a><br>Artificial Intelligence. The classic paper detailing the mathematical challenges and belief-state formulations of POMDPs.</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="马尔可夫决策过程核心讲义：序列决策形式化、贝尔曼最优性方程、压缩映射定理与状态转移的物理动力学。">
+  <title>马尔可夫决策过程：当行动开始改变世界 — BreakRL</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim-mdp.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '已复制!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">跳转到正文</a>
+  
+  <nav class="site-nav" aria-label="页面控制">
+    <div class="lang-switch" role="group" aria-label="语言选择">
+      <a href="javascript:void(0)" onclick="switchLang('index.html')">EN</a>
+      <a href="javascript:void(0)" class="is-active" aria-current="page">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="切换浅色/暗色主题">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">第 02 章 · 核心讲义</p>
+        <h1>马尔可夫决策过程</h1>
+        <p class="lead">在多臂老虎机中，你的选择只重塑主观信念，环境每天清晨依然独立重置。一旦行动开始物理性地改变明天世界的客观状态，强化学习才真正拉开序幕。</p>
+      </header>
+
+      <details class="contents">
+        <summary>本页目录</summary>
+        <nav aria-label="章节目录">
+          <ol>
+            <li><a href="#horizon">告别近视视野：当行动具备时空动量</a></li>
+            <li><a href="#formalism">数学五元组：序列决策的形式化骨架</a></li>
+            <li><a href="#markov">马尔可夫性质：历史信息的充分统计压缩</a></li>
+            <li><a href="#bellman">价值函数与贝尔曼递推解耦</a></li>
+            <li><a href="#optimality">贝尔曼最优性与压缩映射波纹</a></li>
+            <li><a href="#dp">动态规划精确解法：策略迭代与价值迭代</a></li>
+            <li><a href="#failures">失败模式：有效时域崩塌与伪马尔可夫盲区</a></li>
+            <li><a href="#reading">扩展阅读与经典文献</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="horizon" aria-labelledby="horizon-heading">
+        <h2 id="horizon-heading">告别近视视野：当行动具备时空动量</h2>
+        <p>在多臂老虎机中，智能体面对的是一个无状态（Stateless）的平面世界：拉下摇杆，吐出金币，环境立即恢复原状。行动不带有任何质量与惯性，昨天做出的决策丝毫不会限制今天能踏足的疆界。</p>
+
+        <aside class="sidenote">
+          <strong>学习范式的本质分水岭：</strong> 监督学习在独立同分布（i.i.d.）下建立映射；老虎机在恒定状态下引入盲目评估反馈；而 MDP 真正引入了延迟后果（Delayed Consequences）——当下的一个细微偏转，决定了未来全概率轨迹的走向。
+        </aside>
+
+        <p>然而真实的决策从非孤立发生。踩下油门不仅消耗燃油，更改变了汽车的瞬时位移，在数秒后将你送入全然不同的车流交叉口；下国际象棋时弃后（Sacrifice the Queen）在当下账面上承受 $-9$ 分的毁灭性亏损，却为三步之后的绝对绝杀埋下了不可逆转的伏笔。</p>
+
+        <p><span class="key-point">强化学习的核心要义在于跨期问责：评判一个动作的优劣，绝不能看它当下的蝇头微利，而必须审视它所解锁的后续可能状态分布。</span>为了将这种具备时空动量的序列问责形式化，我们引入马尔可夫决策过程（Markov Decision Processes, MDP）。</p>
+      </section>
+
+      <section id="formalism" aria-labelledby="formalism-heading">
+        <h2 id="formalism-heading">数学五元组：序列决策的形式化骨架</h2>
+        <p>一个离散时间马尔可夫决策过程由五个严密的数学基元完全定义：</p>
+
+        <div class="equation">
+          $$\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle$$
+        </div>
+
+        <ol>
+          <li>$\mathcal{S}$ 为<strong>状态空间（State Space）</strong>，表征智能体与物理环境一切可能构型的集合；</li>
+          <li>$\mathcal{A}$ 为<strong>动作空间（Action Space）</strong>，定义智能体在各节点可实施的决策集合；</li>
+          <li>$\mathcal{P}$ 为<strong>状态转移概率核（Transition Kernel）</strong>：
+            $$\mathcal{P}(s' \mid s, a) = \mathbb{P}(S_{t+1} = s' \mid S_t = s, A_t = a)$$
+            严格刻画了在状态 $s$ 施加动作 $a$ 后，跳跃到下一状态 $s'$ 的条件概率分布；
+          </li>
+          <li>$\mathcal{R}$ 为<strong>奖励函数（Reward Function）</strong>：$\mathcal{R}(s, a) = \mathbb{E}[R_{t+1} \mid S_t = s, A_t = a]$，建立状态-动作对到即时期望标量回报的映射；</li>
+          <li>$\gamma \in [0, 1)$ 为<strong>折扣因子（Discount Factor）</strong>，衡量远期收益折算到当下的贴现率。</li>
+        </ol>
+
+        <aside class="sidenote">
+          <strong>有效时域（Effective Horizon）：</strong> 几何级数 $\sum_{k=0}^{\infty} \gamma^k = \frac{1}{1 - \gamma}$ 不仅保证了无穷级数的数值收敛，更在物理上量化了智能体的有效视野 $H_{\text{eff}} \approx \frac{1}{1 - \gamma}$：令 $\gamma = 0.9$ 意味着智能体大约看清未来 10 步；令 $\gamma = 0.99$ 则将眼光拓展到 100 步。
+        </aside>
+
+        <p>交互在离散时间轴 $t = 0, 1, 2, \dots$ 上展开，生成一条永不停歇的轨迹：</p>
+
+        <div class="equation">
+          $$\tau = (S_0, A_0, R_1, S_1, A_1, R_2, S_2, \dots)$$
+        </div>
+
+        <p>智能体通过<strong>策略（Policy）</strong> $\pi(a \mid s) = \mathbb{P}(A_t = a \mid S_t = s)$ 导航该轨迹，目标是寻找一个能最大化累积折扣回报的策略：</p>
+
+        <div class="equation">
+          $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$
+        </div>
+      </section>
+
+      <section id="markov" aria-labelledby="markov-heading">
+        <h2 id="markov-heading">马尔可夫性质：历史信息的充分统计压缩</h2>
+        <p>支撑整个强化学习数学大厦的基石，是<strong>马尔可夫性质（Markov Property）</strong>：</p>
+
+        <div class="equation">
+          $$\mathbb{P}(S_{t+1} = s', R_{t+1} = r \mid S_t, A_t, S_{t-1}, A_{t-1}, \dots, S_0, A_0) = \mathbb{P}(S_{t+1} = s', R_{t+1} = r \mid S_t, A_t)$$
+        </div>
+
+        <p>用直白的话来说：<span class="key-point">在给定当下状态的条件下，未来与过去在统计上条件独立。</span>当前状态 $S_t$ 必须充当整个历史轨迹的充分统计量（Sufficient Statistic），彻底吸纳并封存所有历史细节。</p>
+
+        <p>这并非物理世界的天然宿命，而是对<strong>状态表征质量</strong>提出的硬性度量标准。如果自动驾驶汽车仅将自身当前坐标 $(x, y)$ 视为状态，其下一秒的物理轨迹便极端依赖其未被观测到的速度与角动量——此时马尔可夫性质被粉碎；但若将状态扩充为带有高阶导数的向量 $(x, y, \dot{x}, \dot{y})$，马尔可夫性质便得以重塑。</p>
+      </section>
+
+      <section id="bellman" aria-labelledby="bellman-heading">
+        <h2 id="bellman-heading">价值函数与贝尔曼递推解耦</h2>
+        <p>我们该如何衡量一个状态的优劣？显然不能仅凭它脚下这一瞬的即时奖励——很多通往终点的关键中继站即时奖励皆为零。我们通过其在未来所能收获的期望折扣回报总额来给它标价。</p>
+
+        <p>在策略 $\pi$ 下，我们严格定义两套互为表里的价值函数：</p>
+        <ul>
+          <li><strong>状态价值函数（State-Value Function）：</strong> $V^\pi(s) = \mathbb{E}_\pi [G_t \mid S_t = s]$</li>
+          <li><strong>动作价值函数（Action-Value Function）：</strong> $Q^\pi(s, a) = \mathbb{E}_\pi [G_t \mid S_t = s, A_t = a]$</li>
+        </ul>
+
+        <h3>贝尔曼期望方程（Bellman Expectation Equation）</h3>
+        <p>Richard Bellman 的天才洞察在于：根本无需把轨迹一路掷骰子模拟到无穷远处。因为 $G_t = R_{t+1} + \gamma G_{t+1}$，我们能够将全局长程回报精确解耦为「即时所得」与「下游折现」：</p>
+
+        <div class="equation">
+          $$V^\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) \left[ \mathcal{R}(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) V^\pi(s') \right]$$
+        </div>
+
+        <aside class="sidenote">
+          <strong>线性代数解析解：</strong> 矩阵向量形式下，贝尔曼期望方程完全是线性的：
+          $$\mathbf{v}^\pi = \mathbf{r}^\pi + \gamma \mathbf{P}^\pi \mathbf{v}^\pi$$
+          其封闭解析解为 $\mathbf{v}^\pi = (\mathbf{I} - \gamma \mathbf{P}^\pi)^{-1} \mathbf{r}^\pi$。对于小规模离散状态，只需通过 $O(|\mathcal{S}|^3)$ 的矩阵求逆即可一步求出精确价值。
+        </aside>
+
+        <p>这一自举递推（Bootstrapping）揭示了动态规划的精髓：<span class="key-point">你所立足之处的价值，等于你脚下立即收割的稻穗，加上你下一步踏足之地的折现预期。</span></p>
+      </section>
+
+      <section id="optimality" aria-labelledby="optimality-heading">
+        <h2 id="optimality-heading">贝尔曼最优性与压缩映射波纹</h2>
+        <p>在所有可能的策略森林中，必定存在至少一个最优策略 $\pi^*$，能在所有状态上同时取得最大可能价值：$V^*(s) = \max_\pi V^\pi(s), \; \forall s \in \mathcal{S}$。</p>
+
+        <p>最优价值函数满足<strong>贝尔曼最优方程（Bellman Optimality Equation）</strong>：</p>
+
+        <div class="equation">
+          $$V^*(s) = \max_{a \in \mathcal{A}} \left[ \mathcal{R}(s, a) + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}(s' \mid s, a) V^*(s') \right]$$
+        </div>
+
+        <p>由于 $\max$ 操作符的存在，最优方程彻底脱离了线性系统的范畴，无法直接通过矩阵求逆解决。我们凭什么确信迭代逼近一定能稳定收敛至唯一真解？</p>
+
+        <aside class="sidenote">
+          <strong>巴拿赫不动点定理（Banach Fixed-Point Theorem）：</strong> 定义贝尔曼最优算子 $T^*: \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$。在无穷范数 $\|V\|_\infty = \max_s |V(s)|$ 下，$T^*$ 是严格的 $\gamma$-压缩映射：
+          $$\|T^* U - T^* V\|_\infty \le \gamma \|U - V\|_\infty$$
+          由于 $\gamma < 1$，不动点定理保证了唯一极限解 $V^*$ 的存在，且任意初值出发的迭代 $V_{k+1} = T^* V_k$ 均以 $\gamma^k$ 的几何速率指数收敛。
+        </aside>
+
+        <p>压缩映射性质保证了价值更新会像物理水波一样，从回报源泉向全图稳定回溯扩散。下方模拟器展示了网格世界（GridWorld）中这一贝尔曼最优波纹的 60FPS 实时演化过程。</p>
+
+        <div class="mdp-sim" role="region" aria-label="在线贝尔曼最优性网格模拟器">
+          <div class="mdp-sim__header">
+            <span class="mdp-sim__title">在线实证 · 网格世界贝尔曼价值迭代波纹（Value Iteration）</span>
+            <span class="mdp-sim__iter" id="mdp-iter-num">迭代轮次 k = 0</span>
+          </div>
+          <div class="mdp-sim__canvas-wrap">
+            <canvas id="mdp-canvas" class="mdp-sim__canvas"></canvas>
+          </div>
+          <div class="mdp-sim__status" id="mdp-status-text">
+            状态价值初始化为零。点击「自动演练」观察贝尔曼最优算子如何将终点价值像涟漪般向外回溯扩散。
+          </div>
+          <div class="mdp-sim__controls">
+            <div class="mdp-sim__slider-wrap">
+              <label for="gamma-range">折扣因子 $\gamma$ = <strong id="mdp-gamma-val">0.90</strong></label>
+              <input type="range" id="gamma-range" class="mdp-sim__slider" min="0.10" max="0.99" step="0.05" value="0.90" oninput="setMdpGamma(this.value)">
+            </div>
+            <div class="mdp-sim__btns">
+              <button type="button" class="mdp-sim__btn mdp-sim__btn--primary" id="mdp-auto-btn" onclick="toggleAutoMdp()">自动演练</button>
+              <button type="button" class="mdp-sim__btn" onclick="stepMdp()">单步</button>
+              <button type="button" class="mdp-sim__btn" onclick="resetMdp()">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <p>请细察模拟器中的物理机制：右上角终点 $(+1.0)$ 是价值的源泉喷泉，而陷阱 $(-1.0)$ 是带来排斥力的负值深渊。在第 1 轮备份中，唯有相邻格子能感知微弱的温度；随着迭代推进，算子每应用一次，信息就向外回溯扩散一格，策略箭头自然而然地沿着价值势能坡度的法线方向凝聚定型。</p>
+      </section>
+
+      <section id="dp" aria-labelledby="dp-heading">
+        <h2 id="dp-heading">动态规划精确解法：策略迭代与价值迭代</h2>
+        <p>当环境模型 $(\mathcal{P}, \mathcal{R})$ 完备已知时，动态规划为我们提供了两条经典的求解主干：</p>
+
+        <h3>1. 策略迭代（Policy Iteration）：评估与改进的解耦交替</h3>
+        <p>策略迭代将评估与决策分为清晰的两个阶段：</p>
+        <ol>
+          <li><strong>策略评估（Policy Evaluation）：</strong> 针对当前策略 $\pi_k$，反复应用线性贝尔曼期望算子直至收敛，精确求解出 $V^{\pi_k}$；</li>
+          <li><strong>策略改进（Policy Improvement）：</strong> 针对当前价值场实施贪心选择，萃取出一套全新策略：
+            $$\pi_{k+1}(s) = \arg\max_{a \in \mathcal{A}} \left[ \mathcal{R}(s, a) + \gamma \sum_{s'} \mathcal{P}(s' \mid s, a) V^{\pi_k}(s') \right]$$
+          </li>
+        </ol>
+        <p><em>策略改进定理（Policy Improvement Theorem）</em>保证了 $V^{\pi_{k+1}}(s) \ge V^{\pi_k}(s)$ 在所有状态上单调不降。由于有限 MDP 中的确定性策略总数有限（$|\mathcal{A}|^{|\mathcal{S}|}$），策略迭代必定在有限步内严格收敛至全局最优。</p>
+
+        <h3>2. 价值迭代（Value Iteration）：不等收敛的直接压缩</h3>
+        <p>价值迭代拒绝漫长的策略评估等待。它将评估与改进压缩为一步，直接以贝尔曼最优算子强行更新：$V_{k+1} = T^* V_k$。当差分满足 $\|V_{k+1} - V_k\|_\infty < \epsilon \frac{1-\gamma}{2\gamma}$ 时，贪心提取出的策略即可确保达到 $\epsilon$-最优。</p>
+      </section>
+
+      <section id="failures" aria-labelledby="failures-heading">
+        <h2 id="failures-heading">失败模式：有效时域崩塌与伪马尔可夫盲区</h2>
+        <p>数学定理的美轮美奂，往往掩盖了将其投入复杂真实工程时最易遭遇的致命陷阱。</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">失败模式 1 · 折扣因子崩塌引起的全局盲区（Horizon Collapse）</div>
+          <p>很多开发者误将折扣因子 $\gamma$ 当作一个单纯防止求和发散的正则化旋钮。然而，将 $\gamma$ 从 $0.99$ 调降至 $0.50$，意味着智能体的有效规划时域从 $100$ 步暴跌至仅仅 $2$ 步。</p>
+          <p>在稀疏奖励环境（如迷宫穿梭或悬崖漫步）中，若 $\gamma$ 设得过小，来自远方终点的价值信号在回溯穿透迷宫之前，就已指数级衰减至机器浮点精度之下。<span class="key-point">一旦有效时域短于抵达奖励的最短物理路径，价值势能曲面就会彻底退化为死寂的平地，智能体将在无尽的原地徘徊中永久迷失。</span></p>
+        </div>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">失败模式 2 · 部分可观测性与伪状态幻觉（The Phantom State Trap）</div>
+          <p>在实际系统（如机器人视觉导航）中，智能体很少能直接窥见环境真态 $S_t$，而仅仅接收经过传感器遮蔽的局部观测 $O_t \in \Omega$（POMDP）。</p>
+          <p>若两个功能截然不同的底层状态产生了完全相同的局部观测（状态混淆 / Aliasing），若误将观测当作马尔可夫状态处理，贝尔曼自举机制便会系统性瓦解。算子强行假定同一观测后必然跟随相同的未来，而事实上后续走向取决于不可见的历史。此时贝尔曼备份充满内在矛盾，价值估计剧烈震荡，自举更新不断放大偏差。</p>
+        </div>
+
+        <p><span class="key-point">马尔可夫决策过程最深刻的教训在于：状态的表征质量与有效时间视野共同划定了算法的可解边界。</span>若状态无法封存历史，自举递推必成幻觉；若折扣视野与环境延迟脱节，最优策略便会瞬间消融于随机噪声之中。</p>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>附录 · 极简 NumPy 价值迭代求解器</span>
+          <span class="code-accordion__tag">30 行 Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">复制代码</button>
+          <pre id="code-py"><code>import numpy as np
+
+def value_iteration(P, R, gamma=0.95, theta=1e-6):
+    """
+    基于贝尔曼最优算子的向量化价值迭代求解器。
+    P: 转移概率张量，形状为 (S, A, S)
+    R: 期望奖励矩阵，形状为 (S, A)
+    """
+    num_states, num_actions = R.shape
+    V = np.zeros(num_states)
+
+    while True:
+        # 向量化贝尔曼备份：Q(s, a) = R(s, a) + gamma * sum(P(s'|s, a) * V(s'))
+        Q = R + gamma * np.einsum('sat,t->sa', P, V)
+        next_V = np.max(Q, axis=1)
+
+        # 检查无穷范数收敛误差（巴拿赫压缩映射保证）
+        if np.max(np.abs(next_V - V)) < theta:
+            break
+        V = next_V
+
+    # 提取确定性最优策略：pi(s) = argmax_a Q(s, a)
+    Q = R + gamma * np.einsum('sat,t->sa', P, V)
+    policy = np.argmax(Q, axis=1)
+    return V, policy</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">扩展阅读与经典文献</h2>
+        <p>以下专著构成了动态规划与马尔可夫决策过程的理论奠基巨著：</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>第 3 章：有限马尔可夫决策过程。形式化五元组、贝尔曼方程与网格世界动力学的标准教学名篇。</li>
+          <li><a href="https://press.princeton.edu/books/hardcover/9780691146683/dynamic-programming">Bellman (1957) · Dynamic Programming</a><br>Princeton University Press. 提出最优性原理与奠基性递归方程的开山之作。</li>
+          <li><a href="https://mitpress.mit.edu/9780262022255/dynamic-programming-and-optimal-control/">Bertsekas (2012) · Dynamic Programming and Optimal Control</a><br>Athena Scientific. 对压缩映射定理、价值迭代几何收敛率与无限时域问题的严格数学专著。</li>
+          <li><a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316887">Puterman (1994) · Markov Decision Processes: Discrete Stochastic Dynamic Programming</a><br>John Wiley &amp; Sons. 现代 MDP 理论的百科全书式巨著，详尽涵盖测度论性质、多项式时间复杂度界与线性规划求解。</li>
+          <li><a href="https://www.cs.cmu.edu/~ggordon/780-fall07/lectures/POMDP_tutorial.pdf">Kaelbling, Littman &amp; Cassandra (1998) · Planning and acting in partially observable stochastic domains</a><br>Artificial Intelligence. 阐明部分可观测马尔可夫决策过程（POMDP）挑战与信念状态表征的经典长文。</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
