@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="时序差分学习核心讲义：在无知中自举、偏差-方差权衡、同策略与异策略控制、以及悬崖漫步失败动力学。">
+  <title>时序差分学习：在无知中自举 — BreakRL</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim-cliff.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '已复制!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">跳转到正文</a>
+  
+  <nav class="site-nav" aria-label="页面控制">
+    <div class="lang-switch" role="group" aria-label="语言选择">
+      <a href="javascript:void(0)" onclick="switchLang('index.html')">EN</a>
+      <a href="javascript:void(0)" class="is-active" aria-current="page">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="切换浅色/暗色主题">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">第 03 章 · 核心讲义</p>
+        <h1>时序差分学习</h1>
+        <p class="lead">动态规划需要全知全能的环境模型，蒙特卡洛需要漫长等待剧集终结。时序差分学习跨越了这一鸿沟：它在完全无知的黑暗中，用一个猜测去修正另一个猜测。</p>
+      </header>
+
+      <details class="contents">
+        <summary>本页目录</summary>
+        <nav aria-label="章节目录">
+          <ol>
+            <li><a href="#dilemma">预测的两难：等待真相还是当场猜度</a></li>
+            <li><a href="#td0">TD(0) 算子：原地自举的误差修正</a></li>
+            <li><a href="#tradeoff">偏差与方差：信用分配的连续谱系</a></li>
+            <li><a href="#control">从价值到控制：同策略与异策略的本质对决</a></li>
+            <li><a href="#cliff">悬崖漫步试金石：保守的生路与脆弱的极限</a></li>
+            <li><a href="#failures">失败模式：步长敏感度与致命三要素</a></li>
+            <li><a href="#reading">扩展阅读与经典文献</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="dilemma" aria-labelledby="dilemma-heading">
+        <h2 id="dilemma-heading">预测的两难：等待真相还是当场猜度</h2>
+        <p>设想你每天开车去公司上班。今天行驶到中途高架桥时，你目睹前方发生多车连环追尾，道路被彻底堵死。此时你该如何修正最初对「预计到达时间」的预测？</p>
+
+        <aside class="sidenote">
+          <strong>强化学习的三大家族：</strong> <em>动态规划（DP）</em>基于完备转移模型向后推演；<em>蒙特卡洛（MC）</em>不需模型，但必须等待整段真实轨迹落幕；<em>时序差分（TD）</em>集两家所长：既不需要物理模型，也无需等待结局。
+        </aside>
+
+        <p>纯粹的<strong>蒙特卡洛</strong>思维是冷酷的：在车轮彻底停入公司地库、关掉引擎抬头看表之前，它拒绝调整任何数字。这种估计是绝对无偏的，但你必须苦等整个事件彻底闭环，并且路上哪怕偶遇一个随机红灯的波动，都会叠加进最终的高方差目标里。</p>
+
+        <p>而<strong>时序差分</strong>的做法更贴合人类直觉：看到车祸的那一瞬间，你用已经消耗的时间，加上对前方拥堵路段的最新估计，当场重估整体耗时。<span class="key-point">时序差分学习绝不等结局落幕；它用眼前刚刚发生的即时反馈，加上对下游未来的新鲜猜测，原地修正先前的猜测。</span></p>
+      </section>
+
+      <section id="td0" aria-labelledby="td0-heading">
+        <h2 id="td0-heading">TD(0) 算子：原地自举的误差修正</h2>
+        <p>为了在数学上清晰对比，我们列出评估状态价值 $V(S_t)$ 的三种核心目标形式：</p>
+
+        <p><strong>1. 蒙特卡洛方法（整轨样本更新）：</strong> 等到终止步 $T$，以整条轨迹兑现的真实折扣回报 $G_t$ 作为更新靶标：</p>
+        <div class="equation">
+          $$V(S_t) \leftarrow V(S_t) + \alpha \left[ G_t - V(S_t) \right], \quad G_t = \sum_{k=0}^{T-t-1} \gamma^k R_{t+k+1}$$
+        </div>
+
+        <p><strong>2. 动态规划方法（全期望遍历）：</strong> 依赖完整的转移概率核 $\mathcal{P}(s' \mid s, a)$：</p>
+        <div class="equation">
+          $$V(s) \leftarrow \sum_{a} \pi(a \mid s) \left[ \mathcal{R}(s, a) + \gamma \sum_{s'} \mathcal{P}(s' \mid s, a) V(s') \right]$$
+        </div>
+
+        <p><strong>3. TD(0) 学习（单步采样自举）：</strong> 仅从自然界中采样单一转移元组 $(S_t, A_t, R_{t+1}, S_{t+1})$，立即原地完成备份：</p>
+        <div class="equation">
+          $$V(S_t) \leftarrow V(S_t) + \alpha \underbrace{\left[ R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right]}_{\delta_t \text{ (TD 误差)}}$$
+        </div>
+
+        <aside class="sidenote">
+          <strong>贝尔曼映射的单次样本体现：</strong> TD 误差 $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$ 严格对应贝尔曼期望算子的单次自然界采样实现：
+          $$\mathbb{E}_\pi[\delta_t \mid S_t = s] = \mathcal{T}^\pi V(s) - V(s)$$
+          当且仅当 $V = v_\pi$ 达到真值时，TD 误差的数学期望恒等于零。
+        </aside>
+
+        <p>其中 $R_{t+1} + \gamma V(S_{t+1})$ 被称为 <strong>TD 目标（TD Target）</strong>。不同于蒙特卡洛必须求和到未来终点，TD 学习直接用当前对下一状态的估计值 $V(S_{t+1})$ 代替了未知的一切未来收益。这种<strong>用估计去修正估计</strong>的机制，被称为<strong>自举（Bootstrapping）</strong>。</p>
+      </section>
+
+      <section id="tradeoff" aria-labelledby="tradeoff-heading">
+        <h2 id="tradeoff-heading">偏差与方差：信用分配的连续谱系</h2>
+        <p>蒙特卡洛与 TD(0) 构成了强化学习中最典型的偏差-方差权衡（Bias-Variance Trade-off）：</p>
+
+        <div class="feedback-grid" role="region" aria-label="MC 与 TD 特征对照卡片">
+          <div class="feedback-card">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">蒙特卡洛目标 (MC)</span>
+              <span class="feedback-card__badge">零偏差 · 高方差</span>
+            </div>
+            <p class="feedback-card__desc">以真实回报 $G_t$ 为目标。由于直接采自自然界真实终局，完全无偏；但整条长轨迹上每一步的随机扰动不断累积，方差巨大。</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">目标结构</span>
+                <span class="feedback-card__signal">$G_t = \sum_{k=0}^\infty \gamma^k R_{t+k+1}$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">任务限制</span>
+                <span class="feedback-card__signal signal--obscured">必须为有限剧集（无法在线终身学习）</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">收敛阻力</span>
+                <span class="feedback-card__signal signal--obscured">慢（高方差要求极小步长 $\alpha$）</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-card feedback-card--highlight">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">TD(0) 自举目标</span>
+              <span class="feedback-card__badge feedback-card__badge--accent">极低方差 · 带有偏差</span>
+            </div>
+            <p class="feedback-card__desc">以 $R_{t+1} + \gamma V(S_{t+1})$ 为目标。继承了当前估计器 $V$ 的初始先验偏差；但通过截断后续整段轨迹噪音，大幅压缩方差。</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">目标结构</span>
+                <span class="feedback-card__signal signal--revealed">$R_{t+1} + \gamma V(S_{t+1})$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">任务限制</span>
+                <span class="feedback-card__signal signal--revealed">完全在线支持（连续无休止任务）</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">收敛阻力</span>
+                <span class="feedback-card__signal signal--revealed">快（方差小，可耐受激进的步长 $\alpha$）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>$n$ 步时序差分：统一的连续谱系</h3>
+        <p>TD(0) 与蒙特卡洛并非水火不容的两极，它们是一个由规划步长 $n$ 参数化的连续谱系的端点：</p>
+
+        <div class="equation">
+          $$G_t^{(n)} = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+n})$$
+        </div>
+
+        <p><span class="key-point">随着 $n$ 从 $1$ 渐变到 $\infty$，$n$ 步 TD 在完全自举（TD(0)）与零自举（MC）之间平滑过渡。</span>在工程实践中，适度折中的步数（如 $n=3$ 或 $n=5$）往往表现最佳：既积累了足够多的真实奖励稀释初始估计偏差，又及时截断了后续未知的方差雪崩。</p>
+      </section>
+
+      <section id="control" aria-labelledby="control-heading">
+        <h2 id="control-heading">从价值到控制：同策略与异策略的本质对决</h2>
+        <p>当环境物理模型未知时，单纯估计状态价值 $V(s)$ 无法直接转化为行动策略（若无法预测动作会导向何方，你根本无法评估 $\arg\max_a \sum_{s'} \mathcal{P}(s' \mid s, a) V(s')$）。因此，无模型控制必须转向学习动作价值 $Q(s, a)$。</p>
+
+        <h3>SARSA：同策略控制（On-Policy）</h3>
+        <p>SARSA 严格评估并改进<strong>当前正在执行的真实策略</strong>（包含探索阶段的随机走样）：</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">算法规范 · SARSA (State-Action-Reward-State-Action)</span>
+            <span class="algo-box__meta">同策略 TD 控制</span>
+          </div>
+          <ol>
+            <li>在状态 $S_t$，依据行为策略（如基于 $Q$ 的 $\varepsilon$-贪心）挑出动作 $A_t$；</li>
+            <li>执行动作 $A_t$，观测即时回报 $R_{t+1}$ 与下一状态 $S_{t+1}$；</li>
+            <li>在状态 $S_{t+1}$ 下，依据同一行为策略预先抽选下一动作 $A_{t+1} \sim \pi(\cdot \mid S_{t+1})$；</li>
+            <li>执行同策略自举更新：
+              $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t) \right]$$
+            </li>
+            <li>递进状态与动作：$S_t \leftarrow S_{t+1}, \; A_t \leftarrow A_{t+1}$，循环往复。</li>
+          </ol>
+        </div>
+
+        <h3>Q-Learning：异策略控制（Off-Policy）</h3>
+        <p>Watkins 在 1989 年斩断了“执行策略”与“评估策略”之间的硬性绑定，开创了 Q-Learning：</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">算法规范 · Q-Learning (Watkins, 1989)</span>
+            <span class="algo-box__meta">异策略 TD 控制</span>
+          </div>
+          <ol>
+            <li>在状态 $S_t$，依据行为策略（如 $\varepsilon$-贪心）执行动作 $A_t$；</li>
+            <li>执行动作 $A_t$，观测回报 $R_{t+1}$ 与下一状态 $S_{t+1}$；</li>
+            <li>强行假定未来永远采取全局最优决断，执行异策略自举更新：
+              $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+            </li>
+            <li>递进状态：$S_t \leftarrow S_{t+1}$，循环往复。</li>
+          </ol>
+        </div>
+
+        <p><span class="key-point">两者的本质差异在于对未来的预设：SARSA 预料到了自己未来仍会犯错探索，因而主动趋利避害；而 Q-Learning 在目标中假定从下一步起自己永远绝对理性。</span></p>
+      </section>
+
+      <section id="cliff" aria-labelledby="cliff-heading">
+        <h2 id="cliff-heading">悬崖漫步试金石：保守的生路与脆弱的极限</h2>
+        <p>经典悬崖漫步（Cliff Walking，$4 \times 12$ 网格）将两种哲学的冲突推向极致。起点位于左下角，终点位于右下角，二者之间的整个底边是致命悬崖：踏入悬崖扣 $-100$ 分并强制回到起点。</p>
+
+        <div class="cliff-sim" role="region" aria-label="悬崖漫步双智能体实时赛跑竞技场">
+          <div class="cliff-sim__header">
+            <span class="cliff-sim__title">在线竞技场 · 悬崖漫步双算法同台赛跑 ($\varepsilon = 0.1, \alpha = 0.5$)</span>
+            <div class="cliff-sim__scoreboard">
+              <span>SARSA 坠崖: <strong id="cliff-sarsa-falls" style="color:#237440">0</strong></span>
+              <span>Q-Learning 坠崖: <strong id="cliff-q-falls" style="color:#b04632">0</strong></span>
+            </div>
+          </div>
+          <div class="cliff-sim__canvas-wrap">
+            <canvas id="cliff-canvas" class="cliff-sim__canvas"></canvas>
+          </div>
+          <div class="cliff-sim__status" id="cliff-status-text">
+            点击「自动演练」观察两名智能体如何在悬崖边缘演化出截然不同的生存哲学。
+          </div>
+          <div class="cliff-sim__controls">
+            <div class="cliff-sim__legend">
+              <span class="cliff-sim__label"><span class="regret-sim__dot" style="background:#237440;"></span><span>SARSA（同策略·安全绕远）</span></span>
+              <span class="cliff-sim__label"><span class="regret-sim__dot" style="background:#b04632;"></span><span>Q-Learning（异策略·极限贴边）</span></span>
+            </div>
+            <div class="cliff-sim__btns">
+              <button type="button" class="cliff-sim__btn cliff-sim__btn--primary" id="cliff-auto-btn" onclick="toggleAutoCliff()">自动演练</button>
+              <button type="button" class="cliff-sim__btn" onclick="stepCliff()">单步</button>
+              <button type="button" class="cliff-sim__btn" onclick="resetCliff()">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <p>观察两名智能体的学习动态：</p>
+        <ul>
+          <li><strong>Q-Learning（红点）：</strong> 学会了紧贴悬崖边缘的最短最优路径（耗时仅 13 步）。因为它的更新采用 $\max_a Q$，其目标深信自己绝对不会失足；然而在训练探索期（$\varepsilon=0.1$），哪怕一次极小概率的随机手抖，就会直接跌落深渊，导致其训练期累计得分极端难看。</li>
+          <li><strong>SARSA（绿点）：</strong> 学会了从顶部高位大范围迂回的保守安全路线。由于其更新直接代入了下一轮真实带探索的动作，紧贴悬崖的格子在数学期望上包含了高昂的失足代价，逼迫它向远离悬崖的安全纵深避险。</li>
+        </ul>
+
+        <div class="callout">
+          <div class="callout-title">失败图鉴第 10 条 · 行为策略与评估协议错配</div>
+          <p>训练曲线的狼狈仅仅反映了<em>行为策略（带有探索噪音）</em>的表现，绝不代表学到的价值曲面的最终贪心能力。Q-Learning 在训练中频繁摔得粉身碎骨，但一旦在部署时关掉探索（$\varepsilon = 0$ 贪心评估），它所走出的正是无可挑剔的理论最优路径。</p>
+          <p><span class="key-point">评估算法性能时切忌将训练期探索回报当作最终答卷：同策略追求在线安全稳健，异策略追求全局无妥协的最优极限。</span></p>
+        </div>
+      </section>
+
+      <section id="failures" aria-labelledby="failures-heading">
+        <h2 id="failures-heading">失败模式：步长敏感度与致命三要素</h2>
+        <p>时序差分放弃了蒙特卡洛纯粹的样本平均安全网，在换取惊人收敛速度的同时，也打开了数值脆弱性的大门：</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">失败图鉴第 11 条 · 对步长与多步设置的病态敏感</div>
+          <p>与蒙特卡洛在简单经验平均下必然单调渐近收敛不同，TD 自举更新每一步都在追逐一个移动靶标（$R_{t+1} + \gamma V(S_{t+1})$）。</p>
+          <p>若学习率 $\alpha$ 过大，下游估计的微小波动会被自举机制呈指数级回溯放大，导致价值曲面剧烈振荡；若 $\alpha$ 过小，自举传播又如泥牛入海。最优步长与环境谱半径及奖励尺度高度耦合，容错窗口极窄。</p>
+        </div>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">深度强化学习的致命三要素（The Deadly Triad）</div>
+          <p>当我们将 TD 从简单查表法推广至函数逼近（如深度神经网络）时，收敛保证荡然无存。同时满足以下三项条件时，系统极易发生灾难性数值发散：</p>
+          <ol>
+            <li><strong>函数逼近（Function Approximation）：</strong> 使用参数化网络表征价值 $V_\theta(s)$ 或 $Q_\theta(s, a)$；</li>
+            <li><strong>自举估计（Bootstrapping）：</strong> 用下游估计值代替真实蒙特卡洛全回报；</li>
+            <li><strong>异策略学习（Off-Policy Learning）：</strong> 在异于数据收集策略的分布上实施更新。</li>
+          </ol>
+          <p>打破三要素中的任意一环即可夺回稳定性：蒙特卡洛丢弃自举，SARSA 丢弃异策略分布漂移，查表法丢弃函数逼近。</p>
+        </div>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>附录 · 极简 NumPy 表格型 TD 控制</span>
+          <span class="code-accordion__tag">35 行 Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">复制代码</button>
+          <pre id="code-py"><code>import numpy as np
+
+class QLearning:
+    """针对离散状态动作空间的异策略 TD 控制"""
+    def __init__(self, num_states, num_actions, alpha=0.1, gamma=0.99, epsilon=0.1):
+        self.Q = np.zeros((num_states, num_actions))
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.num_actions = num_actions
+
+    def act(self, state):
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.num_actions)
+        return int(np.argmax(self.Q[state]))
+
+    def update(self, s, a, r, next_s, done):
+        target = r if done else r + self.gamma * np.max(self.Q[next_s])
+        self.Q[s, a] += self.alpha * (target - self.Q[s, a])
+
+class SARSA(QLearning):
+    """评估实际探索策略的同策略 TD 控制"""
+    def update(self, s, a, r, next_s, next_a, done):
+        target = r if done else r + self.gamma * self.Q[next_s, next_a]
+        self.Q[s, a] += self.alpha * (target - self.Q[s, a])</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">扩展阅读与经典文献</h2>
+        <p>以下里程碑文献奠定了时序差分学习与无模型控制的基石：</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>第 6 章：时序差分学习。TD 误差、自举机制与悬崖漫步动力学的经典阐释。</li>
+          <li><a href="https://link.springer.com/article/10.1007/BF00115009">Sutton (1988) · Learning to predict by the methods of temporal differences</a><br>Machine Learning. 提出 TD($\lambda$) 理论并证明其在吸收马尔可夫链上的线性收敛性。</li>
+          <li><a href="https://link.springer.com/article/10.1007/BF00992698">Watkins &amp; Dayan (1992) · Q-learning</a><br>Machine Learning. 首次严格完成了 Q-Learning 几乎必然收敛至最优动作价值的数学证明。</li>
+          <li><a href="https://link.springer.com/article/10.1023/A:1007331507769">Rummery &amp; Niranjan (1994) · On-line Q-learning using connectionist systems</a><br>剑桥大学技术报告。形式化提出了用于在线动作控制的 SARSA 算法。</li>
+          <li><a href="https://ieeexplore.ieee.org/document/580874">Tsitsiklis &amp; Van Roy (1997) · An analysis of temporal-difference learning with function approximation</a><br>IEEE Transactions on Automatic Control. 阐明了带函数逼近的 TD 算法稳定性边界与数值发散风险。</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

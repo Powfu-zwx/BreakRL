@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A foundational treatise on Temporal-Difference learning: bootstrapping under ignorance, the bias-variance trade-off, on-policy vs off-policy control, and Cliff Walking failure dynamics.">
+  <title>Temporal-Difference Learning — Bootstrapping Under Ignorance</title>
+  <link rel="icon" href="data:,">
+  <link rel="preload" href="fonts/anthropic-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/anthropic-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="katex/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="katex/katex.min.js"></script>
+  <script defer src="katex/auto-render.min.js" onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+  <script defer src="sim-cliff.js"></script>
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('breakrl-theme', next);
+    }
+    (function() {
+      const saved = localStorage.getItem('breakrl-theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+    function switchLang(targetUrl) {
+      const scrollY = window.scrollY;
+      const hash = window.location.hash || '';
+      sessionStorage.setItem('breakrl-scroll-pos', scrollY);
+      document.body.classList.add('is-switching');
+      setTimeout(() => {
+        window.location.href = targetUrl + hash;
+      }, 80);
+    }
+    function copySnippet(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 1600);
+      });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPos = sessionStorage.getItem('breakrl-scroll-pos');
+      if (savedPos !== null && !window.location.hash) {
+        window.scrollTo(0, parseInt(savedPos, 10));
+        sessionStorage.removeItem('breakrl-scroll-pos');
+      }
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#chapter">Skip to chapter</a>
+  
+  <nav class="site-nav" aria-label="Page controls">
+    <div class="lang-switch" role="group" aria-label="Language selection">
+      <a href="javascript:void(0)" class="is-active" aria-current="page">EN</a>
+      <a href="javascript:void(0)" onclick="switchLang('index-zh.html')">中文</a>
+    </div>
+    <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme">
+      <span>Theme</span>
+    </button>
+  </nav>
+
+  <main id="chapter">
+    <article>
+      <header>
+        <p class="chapter-label">Chapter 03 · Lecture Notes</p>
+        <h1>Temporal-Difference Learning</h1>
+        <p class="lead">Dynamic programming requires an omniscient transition model; Monte Carlo requires waiting for eternity to end. Temporal-Difference learning bridges the chasm by updating a guess from a guess.</p>
+      </header>
+
+      <details class="contents">
+        <summary>On this page</summary>
+        <nav aria-label="Chapter contents">
+          <ol>
+            <li><a href="#dilemma">The Prediction Dilemma: Waiting vs. Guessing</a></li>
+            <li><a href="#td0">The TD(0) Operator: Bootstrapping in Place</a></li>
+            <li><a href="#tradeoff">Bias, Variance, and the Credit Assignment Dial</a></li>
+            <li><a href="#control">From Value to Policy: On-Policy vs. Off-Policy Control</a></li>
+            <li><a href="#cliff">The Cliff Walking Crucible: Safe Paths vs. Fragile Optima</a></li>
+            <li><a href="#failures">Failure Modes: Step-Size Sensitivity &amp; Divergence</a></li>
+            <li><a href="#reading">Further Reading</a></li>
+          </ol>
+        </nav>
+      </details>
+
+      <section id="dilemma" aria-labelledby="dilemma-heading">
+        <h2 id="dilemma-heading">The Prediction Dilemma: Waiting vs. Guessing</h2>
+        <p>Imagine predicting your commute time to work. Halfway along the highway, you encounter an unexpected multi-car collision that backs up traffic for miles. How should you adjust your arrival estimate?</p>
+
+        <aside class="sidenote">
+          <strong>The Three Paradigms:</strong> <em>Dynamic Programming</em> solves by planning over an explicit transition model. <em>Monte Carlo</em> learns model-free by waiting for terminal returns. <em>Temporal Difference</em> combines both: it learns from raw experience without a model, yet bootstraps without waiting.
+        </aside>
+
+        <p>A pure <strong>Monte Carlo</strong> mindset refuses to update anything until you park the car, glance at the dashboard clock, and compare the total time against your morning prediction. It is completely unbiased, but it forces you to wait until the episode concludes, absorbing all cumulative weather and traffic noise along the entire route into a high-variance target.</p>
+
+        <p>A <strong>Temporal-Difference</strong> approach revises the prediction immediately: at the moment of seeing the wreckage, you combine the elapsed travel time with your fresh estimate of the remaining delay. <span class="key-point">TD learning does not wait for the final outcome; it updates a prior guess using immediate empirical feedback coupled with a downstream guess.</span></p>
+      </section>
+
+      <section id="td0" aria-labelledby="td0-heading">
+        <h2 id="td0-heading">The TD(0) Operator: Bootstrapping in Place</h2>
+        <p>To crystallize the mathematical contrast, recall the three core update targets for evaluating a state value $V(S_t)$:</p>
+
+        <p><strong>1. Monte Carlo (Full Trajectory):</strong> Waits for the terminal step $T$ and updates toward the realized discounted return $G_t$:</p>
+        <div class="equation">
+          $$V(S_t) \leftarrow V(S_t) + \alpha \left[ G_t - V(S_t) \right], \quad G_t = \sum_{k=0}^{T-t-1} \gamma^k R_{t+k+1}$$
+        </div>
+
+        <p><strong>2. Dynamic Programming (Expectation Backup):</strong> Requires complete transition probabilities $\mathcal{P}(s' \mid s, a)$:</p>
+        <div class="equation">
+          $$V(s) \leftarrow \sum_{a} \pi(a \mid s) \left[ \mathcal{R}(s, a) + \gamma \sum_{s'} \mathcal{P}(s' \mid s, a) V(s') \right]$$
+        </div>
+
+        <p><strong>3. TD(0) (Sampled Bootstrapping):</strong> Samples a single transition $(S_t, A_t, R_{t+1}, S_{t+1})$ from nature and updates immediately:</p>
+        <div class="equation">
+          $$V(S_t) \leftarrow V(S_t) + \alpha \underbrace{\left[ R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right]}_{\delta_t \text{ (TD Error)}}$$
+        </div>
+
+        <aside class="sidenote">
+          <strong>The Bellman Link:</strong> Notice that the TD error $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$ is a sample realization of the Bellman expectation deficit:
+          $$\mathbb{E}_\pi[\delta_t \mid S_t = s] = \mathcal{T}^\pi V(s) - V(s)$$
+          When $V = v_\pi$, the expected TD error is identically zero.
+        </aside>
+
+        <p>The term $R_{t+1} + \gamma V(S_{t+1})$ is the <strong>TD target</strong>. Unlike Monte Carlo, TD substitutes the unknown sum of future rewards with its current estimate $V(S_{t+1})$. This process—updating an estimate from other existing estimates—is called <strong>bootstrapping</strong>.</p>
+      </section>
+
+      <section id="tradeoff" aria-labelledby="tradeoff-heading">
+        <h2 id="tradeoff-heading">Bias, Variance, and the Credit Assignment Dial</h2>
+        <p>The comparison between Monte Carlo and TD(0) represents the quintessential bias-variance trade-off in reinforcement learning:</p>
+
+        <div class="feedback-grid" role="region" aria-label="MC vs TD Comparison Cards">
+          <div class="feedback-card">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">Monte Carlo Target</span>
+              <span class="feedback-card__badge">Zero Bias · High Variance</span>
+            </div>
+            <p class="feedback-card__desc">Updates toward realized return $G_t$. Unbiased because it records nature directly, but noisy because every random transition in the trajectory compounds.</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Target Form</span>
+                <span class="feedback-card__signal">$G_t = \sum_{k=0}^\infty \gamma^k R_{t+k+1}$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Episode Constraint</span>
+                <span class="feedback-card__signal signal--obscured">Must terminate (no online loops)</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Convergence Speed</span>
+                <span class="feedback-card__signal signal--obscured">Slow (demands small step size $\alpha$)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feedback-card feedback-card--highlight">
+            <div class="feedback-card__header">
+              <span class="feedback-card__title">TD(0) Bootstrapped Target</span>
+              <span class="feedback-card__badge feedback-card__badge--accent">Low Variance · Biased</span>
+            </div>
+            <p class="feedback-card__desc">Updates toward $R_{t+1} + \gamma V(S_{t+1})$. Inherits bias from current estimate $V$, but dramatically suppresses variance by truncating trajectory noise.</p>
+            <div class="feedback-card__visual">
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Target Form</span>
+                <span class="feedback-card__signal signal--revealed">$R_{t+1} + \gamma V(S_{t+1})$</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Episode Constraint</span>
+                <span class="feedback-card__signal signal--revealed">Fully online (continuous tasks)</span>
+              </div>
+              <div class="feedback-card__row">
+                <span class="feedback-card__row-label">Convergence Speed</span>
+                <span class="feedback-card__signal signal--revealed">Fast (tolerates aggressive $\alpha$)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>$n$-Step TD: Unifying the Continuum</h3>
+        <p>TD(0) and Monte Carlo are not incompatible opposites; they are the extreme anchor points of a continuous spectrum parameterized by the planning horizon $n$:</p>
+
+        <div class="equation">
+          $$G_t^{(n)} = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+n})$$
+        </div>
+
+        <p><span class="key-point">As $n$ ranges from $1$ to $\infty$, $n$-step TD sweeps smoothly from maximum bootstrapping (TD(0)) to zero bootstrapping (Monte Carlo).</span> Intermediate values like $n=3$ or $n=5$ frequently strike the optimal empirical trade-off: accumulating enough real empirical rewards to dilute initial estimation bias, while cutting off the tail before trajectory variance explodes.</p>
+      </section>
+
+      <section id="control" aria-labelledby="control-heading">
+        <h2 id="control-heading">From Value to Policy: On-Policy vs. Off-Policy Control</h2>
+        <p>When the environment transition dynamics are unknown, a state-value function $V(s)$ cannot be translated into actions without a model (you cannot evaluate $\arg\max_a \sum_{s'} \mathcal{P}(s' \mid s, a) V(s')$ if you cannot predict where actions land). Control therefore demands learning state-action values $Q(s, a)$.</p>
+
+        <h3>SARSA: On-Policy Control</h3>
+        <p>SARSA evaluates and improves the policy that is <strong>actually being executed</strong> (including its random exploratory deviations):</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">Algorithm · SARSA (State-Action-Reward-State-Action)</span>
+            <span class="algo-box__meta">On-Policy TD Control</span>
+          </div>
+          <ol>
+            <li>In state $S_t$, choose action $A_t$ using behavior policy (e.g., $\varepsilon$-greedy on $Q$).</li>
+            <li>Execute $A_t$, observe reward $R_{t+1}$ and next state $S_{t+1}$.</li>
+            <li>In state $S_{t+1}$, sample next action $A_{t+1} \sim \pi(\cdot \mid S_{t+1})$.</li>
+            <li>Perform on-policy update:
+              $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t) \right]$$
+            </li>
+            <li>Set $S_t \leftarrow S_{t+1}$, $A_t \leftarrow A_{t+1}$, and repeat.</li>
+          </ol>
+        </div>
+
+        <h3>Q-Learning: Off-Policy Control</h3>
+        <p>Watkins (1989) formulated Q-Learning by severing the link between the policy being executed and the policy being evaluated:</p>
+
+        <div class="algo-box">
+          <div class="algo-box__head">
+            <span class="algo-box__title">Algorithm · Q-Learning (Watkins, 1989)</span>
+            <span class="algo-box__meta">Off-Policy TD Control</span>
+          </div>
+          <ol>
+            <li>In state $S_t$, choose action $A_t$ using behavior policy (e.g., $\varepsilon$-greedy on $Q$).</li>
+            <li>Execute $A_t$, observe reward $R_{t+1}$ and next state $S_{t+1}$.</li>
+            <li>Perform off-policy update assuming greedy optimality next:
+              $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]$$
+            </li>
+            <li>Set $S_t \leftarrow S_{t+1}$, and repeat.</li>
+          </ol>
+        </div>
+
+        <p><span class="key-point">The operational distinction lies in the target: SARSA accounts for the exploratory mistakes it knows it will make, whereas Q-Learning assumes counterfactual perfection from the next step onward.</span></p>
+      </section>
+
+      <section id="cliff" aria-labelledby="cliff-heading">
+        <h2 id="cliff-heading">The Cliff Walking Crucible: Safe Paths vs. Fragile Optima</h2>
+        <p>The philosophical divergence between SARSA and Q-Learning is illuminated by the classic Cliff Walking environment ($4 \times 12$ grid). The start is at the bottom-left; the goal is at the bottom-right. The entire bottom edge between them is an abyss: stepping onto the cliff yields a $-100$ penalty and resets the agent to the start.</p>
+
+        <div class="cliff-sim" role="region" aria-label="Cliff Walking Live Dual Agent Comparison">
+          <div class="cliff-sim__header">
+            <span class="cliff-sim__title">Live Arena · Cliff Walking Dual Agent Sandbox ($\varepsilon = 0.1, \alpha = 0.5$)</span>
+            <div class="cliff-sim__scoreboard">
+              <span>SARSA Falls: <strong id="cliff-sarsa-falls" style="color:#237440">0</strong></span>
+              <span>Q-Learning Falls: <strong id="cliff-q-falls" style="color:#b04632">0</strong></span>
+            </div>
+          </div>
+          <div class="cliff-sim__canvas-wrap">
+            <canvas id="cliff-canvas" class="cliff-sim__canvas"></canvas>
+          </div>
+          <div class="cliff-sim__status" id="cliff-status-text">
+            Click "Auto Play" to pit SARSA against Q-Learning in real time across the cliff edge.
+          </div>
+          <div class="cliff-sim__controls">
+            <div class="cliff-sim__legend">
+              <span class="cliff-sim__label"><span class="regret-sim__dot" style="background:#237440;"></span><span>SARSA (On-Policy Detour)</span></span>
+              <span class="cliff-sim__label"><span class="regret-sim__dot" style="background:#b04632;"></span><span>Q-Learning (Off-Policy Edge)</span></span>
+            </div>
+            <div class="cliff-sim__btns">
+              <button type="button" class="cliff-sim__btn cliff-sim__btn--primary" id="cliff-auto-btn" onclick="toggleAutoCliff()">Auto Play</button>
+              <button type="button" class="cliff-sim__btn" onclick="stepCliff()">Step</button>
+              <button type="button" class="cliff-sim__btn" onclick="resetCliff()">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <p>Watch how the two agents evolve during exploration:</p>
+        <ul>
+          <li><strong>Q-Learning (Red Disk):</strong> Learns the mathematically optimal shortest path directly adjacent to the cliff edge. Because it uses $\max_a Q(s', a)$, its target presumes it will never step off. However, because it explores with $\varepsilon = 0.1$, an accidental random perturbation inevitably sends it plummeting into the abyss, resulting in terrible training-time cumulative returns.</li>
+          <li><strong>SARSA (Green Disk):</strong> Learns a conservative, roundabout detour over the top of the grid. Because its update incorporates $Q(S_{t+1}, A_{t+1})$ drawn from its actual exploratory policy, it explicitly penalizes states close to the edge that are vulnerable to accidental slip-ups.</li>
+        </ul>
+
+        <div class="callout">
+          <div class="callout-title">Atlas Entry #10 · The Behavior-Target Mismatch</div>
+          <p>Training return reflects the <em>behavior policy</em>, not the greedy capacity of the learned values. Q-Learning performs poorly during training due to exploratory cliff falls, yet if frozen and evaluated greedily ($\varepsilon = 0$), it executes the optimal 13-step path flawlessly.</p>
+          <p><span class="key-point">Never evaluate an algorithm solely by its exploratory training reward: on-policy methods maximize online safety, while off-policy methods discover the uncompromised optimum.</span></p>
+        </div>
+      </section>
+
+      <section id="failures" aria-labelledby="failures-heading">
+        <h2 id="failures-heading">Failure Modes: Step-Size Sensitivity &amp; Divergence</h2>
+        <p>Temporal-Difference learning abandons the safety of Monte Carlo sample averaging. This speed comes at the cost of two classical failure modes:</p>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">Atlas Entry #11 · Step-Size Hypersensitivity</div>
+          <p>Unlike Monte Carlo, where errors diminish asymptotically under simple empirical averaging, TD updates chase a moving target ($R_{t+1} + \gamma V(S_{t+1})$).</p>
+          <p>If the learning rate $\alpha$ is too high, errors in downstream estimates propagate backward, causing values to oscillate violently. If $\alpha$ is too small, bootstrapping moves like molasses. The sweet spot of $\alpha$ is highly sensitive to the spectral radius of the transition matrix and the reward scale.</p>
+        </div>
+
+        <div class="callout callout--failure">
+          <div class="callout-title">The Deadly Triad (Sutton &amp; Barto)</div>
+          <p>When extending TD from tabular lookups to function approximation (such as deep neural networks), convergence is no longer guaranteed. Combining three elements simultaneously can trigger catastrophic numerical divergence:</p>
+          <ol>
+            <li><strong>Function Approximation:</strong> Parametric representation $V_\theta(s)$ or $Q_\theta(s, a)$;</li>
+            <li><strong>Bootstrapping:</strong> Updating from downstream estimates rather than terminal returns;</li>
+            <li><strong>Off-Policy Learning:</strong> Training on data collected under a different distribution.</li>
+          </ol>
+          <p>Breaking any one leg of the triad restores stability: Monte Carlo drops bootstrapping; on-policy SARSA drops off-policy distribution shifts; tabular methods drop function approximation.</p>
+        </div>
+      </section>
+
+      <details class="code-accordion">
+        <summary>
+          <span>Appendix · Minimal NumPy Tabular TD Control</span>
+          <span class="code-accordion__tag">35 Lines Python</span>
+        </summary>
+        <div class="code-accordion__body">
+          <button type="button" class="copy-code-btn" onclick="copySnippet('code-py')">Copy</button>
+          <pre id="code-py"><code>import numpy as np
+
+class QLearning:
+    """Off-policy TD control for discrete state-action spaces."""
+    def __init__(self, num_states, num_actions, alpha=0.1, gamma=0.99, epsilon=0.1):
+        self.Q = np.zeros((num_states, num_actions))
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.num_actions = num_actions
+
+    def act(self, state):
+        if np.random.rand() < self.epsilon:
+            return np.random.randint(self.num_actions)
+        return int(np.argmax(self.Q[state]))
+
+    def update(self, s, a, r, next_s, done):
+        target = r if done else r + self.gamma * np.max(self.Q[next_s])
+        self.Q[s, a] += self.alpha * (target - self.Q[s, a])
+
+class SARSA(QLearning):
+    """On-policy TD control evaluating the exploratory policy."""
+    def update(self, s, a, r, next_s, next_a, done):
+        target = r if done else r + self.gamma * self.Q[next_s, next_a]
+        self.Q[s, a] += self.alpha * (target - self.Q[s, a])</code></pre>
+        </div>
+      </details>
+
+      <section class="references" id="reading" aria-labelledby="reading-heading">
+        <h2 id="reading-heading">Further Reading</h2>
+        <p>These classical publications established the theoretical foundations of temporal-difference learning:</p>
+        <ol>
+          <li><a href="https://github.com/mutual-ai/Book/blob/main/books/RL/RLbook2020.pdf">Sutton &amp; Barto · Reinforcement Learning: An Introduction</a><br>Chapter 6: Temporal-Difference Learning. The definitive pedagogical exposition of TD error, bootstrapping, and Cliff Walking dynamics.</li>
+          <li><a href="https://link.springer.com/article/10.1007/BF00115009">Sutton (1988) · Learning to predict by the methods of temporal differences</a><br>Machine Learning. Introduced the TD($\lambda$) family and proved linear convergence for absorbing Markov chains.</li>
+          <li><a href="https://link.springer.com/article/10.1007/BF00992698">Watkins &amp; Dayan (1992) · Q-learning</a><br>Machine Learning. The rigorous proof of off-policy convergence to optimal action-values with probability 1.</li>
+          <li><a href="https://link.springer.com/article/10.1023/A:1007331507769">Rummery &amp; Niranjan (1994) · On-line Q-learning using connectionist systems</a><br>Cambridge University Technical Report. Formulated the SARSA algorithm for online state-action control.</li>
+          <li><a href="https://ieeexplore.ieee.org/document/580874">Tsitsiklis &amp; Van Roy (1997) · An analysis of temporal-difference learning with function approximation</a><br>IEEE Transactions on Automatic Control. Clarified the stability bounds and divergence risks of TD under linear function approximation.</li>
+        </ol>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
