@@ -1,8 +1,9 @@
 <div align="center">
 
-# BreakRL
-
-**Learn how an RL algorithm works, then take it apart and watch it break.**
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg">
+  <img src=".github/assets/banner-light.svg" width="100%" alt="BreakRL">
+</picture>
 
 Bilingual reinforcement learning notes in 14 chapters, from multi-armed bandits to GRPO.
 
@@ -16,11 +17,19 @@ Bilingual reinforcement learning notes in 14 chapters, from multi-armed bandits 
 
 </div>
 
-<p align="center">
-  <img src=".github/assets/offline-q-vs-return.png" width="680" alt="Naive offline DQN: estimated Q keeps climbing while the real return stays below the BC baseline">
-</p>
+<p align="center"><b>Four algorithms, taken apart</b></p>
 
-<p align="center"><sub>Chapter 9, Figure 1. Naive offline DQN: the Q estimate climbs to nearly 24, but the real return never catches behavior cloning's 301. The loss curve gives no hint of it.</sub></p>
+<table>
+  <tr>
+    <td width="50%" align="center"><img src=".github/assets/dqn-no-replay.png" alt="Ch. 4 · DQN without replay: return stays near 10 and never takes off"><br><sub>Ch. 4 · DQN without replay: return stays near 10 and never takes off</sub></td>
+    <td width="50%" align="center"><img src=".github/assets/ppo-no-clip.png" alt="Ch. 7 · PPO without the clip: 20 epochs per batch, wild swings in return"><br><sub>Ch. 7 · PPO without the clip: 20 epochs per batch, wild swings in return</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src=".github/assets/offline-q-vs-return.png" alt="Ch. 9 · Naive offline DQN: Q keeps climbing, real return never reaches BC"><br><sub>Ch. 9 · Naive offline DQN: Q keeps climbing, real return never reaches BC</sub></td>
+    <td width="50%" align="center"><img src=".github/assets/rlhf-reward-hacking.png" alt="Ch. 12 · RLHF with β = 0: proxy reward maxes out, true score falls off a cliff"><br><sub>Ch. 12 · RLHF with β = 0: proxy reward maxes out, true score falls off a cliff</sub></td>
+  </tr>
+</table>
+
 
 ## What this is
 
@@ -86,6 +95,9 @@ Each chapter has a PDF, a web notebook with saved outputs, and a Colab link.
 
 ## Running locally
 
+<details>
+<summary>Show local setup</summary>
+
 Colab is the easiest route. To run locally, use Python 3.10:
 
 ```bash
@@ -97,6 +109,8 @@ python tools/run_jupyter.py
 ```
 
 Open `book/notes/<chapter>/<chapter>-en.ipynb` and pick the `rl_env` kernel. Files without a suffix are Chinese; `-en` files are English.
+
+</details>
 
 ## Repository layout
 
