@@ -7,28 +7,15 @@
 
 Bilingual reinforcement learning notes in 14 chapters, from multi-armed bandits to GRPO.
 
-[![Stars](https://img.shields.io/github/stars/Powfu-zwx/BreakRL?style=flat-square&color=yellow)](https://github.com/Powfu-zwx/BreakRL/stargazers)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21966485-blue?style=flat-square)](https://doi.org/10.5281/zenodo.21966485)
-[![Code MIT](https://img.shields.io/badge/Code-MIT-green?style=flat-square)](LICENSE-MIT)
-[![Text CC BY 4.0](https://img.shields.io/badge/Text-CC%20BY%204.0-orange?style=flat-square)](LICENSE-CC-BY-4.0)
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue?style=flat-square)](requirements.txt)
+<a href="https://github.com/Powfu-zwx/BreakRL/stargazers"><img src="https://img.shields.io/github/stars/Powfu-zwx/BreakRL?style=flat&logo=github&label=Stars&labelColor=161b22&color=ff2e63" alt="Stars"></a>
+<a href="https://doi.org/10.5281/zenodo.21966485"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21966485-30363d?style=flat&labelColor=161b22" alt="DOI"></a>
+<a href="LICENSE-MIT"><img src="https://img.shields.io/badge/Code-MIT-30363d?style=flat&labelColor=161b22" alt="MIT"></a>
+<a href="LICENSE-CC-BY-4.0"><img src="https://img.shields.io/badge/Text-CC%20BY%204.0-30363d?style=flat&labelColor=161b22" alt="CC BY 4.0"></a>
+<a href="requirements.txt"><img src="https://img.shields.io/badge/Python-3.10-30363d?style=flat&logo=python&logoColor=white&labelColor=161b22" alt="Python 3.10"></a>
 
-[Read online](https://powfu-zwx.github.io/BreakRL/index-en.html) · [Interactive demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) · [Failure atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) · [中文](README-zh.md)
+<b><a href="https://powfu-zwx.github.io/BreakRL/index-en.html">Read online</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo-en.html">Interactive demo</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss">Failure atlas</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="README-zh.md">中文</a></b>
 
 </div>
-
-<p align="center"><b>Four algorithms, taken apart</b></p>
-
-<table>
-  <tr>
-    <td width="50%" align="center"><img src=".github/assets/dqn-no-replay.png" alt="Ch. 4 · DQN without replay: return stays near 10 and never takes off"><br><sub>Ch. 4 · DQN without replay: return stays near 10 and never takes off</sub></td>
-    <td width="50%" align="center"><img src=".github/assets/ppo-no-clip.png" alt="Ch. 7 · PPO without the clip: 20 epochs per batch, wild swings in return"><br><sub>Ch. 7 · PPO without the clip: 20 epochs per batch, wild swings in return</sub></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src=".github/assets/offline-q-vs-return.png" alt="Ch. 9 · Naive offline DQN: Q keeps climbing, real return never reaches BC"><br><sub>Ch. 9 · Naive offline DQN: Q keeps climbing, real return never reaches BC</sub></td>
-    <td width="50%" align="center"><img src=".github/assets/rlhf-reward-hacking.png" alt="Ch. 12 · RLHF with β = 0: proxy reward maxes out, true score falls off a cliff"><br><sub>Ch. 12 · RLHF with β = 0: proxy reward maxes out, true score falls off a cliff</sub></td>
-  </tr>
-</table>
 
 
 ## What this is
