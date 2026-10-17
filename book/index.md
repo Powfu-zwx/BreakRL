@@ -43,4 +43,4 @@ BreakRL 是一份双语、失败优先的强化学习讲义。每章先讲清一
 
 第 12–14 章用玩具序列任务和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
 
-站点展示已保存的 notebook 输出，阅读时不会训练模型。要运行实验，用上表的 Colab，或按 [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README.md#运行实验) 装本地环境。
+站点展示已保存的 notebook 输出，阅读时不会训练模型。要运行实验，用上表的 Colab，或按 [README](https://github.com/Powfu-zwx/BreakRL/blob/main/README-zh.md#运行实验) 装本地环境。

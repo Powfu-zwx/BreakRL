@@ -23,8 +23,8 @@ HTML_HREF = re.compile(r'href="([^"]+)"')
 # RL chapter. Each of these pages restates it in its own markup, so the check
 # asks for the link targets and leaves the wording around them to the author.
 ENTRY_PAGES = (
-    ("README.md", "failure-atlas.html"),
-    ("README-en.md", "failure-atlas-en.html"),
+    ("README.md", "failure-atlas-en.html"),
+    ("README-zh.md", "failure-atlas.html"),
     ("book/index.md", "failure-atlas.html"),
     ("book/index-en.md", "failure-atlas-en.html"),
 )

@@ -32,8 +32,8 @@ TABLE_RULE = "| --- | --- | --- | --- | --- |"
 # the saved experiment output.
 KINDS = {
     "readme": {
-        "zh": REPO_ROOT / "README.md",
-        "en": REPO_ROOT / "README-en.md",
+        "zh": REPO_ROOT / "README-zh.md",
+        "en": REPO_ROOT / "README.md",
     },
     "home": {
         "zh": BOOK / "index.md",
