@@ -13,7 +13,7 @@ Bilingual reinforcement learning notes in 14 chapters, from multi-armed bandits 
 <a href="LICENSE-CC-BY-4.0"><img src="https://img.shields.io/badge/Text-CC%20BY%204.0-30363d?style=flat&labelColor=161b22" alt="CC BY 4.0"></a>
 <a href="requirements.txt"><img src="https://img.shields.io/badge/Python-3.10-30363d?style=flat&logo=python&logoColor=white&labelColor=161b22" alt="Python 3.10"></a>
 
-<b><a href="https://powfu-zwx.github.io/BreakRL/index-en.html">Read online</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo-en.html">Interactive demo</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss">Failure atlas</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="README-zh.md">中文</a></b>
+<b><a href="https://powfu-zwx.github.io/BreakRL/index-en.html">Read online</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo-en.html">Interactive demo</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss">Failure atlas</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="README-zh.md">中文</a></b>
 
 </div>
 
