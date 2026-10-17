@@ -1,8 +1,9 @@
 <div align="center">
 
-# BreakRL
-
-**把算法讲明白，再亲手把它拆坏。**
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/banner-dark.svg">
+  <img src=".github/assets/banner-light.svg" width="100%" alt="BreakRL">
+</picture>
 
 一套中英双语的强化学习讲义，14 章，从多臂老虎机一路讲到 GRPO。
 
@@ -16,11 +17,19 @@
 
 </div>
 
-<p align="center">
-  <img src=".github/assets/offline-q-vs-return.png" width="680" alt="离线 DQN：Q 估计一路涨，真实回报始终在 BC 基线之下">
-</p>
+<p align="center"><b>四个被拆坏的算法</b></p>
 
-<p align="center"><sub>第 9 章 Figure 1：离线 DQN 的 Q 估计一路涨到 24 左右，真实回报却始终没追上行为克隆的 301。损失曲线上什么都看不出来。</sub></p>
+<table>
+  <tr>
+    <td width="50%" align="center"><img src=".github/assets/dqn-no-replay.png" alt="第 4 章 · DQN 去掉经验回放：回报停在 10 左右，一点也学不动"><br><sub>第 4 章 · DQN 去掉经验回放：回报停在 10 左右，一点也学不动</sub></td>
+    <td width="50%" align="center"><img src=".github/assets/ppo-no-clip.png" alt="第 7 章 · PPO 去掉 clip：同一批数据复用 20 轮，回报大起大落"><br><sub>第 7 章 · PPO 去掉 clip：同一批数据复用 20 轮，回报大起大落</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><img src=".github/assets/offline-q-vs-return.png" alt="第 9 章 · 朴素离线 DQN：Q 一路涨，真实回报始终够不着 BC"><br><sub>第 9 章 · 朴素离线 DQN：Q 一路涨，真实回报始终够不着 BC</sub></td>
+    <td width="50%" align="center"><img src=".github/assets/rlhf-reward-hacking.png" alt="第 12 章 · RLHF 令 β=0：代理奖励冲顶，真实分数断崖下跌"><br><sub>第 12 章 · RLHF 令 β=0：代理奖励冲顶，真实分数断崖下跌</sub></td>
+  </tr>
+</table>
+
 
 ## 这套讲义在做什么
 
@@ -86,6 +95,9 @@
 
 ## 在本地跑
 
+<details>
+<summary>展开本地安装步骤</summary>
+
 最省事的是点表里的 Colab。想在本地跑的话，用 Python 3.10：
 
 ```bash
@@ -97,6 +109,8 @@ python tools/run_jupyter.py
 ```
 
 然后打开 `book/notes/<章节>/<章节>.ipynb`，内核选 `rl_env`。不带后缀的是中文版，带 `-en` 的是英文版。
+
+</details>
 
 ## 仓库结构
 
