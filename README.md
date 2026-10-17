@@ -2,33 +2,68 @@
 
 # BreakRL
 
-**Explain an algorithm, then remove a key mechanism and watch it fail.**
+**Learn how an RL algorithm works, then take it apart and watch it break.**
 
-14 chapters of reinforcement learning notes · Chinese & English PDFs · Runnable notebooks · Ablation experiments
+Bilingual reinforcement learning notes in 14 chapters, from multi-armed bandits to GRPO.
 
 [![Stars](https://img.shields.io/github/stars/Powfu-zwx/BreakRL?style=flat-square&color=yellow)](https://github.com/Powfu-zwx/BreakRL/stargazers)
-[![Forks](https://img.shields.io/github/forks/Powfu-zwx/BreakRL?style=flat-square&color=blue)](https://github.com/Powfu-zwx/BreakRL/network/members)
-[![License: MIT](https://img.shields.io/badge/Code-MIT-green?style=flat-square)](LICENSE-MIT)
-[![License: CC BY 4.0](https://img.shields.io/badge/Text-CC%20BY%204.0-orange?style=flat-square)](LICENSE-CC-BY-4.0)
-[![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square)](requirements.txt)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21966485-blue?style=flat-square)](https://doi.org/10.5281/zenodo.21966485)
+[![Code MIT](https://img.shields.io/badge/Code-MIT-green?style=flat-square)](LICENSE-MIT)
+[![Text CC BY 4.0](https://img.shields.io/badge/Text-CC%20BY%204.0-orange?style=flat-square)](LICENSE-CC-BY-4.0)
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue?style=flat-square)](requirements.txt)
 
-**[Read online](https://powfu-zwx.github.io/BreakRL/index-en.html) · [Interactive demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) · [Failure atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) · [中文](README-zh.md)**
+[Read online](https://powfu-zwx.github.io/BreakRL/index-en.html) · [Interactive demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) · [Failure atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) · [中文](README-zh.md)
 
 </div>
 
-## Why BreakRL
+<p align="center">
+  <img src=".github/assets/offline-q-vs-return.png" width="680" alt="Naive offline DQN: estimated Q keeps climbing while the real return stays below the BC baseline">
+</p>
 
-Most textbooks only show the version of an algorithm that works. BreakRL goes the other way: **explain the principle first, then deliberately remove a key mechanism so you watch it fail — and understand why each component exists**.
+<p align="center"><sub>Chapter 9, Figure 1. Naive offline DQN: the Q estimate climbs to nearly 24, but the real return never catches behavior cloning's 301. The loss curve gives no hint of it.</sub></p>
 
-| Derive | Run | Break |
+## What this is
+
+The hard part of RL is usually not the math. It's the moment a run finishes, the curve is right there, and you still can't say why it worked or why it didn't.
+
+So every chapter here does three things. It derives the method from scratch, gives you a notebook you can run, and then pulls out one piece the method depends on and trains it again. DQN loses its replay buffer. PPO loses its clip. RLHF gets a KL weight of zero. Seeing exactly how each one falls apart teaches more than a paragraph about why the piece matters.
+
+The failures are collected in a [failure atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss): 17 entries, each laid out as symptom, cause, how to reproduce it, and how to fix it. When your own training stalls, look it up by symptom.
+
+## Start in three minutes
+
+Nothing to install:
+
+1. Open the [interactive demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) and drag the data-coverage slider down. Watch the loss and the return part ways.
+2. Read [failure atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) for the extrapolation error behind it.
+3. Then read Chapter 9 on offline RL to see how CQL and IQL each fix it.
+
+That loop is how every chapter reads. You don't need to start at Chapter 1.
+
+## What each chapter breaks
+
+| Ch. | What gets removed | What you see |
 | --- | --- | --- |
-| Every chapter derives the math from first principles, no steps skipped | Every chapter ships a runnable notebook, one click on Colab | Every chapter includes ablations that show how the algorithm degrades |
+| 1 Bandits | Exploration (pure greedy) | About 3 in 10 seeds get stuck on a worse arm |
+| 2 MDP | Nothing; this is the foundation | Policy iteration and value iteration converging |
+| 3 TD | On- vs off-policy, n-step choice | SARSA and Q-learning take different paths on Cliff Walking |
+| 4 DQN | Replay buffer, target network | CartPole return stuck near 10; wildly oscillating curves |
+| 5 REINFORCE | Baseline, entropy bonus | Returns are pure noise; entropy collapses early |
+| 6 Actor-Critic | A2C's stabilizers | Advantage collapse; return pinned near 9 from episode one |
+| 7 PPO | The clip | LunarLander collapses mid-run, down to around −8000 |
+| 8 SAC | Entropy term, double Q, soft updates | Exploration dies, Q overestimates, targets jump |
+| 9 Offline RL | Conservatism (naive offline DQN) | Q keeps rising while return stays far below BC |
+| 10 Model-based RL | An accurate model | More planning amplifies the model's bias |
+| 11 Decision Transformer | Return targets inside the data | Higher targets don't help; can't stitch the optimal path |
+| 12 RLHF | The KL constraint (β = 0) | Proxy reward rises while true quality collapses |
+| 13 DPO | A large enough β, early stopping | Loss keeps falling while generations get worse |
+| 14 GRPO | Cold-start SFT | Every group's reward is zero, so nothing is learned |
 
-Topics range from classical RL (bandits, TD, DQN, PPO, SAC) to offline and model-based RL, Decision Transformer, and small-task implementations of RLHF, DPO, and GRPO.
+Chapters 12–14 use toy tasks. They are there to make post-training mechanics visible, not to reproduce LLM-scale results.
 
 ## Chapters
 
-Each chapter includes derivations, code, and ablation experiments. Chapters 12–14 use toy tasks to explain post-training mechanisms.
+Each chapter has a PDF, a web notebook with saved outputs, and a Colab link.
 
 <!-- chapters:begin -->
 | # | Chapter | Text | Experiments | Run |
@@ -49,11 +84,9 @@ Each chapter includes derivations, code, and ablation experiments. Chapters 12�
 | 14 | GRPO and RLVR: Verifiable Rewards | [PDF](book/notes/grpo/grpo-en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo-en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo-en.ipynb) |
 <!-- chapters:end -->
 
-## Run the experiments
+## Running locally
 
-Click **Colab** in the table to run a notebook. The website displays saved outputs and needs no local setup.
-
-For local use, install Python 3.10:
+Colab is the easiest route. To run locally, use Python 3.10:
 
 ```bash
 conda create -n rl_env python=3.10
@@ -63,25 +96,25 @@ python -m ipykernel install --user --name rl_env --display-name rl_env
 python tools/run_jupyter.py
 ```
 
-Open `book/notes/<chapter>/<chapter>-en.ipynb` and select the `rl_env` kernel. Unsuffixed files are Chinese; `-en` files are English.
+Open `book/notes/<chapter>/<chapter>-en.ipynb` and pick the `rl_env` kernel. Files without a suffix are Chinese; `-en` files are English.
 
-## Project layout
+## Repository layout
 
 ```
 book/
-  notes/          # Chapter text (TeX/PDF), experiment notebooks, and figures
-  chapters.yml    # Chapter registry; README tables and the site TOC are generated from it
-  _toc.yml        # Jupyter Book table of contents (auto-generated)
-tools/            # Build and validation scripts
+  notes/          TeX, PDFs, notebooks, and figures for each chapter
+  chapters.yml    The chapter list; the READMEs and site TOC are generated from it
+  _toc.yml        Jupyter Book TOC (generated, don't edit by hand)
+tools/            Build and check scripts
 ```
 
-After editing chapters, run `python tools/sync_pages.py` to sync the pages; validate with `python tools/check_repo.py`. Update the PDF whenever its TeX source changes.
+To add, remove, or rename a chapter, edit only `book/chapters.yml`, run `python tools/sync_pages.py` to regenerate the pages, then `python tools/check_repo.py`. If you touch a `.tex` file, rebuild its PDF too. Found a wrong derivation or a notebook that won't run? Please open an issue.
 
 ## License and citation
 
-Text, figures, and data: [CC BY 4.0](LICENSE-CC-BY-4.0). Code: [MIT](LICENSE-MIT).
+Text, figures, and data are [CC BY 4.0](LICENSE-CC-BY-4.0). Code is [MIT](LICENSE-MIT).
 
-Citation details: [CITATION.cff](CITATION.cff), or use "Cite this repository" in the GitHub sidebar to copy the BibTeX.
+If you use BreakRL in a course, a paper, or other public work, please cite it using [CITATION.cff](CITATION.cff), or click "Cite this repository" in the GitHub sidebar for BibTeX.
 
 ## Star History
 
