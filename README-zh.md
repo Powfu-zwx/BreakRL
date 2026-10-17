@@ -13,7 +13,7 @@
 <a href="LICENSE-CC-BY-4.0"><img src="https://img.shields.io/badge/正文-CC%20BY%204.0-30363d?style=flat&labelColor=161b22" alt="CC BY 4.0"></a>
 <a href="requirements.txt"><img src="https://img.shields.io/badge/Python-3.10-30363d?style=flat&logo=python&logoColor=white&labelColor=161b22" alt="Python 3.10"></a>
 
-<b><a href="https://powfu-zwx.github.io/BreakRL/">在线阅读</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo.html">交互演示</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss">失败图鉴</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="README.md">English</a></b>
+<b><a href="https://powfu-zwx.github.io/BreakRL/">在线阅读</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo.html">交互演示</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss">失败图鉴</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="README.md">English</a></b>
 
 </div>
 
