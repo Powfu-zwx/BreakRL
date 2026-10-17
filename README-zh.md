@@ -7,28 +7,15 @@
 
 一套中英双语的强化学习讲义，14 章，从多臂老虎机一路讲到 GRPO。
 
-[![Stars](https://img.shields.io/github/stars/Powfu-zwx/BreakRL?style=flat-square&color=yellow)](https://github.com/Powfu-zwx/BreakRL/stargazers)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21966485-blue?style=flat-square)](https://doi.org/10.5281/zenodo.21966485)
-[![代码 MIT](https://img.shields.io/badge/代码-MIT-green?style=flat-square)](LICENSE-MIT)
-[![正文 CC BY 4.0](https://img.shields.io/badge/正文-CC%20BY%204.0-orange?style=flat-square)](LICENSE-CC-BY-4.0)
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue?style=flat-square)](requirements.txt)
+<a href="https://github.com/Powfu-zwx/BreakRL/stargazers"><img src="https://img.shields.io/github/stars/Powfu-zwx/BreakRL?style=flat&logo=github&label=Stars&labelColor=161b22&color=ff2e63" alt="Stars"></a>
+<a href="https://doi.org/10.5281/zenodo.21966485"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21966485-30363d?style=flat&labelColor=161b22" alt="DOI"></a>
+<a href="LICENSE-MIT"><img src="https://img.shields.io/badge/代码-MIT-30363d?style=flat&labelColor=161b22" alt="MIT"></a>
+<a href="LICENSE-CC-BY-4.0"><img src="https://img.shields.io/badge/正文-CC%20BY%204.0-30363d?style=flat&labelColor=161b22" alt="CC BY 4.0"></a>
+<a href="requirements.txt"><img src="https://img.shields.io/badge/Python-3.10-30363d?style=flat&logo=python&logoColor=white&labelColor=161b22" alt="Python 3.10"></a>
 
-[在线阅读](https://powfu-zwx.github.io/BreakRL/) · [交互演示](https://powfu-zwx.github.io/BreakRL/demo.html) · [失败图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss) · [English](README.md)
+<b><a href="https://powfu-zwx.github.io/BreakRL/">在线阅读</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/demo.html">交互演示</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss">失败图鉴</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="README.md">English</a></b>
 
 </div>
-
-<p align="center"><b>四个被拆坏的算法</b></p>
-
-<table>
-  <tr>
-    <td width="50%" align="center"><img src=".github/assets/dqn-no-replay.png" alt="第 4 章 · DQN 去掉经验回放：回报停在 10 左右，一点也学不动"><br><sub>第 4 章 · DQN 去掉经验回放：回报停在 10 左右，一点也学不动</sub></td>
-    <td width="50%" align="center"><img src=".github/assets/ppo-no-clip.png" alt="第 7 章 · PPO 去掉 clip：同一批数据复用 20 轮，回报大起大落"><br><sub>第 7 章 · PPO 去掉 clip：同一批数据复用 20 轮，回报大起大落</sub></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center"><img src=".github/assets/offline-q-vs-return.png" alt="第 9 章 · 朴素离线 DQN：Q 一路涨，真实回报始终够不着 BC"><br><sub>第 9 章 · 朴素离线 DQN：Q 一路涨，真实回报始终够不着 BC</sub></td>
-    <td width="50%" align="center"><img src=".github/assets/rlhf-reward-hacking.png" alt="第 12 章 · RLHF 令 β=0：代理奖励冲顶，真实分数断崖下跌"><br><sub>第 12 章 · RLHF 令 β=0：代理奖励冲顶，真实分数断崖下跌</sub></td>
-  </tr>
-</table>
 
 
 ## 这套讲义在做什么
