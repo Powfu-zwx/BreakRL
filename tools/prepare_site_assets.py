@@ -26,7 +26,6 @@ OUTPUT_FOLDER = BOOK / "_build" / "jupyter_execute"
 IMAGE_TYPES = {
     "image/png": (".png", True),
     "image/jpeg": (".jpeg", True),
-    "image/gif": (".gif", True),
     "image/svg+xml": (".svg", False),
     "application/pdf": (".pdf", True),
 }

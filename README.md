@@ -1,66 +1,12 @@
-<div align="center">
+# BreakRL
 
-<img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
+14 章强化学习讲义，提供中英文 PDF 和可运行的 Notebook。内容涵盖多臂老虎机、深度强化学习、离线强化学习，以及小任务上的 RLHF、DPO 和 GRPO。
 
-<p>
-  <a href="https://powfu-zwx.github.io/BreakRL/"><img alt="在线阅读" src="https://img.shields.io/badge/read-online-0e8a16"></a>
-  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="仓库检查" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
-  <a href="https://doi.org/10.5281/zenodo.21966485"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg"></a>
-  <a href="requirements.txt"><img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-3776AB"></a>
-  <a href="LICENSE-CC-BY-4.0"><img alt="文本许可 CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
-  <a href="LICENSE-MIT"><img alt="代码许可 MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
-</p>
-
-**从失败中学强化学习**
-
-每一章都是一次消融：从老虎机讲到 PPO 与 SAC，再到离线强化学习，最后是玩具任务上的 RLHF / DPO / GRPO。
-
-<p>
-  <a href="https://powfu-zwx.github.io/BreakRL/"><b>在线阅读</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><b>最小演示</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss"><b>图鉴第 8 条</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl.html"><b>离线强化学习</b></a> ·
-  <a href="README-en.md"><b>English</b></a>
-</p>
-
-</div>
-
-BreakRL 是一份双语、失败优先的强化学习**讲义**。每章先讲清一个机制，再把它去掉，让你看见失败。第 12–14 章用玩具序列任务和两位数加法讲机制，不能替代真实的 RLHF、DPO 或 GRPO 训练。
-
-中文是源件，英文是译本；文件名无后缀为中文，`-en` 为英文。
-
-<p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo.html"><img src="assets/readme-demo.gif" alt="最小演示：数据覆盖率低时损失下降、实际回报塌缩" width="720"></a>
-</p>
-
-<p align="center">
-  打开<a href="https://powfu-zwx.github.io/BreakRL/demo.html">最小演示</a>拖动数据覆盖率：覆盖率低时，教学示意图会让损失一路下降而回报塌缩。它不训练模型。
-</p>
-
-## 三分钟上手
-
-1. 打开[最小演示](https://powfu-zwx.github.io/BreakRL/demo.html)，拖动覆盖率滑块（教学示意图，不训练）；
-2. 打开[失败图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)：离线损失正常，回报塌缩；
-3. 读[离线强化学习章](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl.html)——[正文 PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text.html)。
-
-阅读不需要装任何东西：站点只渲染已保存的实验输出。要重跑某一章，用下表的 Colab，或装本地环境改 notebook。下表是其余各章；从上面这三步开始，不必从第 1 章读起。
-
-阅读循环是：
-
-1. 读正文，看问题、公式和机制；
-2. 打开 notebook，在小任务上看算法怎么跑；
-3. 对比消融：跑完了不等于方法可用。
-
-## 学习路径
-
-| 阶段 | 章节 | 重点 |
-| --- | --- | --- |
-| 基础 | 1–3 | 探索、MDP、时序差分学习 |
-| 深度强化学习 | 4–8 | DQN、策略梯度、Actor-Critic、PPO、SAC |
-| 新视角 | 9–11 | 离线强化学习、模型式强化学习、Decision Transformer |
-| 玩具后训练 | 12–14 | 玩具序列与两位数加法上的 RLHF、DPO、GRPO/RLVR |
+[在线阅读](https://powfu-zwx.github.io/BreakRL/) · [交互演示](https://powfu-zwx.github.io/BreakRL/demo.html) · [失败图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss) · [English](README-en.md)
 
 ## 章节
+
+每章包含推导、代码和消融实验。第 12–14 章使用玩具任务讲解后训练机制。
 
 <!-- chapters:begin -->
 | # | 章节 | 正文 | 实验 | 运行 |
@@ -81,19 +27,11 @@ BreakRL 是一份双语、失败优先的强化学习**讲义**。每章先讲�
 | 14 | GRPO 与 RLVR：可验证奖励 | [PDF](book/notes/grpo/grpo.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo.ipynb) |
 <!-- chapters:end -->
 
-## 失败图鉴
-
-训练不收敛时，从症状查起：回报塌缩、Q 值一路涨但策略变差、离线损失正常而回报塌缩、代理奖励上涨而真实质量下降。
-
-先看[图鉴第 8 条](https://powfu-zwx.github.io/BreakRL/failure-atlas.html#atlas-8-offline-loss)（离线损失正常，回报塌缩），或[浏览完整图鉴](https://powfu-zwx.github.io/BreakRL/failure-atlas.html)。每条按「症状 → 机制 → 复现 → 修复」展开。
-
 ## 运行实验
 
-站点展示已保存的 notebook 输出，阅读时不会训练模型。
+点击表中的 **Colab** 可直接运行。网页展示已保存的输出，无需安装环境。
 
-**零安装：** 点上表的 **Colab**。第一个代码单元会克隆本仓库、装实验依赖并进入章节目录，让相对路径可用。有些章节在 CPU 上一分钟内跑完；PPO 大约一小时，Decision Transformer 在 CPU 上可能要几小时。
-
-本地运行用 Python 3.10、PyTorch 与 Gymnasium：
+本地使用 Python 3.10：
 
 ```bash
 conda create -n rl_env python=3.10
@@ -103,20 +41,14 @@ python -m ipykernel install --user --name rl_env --display-name rl_env
 python tools/run_jupyter.py
 ```
 
-打开 `book/notes/<chapter>/<chapter>.ipynb`，选 `rl_env` 内核。
+打开 `book/notes/<章节>/<章节>.ipynb`，选择 `rl_env` 内核。无后缀为中文版，`-en` 为英文版。
 
-## 引用与许可
+## 文件与维护
 
-教学、学习或研究用途见 [CITATION.cff](CITATION.cff)。正文、PDF、TeX、图和生成数据用 [CC BY 4.0](LICENSE-CC-BY-4.0)；notebook 与辅助脚本中的代码用 [MIT License](LICENSE-MIT)。发布历史见 [docs/CHANGELOG.md](docs/CHANGELOG.md)。
+`book/notes/` 保存正文、实验和图表；`book/` 其余文件用于在线阅读；`tools/` 用于构建与检查。
 
-贡献指南见 [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)。
+章节清单在 `book/chapters.yml`。修改后运行 `python tools/sync_pages.py`；检查用 `python tools/check_repo.py`。改动 TeX 时一并更新 PDF。
 
-## 仓库结构
+## 许可
 
-| 路径 | 用途 |
-| --- | --- |
-| [`book/`](book/) | 在线书：章节、实验、最小演示、失败图鉴 |
-| [`book/chapters.yml`](book/chapters.yml) | 章节唯一清单，各处表格由此生成 |
-| [`tools/`](tools/) | 一致性检查、Colab 引导、构建辅助 |
-| [`docs/`](docs/) | 贡献指南、安全策略、变更日志 |
-| [`assets/`](assets/) | README 品牌图与演示 GIF |
+正文、图表和数据：[CC BY 4.0](LICENSE-CC-BY-4.0)。代码：[MIT](LICENSE-MIT)。引用信息见 [CITATION.cff](CITATION.cff)。

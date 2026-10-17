@@ -1,65 +1,12 @@
-<div align="center">
+# BreakRL
 
-<img src="assets/breakrl-wordmark.png" alt="BreakRL" width="400">
+Reinforcement learning notes in 14 chapters, with Chinese and English PDFs and runnable notebooks. Topics range from bandits and deep RL to offline RL and small-task implementations of RLHF, DPO, and GRPO.
 
-<p>
-  <a href="https://powfu-zwx.github.io/BreakRL/index-en.html"><img alt="Read online" src="https://img.shields.io/badge/read-online-0e8a16"></a>
-  <a href="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml"><img alt="Repository checks" src="https://github.com/Powfu-zwx/BreakRL/actions/workflows/quality.yml/badge.svg"></a>
-  <a href="https://doi.org/10.5281/zenodo.21966485"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.21966485.svg"></a>
-  <a href="requirements.txt"><img alt="Python 3.10" src="https://img.shields.io/badge/python-3.10-3776AB"></a>
-  <a href="LICENSE-CC-BY-4.0"><img alt="Text license CC BY 4.0" src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey"></a>
-  <a href="LICENSE-MIT"><img alt="Code license MIT" src="https://img.shields.io/badge/code-MIT-blue"></a>
-</p>
-
-**Learn reinforcement learning through failure**
-
-Each chapter is an ablation: from bandits through PPO and SAC, then offline RL, then toy-task RLHF / DPO / GRPO.
-
-<p>
-  <a href="https://powfu-zwx.github.io/BreakRL/demo-en.html"><b>Demo</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss"><b>Failure Atlas #8</b></a> ·
-  <a href="https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl-en.html"><b>Offline RL</b></a> ·
-  <a href="README.md"><b>中文</b></a>
-</p>
-
-</div>
-
-BreakRL is a bilingual, failure-first set of RL **lecture notes**. Each chapter explains a mechanism, then removes it so you can see the failure. Chapters 12–14 use toy sequence tasks and two-digit addition; they are not a substitute for production RLHF, DPO, or GRPO training.
-
-Chinese is the source edition and the translation is English. An unsuffixed file is the Chinese source; `-en` is its English translation.
-
-<p align="center">
-  <a href="https://powfu-zwx.github.io/BreakRL/demo-en.html"><img src="assets/readme-demo-en.gif" alt="Minimum demo: at low data coverage, TD loss falls while actual return collapses" width="720"></a>
-</p>
-
-<p align="center">
-  Open the <a href="https://powfu-zwx.github.io/BreakRL/demo-en.html">minimum demo</a> and drag data coverage: at low coverage the teaching plot lets loss keep falling while return collapses. It does not train a model.
-</p>
-
-## Start in three minutes
-
-1. Open the [minimum demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) and drag the coverage slider (a teaching plot; it does not train);
-2. Open [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss): healthy offline loss, collapsing returns;
-3. Read the [Offline RL chapter](https://powfu-zwx.github.io/BreakRL/notes/offline-rl/offline-rl-en.html) — [text PDF](https://powfu-zwx.github.io/BreakRL/offline-rl-text-en.html).
-
-No setup is needed for reading: the site displays saved experiment outputs. To rerun a chapter, open it in Colab from the table below, or install a local environment to edit the notebooks. The catalog below is the rest of the book; start with the loop above, not Chapter 1.
-
-The loop is:
-
-1. Read the chapter text for the problem, formulas, and mechanism;
-2. Open the notebook and watch the algorithm on a small task;
-3. Compare the ablations: a finished run is not the same as a method that works.
-
-## Learning path
-
-| Stage | Chapters | Focus |
-| --- | --- | --- |
-| Foundations | 1–3 | Exploration, MDPs, and temporal-difference learning |
-| Deep RL | 4–8 | DQN, policy gradients, Actor-Critic, PPO, and SAC |
-| New views | 9–11 | Offline RL, model-based RL, and Decision Transformer |
-| Toy post-training | 12–14 | RLHF, DPO, and GRPO/RLVR on toy sequence and two-digit-addition tasks |
+[Read online](https://powfu-zwx.github.io/BreakRL/index-en.html) · [Interactive demo](https://powfu-zwx.github.io/BreakRL/demo-en.html) · [Failure atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) · [中文](README.md)
 
 ## Chapters
+
+Each chapter includes derivations, code, and ablation experiments. Chapters 12–14 use toy tasks to explain post-training mechanisms.
 
 <!-- chapters:begin -->
 | # | Chapter | Text | Experiments | Run |
@@ -80,19 +27,11 @@ The loop is:
 | 14 | GRPO and RLVR: Verifiable Rewards | [PDF](book/notes/grpo/grpo-en.pdf) | [Notebook](https://powfu-zwx.github.io/BreakRL/notes/grpo/grpo-en.html) | [Colab](https://colab.research.google.com/github/Powfu-zwx/BreakRL/blob/main/book/notes/grpo/grpo-en.ipynb) |
 <!-- chapters:end -->
 
-## The Failure Atlas
-
-When training does not converge, start from the symptom: collapsing returns, rising Q-values with a worsening policy, a healthy offline loss with collapsing returns, or a proxy reward that climbs while true quality falls.
-
-Start with [Failure Atlas #8](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html#atlas-8-offline-loss) (healthy offline loss, collapsing returns), or [browse the full atlas](https://powfu-zwx.github.io/BreakRL/failure-atlas-en.html). Each entry follows “symptom → mechanism → reproduction → fix.”
-
 ## Run the experiments
 
-The site displays saved notebook outputs and does not train models while you read.
+Click **Colab** in the table to run a notebook. The website displays saved outputs and needs no local setup.
 
-**Zero install:** click **Colab** in the chapter table. The first code cell clones this repository, installs the experiment extras, and enters the chapter folder so relative data paths work. Some chapters finish in under a minute on CPU; PPO is on the order of an hour, and Decision Transformer can take several hours on CPU.
-
-To run locally, use Python 3.10 with PyTorch and Gymnasium:
+For local use, install Python 3.10:
 
 ```bash
 conda create -n rl_env python=3.10
@@ -102,20 +41,14 @@ python -m ipykernel install --user --name rl_env --display-name rl_env
 python tools/run_jupyter.py
 ```
 
-Open `book/notes/<chapter>/<chapter>-en.ipynb` and select the `rl_env` kernel.
+Open `book/notes/<chapter>/<chapter>-en.ipynb` and select the `rl_env` kernel. Unsuffixed files are Chinese; `-en` files are English.
 
-## Citation and license
+## Files and maintenance
 
-For teaching, learning, or research use, see [CITATION.cff](CITATION.cff). Text, PDFs, TeX, figures, and generated data use [CC BY 4.0](LICENSE-CC-BY-4.0); code in notebooks and helper scripts uses the [MIT License](LICENSE-MIT). Release history is in [docs/CHANGELOG.md](docs/CHANGELOG.md).
+`book/notes/` contains the text, experiments, and figures. The rest of `book/` serves the reading site; `tools/` contains build and validation scripts.
 
-See [docs/CONTRIBUTING-en.md](docs/CONTRIBUTING-en.md) for contribution guidance.
+Chapters are listed in `book/chapters.yml`. After edits, run `python tools/sync_pages.py`; validate with `python tools/check_repo.py`. Update the PDF whenever its TeX source changes.
 
-## Repository layout
+## License
 
-| Path | Purpose |
-| --- | --- |
-| [`book/`](book/) | Online book: chapters, experiments, demo, and failure atlas |
-| [`book/chapters.yml`](book/chapters.yml) | Single chapter list; every catalog table is generated from it |
-| [`tools/`](tools/) | Consistency checks, Colab bootstrap, and build helpers |
-| [`docs/`](docs/) | Contributing guide, security policy, and changelog |
-| [`assets/`](assets/) | README branding and demo GIFs |
+Text, figures, and data: [CC BY 4.0](LICENSE-CC-BY-4.0). Code: [MIT](LICENSE-MIT). Citation details: [CITATION.cff](CITATION.cff).
